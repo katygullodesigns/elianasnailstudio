@@ -5,14 +5,19 @@ document.getElementById("loginBtn").addEventListener("click", async function () 
 
   const email = document.getElementById("username").value.trim();
   const password = document.getElementById("password").value;
-  const message = document.getElementById("loginMessage");
+
+  console.log("Email:", email);
 
   try {
-    await window.auth.signInWithEmailAndPassword(email, password);
-    console.log("login success");
+    const result = await window.auth.signInWithEmailAndPassword(email, password);
+
+    console.log("LOGIN SUCCESS", result);
+
     window.location.href = "appointments.html";
+
   } catch (error) {
-    console.error("LOGIN ERROR:", error);
-    message.textContent = error.message;
+    console.error("LOGIN FAILED");
+    console.error("Code:", error.code);
+    console.error("Message:", error.message);
   }
 });
