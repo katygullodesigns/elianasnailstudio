@@ -1,4 +1,6 @@
-window.loginOwner = async function () {
+console.log("login.js loaded");
+
+document.getElementById("loginBtn").addEventListener("click", async function () {
   console.log("login button clicked");
 
   const email = document.getElementById("username").value.trim();
@@ -7,9 +9,10 @@ window.loginOwner = async function () {
 
   try {
     await window.auth.signInWithEmailAndPassword(email, password);
+    console.log("login success");
     window.location.href = "appointments.html";
   } catch (error) {
-    console.error(error);
+    console.error("LOGIN ERROR:", error);
     message.textContent = error.message;
   }
-};
+});
