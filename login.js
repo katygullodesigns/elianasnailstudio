@@ -1,4 +1,6 @@
 window.loginOwner = async function () {
+  console.log("login button clicked");
+
   const email = document.getElementById("username").value.trim();
   const password = document.getElementById("password").value;
   const message = document.getElementById("loginMessage");
@@ -11,5 +13,3 @@ window.loginOwner = async function () {
     message.textContent = error.message;
   }
 };
-
-console.log("login button clicked");
