@@ -11,3 +11,5 @@ window.loginOwner = async function () {
     message.textContent = error.message;
   }
 };
+
+console.log("login button clicked");
