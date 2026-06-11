@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Content-Security-Policy" content="
+default-src 'self';
+script-src 'self' 'unsafe-inline' https://www.gstatic.com;
+connect-src 'self' https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://firestore.googleapis.com https://www.googleapis.com;
+style-src 'self' 'unsafe-inline';
+img-src 'self' data: https:;
+">
+  <title>Eliana's Nails</title>
+  <script type="module" src="firebase.js"></script>
+  <link rel="stylesheet" href="styles.css">
+  </head>
+<body class="owner-page">
+<header>
+    <nav>
+      <a href="appointments.html">Current</a>
+      <a href="apptpast.html"><u>Past</u></a>
+    </nav>
+</header>
+  <div class="background"></div>
+
+  <section class="booking">
+
+<h2>Past Appointments</h2>
+
+  <div id="pastAppointmentsList"></div>
+
+    <a href="index.html" class="back-link">
+      Back to Website
+    </a>
+  </section>
+
+  <script type="module" src="apptpast.js"></script>
+
+<button class="logout-btn" onclick="logoutOwner()">
+  Logout
+</button>
+</body>
+</html>
+  <title>Eliana's Nails</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body class="owner-page">
+<header>
+    <nav>
+      <a href="appointments.html"><u>Current</u></a>
+      <a href="apptpast.html">Past</a>
+    </nav>
+</header>
+  <div class="background"></div>
+
+  <section class="booking">
+<h2>Booked Appointments</h2>
+
+<p id="appointmentCounter" class="appointment-counter">
+  Total Appointments: 0
+</p>
+
+<div id="appointmentsList"></div>
+
+    <a href="index.html" class="back-link">
+      Back to Website
+    </a>
+  </section>
+
+  <script type="module" src="appointments.js"></script>
+
+<button class="logout-btn" id="logoutBtn">
+  Logout
+</button>
+</body>
+</html>

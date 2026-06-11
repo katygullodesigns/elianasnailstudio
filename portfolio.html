@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Content-Security-Policy" content="
+default-src 'self';
+script-src 'self' 'unsafe-inline' https://www.gstatic.com;
+connect-src 'self' https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://firestore.googleapis.com https://www.googleapis.com;
+style-src 'self' 'unsafe-inline';
+img-src 'self' data: https:;
+">
+  <title>Eliana's Nails</title>
+  <script type="module" src="firebase.js"></script>
+  <link rel="stylesheet" href="styles.css">
+  </head>
+<body class="owner-page">
+<header>
+    <nav>
+      <a href="appointments.html">Current</a>
+      <a href="apptpast.html"><u>Past</u></a>
+    </nav>
+</header>
+  <div class="background"></div>
+
+  <section class="booking">
+
+<h2>Past Appointments</h2>
+
+  <div id="pastAppointmentsList"></div>
+
+    <a href="index.html" class="back-link">
+      Back to Website
+    </a>
+  </section>
+
+  <script type="module" src="apptpast.js"></script>
+
+<button class="logout-btn" onclick="logoutOwner()">
+  Logout
+</button>
+</body>
+</html>
+  <title>Eliana's Nails</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body class="portfolio-page">
+<div class="logo-container">
+  <img src="images/Elianalogo.svg" alt="eliana Logo" id="logohead">
+  <img src="images/sparkle.svg" alt="sparkle" id="logohead2">
+   <header>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="index.html#book">Book</a>
+      <a href="services.html">Services</a>
+    </nav>
+  </header>
+</div>
+  <div class="background"></div>
+
+
+
+
+  <section id="portfolio" class="portfolio">
+    <h2>Portfolio</h2>
+<h3>Gel Manicures</h3>
+<div class="grid-port1">
+      <div class="box"> <img src="images/nail11.png" alt="nail1"> </div>
+      <div class="box"> <img src="images/nail13.png" alt="nail3"> </div>
+      <div class="box"> <img src="images/nail22.jpg" alt="nail3"> </div>
+    </div>
+</div>
+
+<h3>Builder Gel</h3>
+<div class="grid-port2">
+      <div class="box"> <img src="images/nail10.png" alt="nail3"> </div>
+    </div>
+</div>
+
+<h3>Acrylic-Basic</h3>
+<div class="grid-port4">
+      <div class="box"> <img src="images/nail8.png" alt="nail1"> </div>
+      <div class="box"> <img src="images/nail9.png" alt="nail2"> </div>
+      <div class="box"> <img src="images/nail12.png" alt="nail2"> </div>
+    </div>
+
+<h3>Minimal Designs</h3>
+<div class="grid-port3">
+      <div class="box"> <img src="images/nail1.png" alt="nail1"> </div>
+      <div class="box"> <img src="images/nail4.png" alt="nail2"> </div>
+      <div class="box"> <img src="images/nail14.png" alt="nail3"> </div>
+      <div class="box"> <img src="images/nail15.png" alt="nail4"> </div>
+      <div class="box"> <img src="images/nail16.png" alt="nail5"> </div>
+      <div class="box"> <img src="images/nail17.png" alt="nail6"> </div>
+      <div class="box"> <img src="images/nail18.png" alt="nail6"> </div>
+      <div class="box"> <img src="images/nail2.png" alt="nail2"> </div>
+      <div class="box"> <img src="images/nail5.png" alt="nail5"> </div>
+    </div>
+</div>
+
+<h3>Max Designs</h3>
+<div class="grid-port4">
+      <div class="box"> <img src="images/nail7.png" alt="nail1"> </div>
+      <div class="box"> <img src="images/nail3.png" alt="nail3"> </div>
+      <div class="box"> <img src="images/nail19.png" alt="nail4"> </div>
+      <div class="box"> <img src="images/nail6.png" alt="nail6"> </div>
+      <div class="box"> <img src="images/nail20.png" alt="nail5"> </div>
+      <div class="box"> <img src="images/nail21.png" alt="nail6"> </div>
+      <div class="box"> <img src="images/nail23.jpg" alt="nail6"> </div>
+      <div class="box"> <img src="images/nail24.jpg" alt="nail5"> </div>
+      <div class="box"> <img src="images/nail25.jpg" alt="nail6"> </div>
+    </div>
+</div>
+  </section>
+
+ <section id="book" class="booking">
+
+  <div class="booking-layout">
+
+    <div class="work">
+      <img src="images/elianawork.svg" alt="Eliana">
+    </div>
+
+    <div class="booking-form">
+      <h2>Book</h2>
+
+      <input type="text" id="clientName" placeholder="Name">
+
+      <input type="tel" id="clientPhone" placeholder="Phone">
+
+      <input type="text" id="appointmentDate" placeholder="Select Date">
+
+      <div id="timeSlots" class="time-slots"></div>
+
+      <select id="serviceSelect">
+        <option value="">Service</option>
+        <option>Manicure</option>
+        <option>Pedicure</option>
+      </select>
+
+      <select id="polishSelect">
+        <option value="">Polish</option>
+        <option>Gel</option>
+        <option>Acrylic</option>
+      </select>
+
+      <select id="designSelect">
+        <option value="">Design</option>
+        <option>Basic</option>
+        <option>Minimal Design</option>
+        <option>Max Design</option>
+      </select>
+
+      <button onclick="bookAppointment()">Book Appointment</button>
+
+      <p id="message"></p>
+    </div>
+
+  </div>
+
+  <div id="bookingPopup" class="popup">
+    <div class="popup-box">
+      <h2>Appointment Booked!</h2>
+      <p>Your appointment has been successfully scheduled.</p>
+      <button onclick="closePopup()">OK</button>
+    </div>
+  </div>
+
+</section>
+  <footer>
+    <p>Contact me at (224) 304-4696<br>
+    or visit my Instagram
+    <a href="https://www.instagram.com/elianas_nailstudio/"> @elianasnailstudio</a> <br>
+    <a href= "https://www.google.com/maps/place/728+58th+St,+Kenosha,+WI+53140/@42.5831109,-87.8231217,628m/data=!3m2!1e3!4b1!4m6!3m5!1s0x88055e595f9a4325:0x7aab89cf8e12d13b!8m2!3d42.583107!4d-87.8205468!16s%2Fg%2F11nntqcl_c?entry=ttu&g_ep=EgoyMDI2MDUyNy4wIKXMDSoASAFQAw%3D%3D">728 58th St Kenosha, WI 53140 </a> <br>
+        <p class="credit">
+  Website created and published by Katy Gullo Designs
+</p>
+    </p>
+  </footer>
+  <div id="imageModal" class="image-modal">
+  <span class="close-modal">&times;</span>
+  <img id="expandedImage" src="" alt="Expanded Nail Design">
+</div>
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+<script type="module" src="services.js"></script>
+</body>
+</html>
