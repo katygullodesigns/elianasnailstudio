@@ -1,5 +1,5 @@
 const firebaseConfig = {
-  apiKey: "AIzaSyCKIRvUsp8Ysv5iqzNUkySwZP2lEmB66JY",
+  apiKey: "...",
   authDomain: "elianasnailstudio.firebaseapp.com",
   projectId: "elianasnailstudio",
   storageBucket: "elianasnailstudio.firebasestorage.app",
@@ -10,3 +10,5 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 
 window.auth = firebase.auth();
+
+console.log("firebase.js loaded", window.auth);
