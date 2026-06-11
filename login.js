@@ -3,7 +3,7 @@ window.loginOwner = async function () {
   const password = document.getElementById("password").value;
 
   try {
-    await auth.signInWithEmailAndPassword(email, password);
+    await window.auth.signInWithEmailAndPassword(email, password);
     window.location.href = "appointments.html";
   } catch (error) {
     console.error(error);
