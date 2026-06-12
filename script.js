@@ -91,24 +91,45 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   async function loadTimes(date) {
-    if (!timeSlots) return;
+  if (!timeSlots) return;
 
-    const bookedAppointments = await getBookedAppointments();
+  timeSlots.innerHTML = "";
 
-    timeSlots.innerHTML = "";
+  let bookedAppointments = {};
 
-    const bookedTimes = bookedAppointments[date] || [];
+  try {
+    bookedAppointments = await getBookedAppointments();
+  } catch (error) {
+    console.error("Could not load booked appointments:", error);
+  }
 
-    allTimes.forEach(function (time) {
-      const button = document.createElement("button");
-      button.type = "button";
-      button.textContent = time;
-      button.classList.add("time-slot");
+  const bookedTimes = bookedAppointments[date] || [];
 
-      if (bookedTimes.includes(time)) {
-        button.classList.add("booked");
-        button.disabled = true;
-      }
+  allTimes.forEach(function (time) {
+    const button = document.createElement("button");
+    button.type = "button";
+    button.textContent = time;
+    button.classList.add("time-slot");
+
+    if (bookedTimes.includes(time)) {
+      button.classList.add("booked");
+      button.disabled = true;
+    }
+
+    button.addEventListener("click", function () {
+      if (button.classList.contains("booked")) return;
+
+      document.querySelectorAll(".time-slot").forEach(function (btn) {
+        btn.classList.remove("selected");
+      });
+
+      button.classList.add("selected");
+      selectedTime = time;
+    });
+
+    timeSlots.appendChild(button);
+  });
+}
 
       button.addEventListener("click", function () {
         if (button.classList.contains("booked")) return;
