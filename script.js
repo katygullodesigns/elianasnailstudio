@@ -8,7 +8,7 @@ import {
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyCKIRvUsp8Ysv5iqzNUkySwZP2lEmB66JY",
+   apiKey: "AIzaSyAyQ7X2sgfhJMt7pv_N2eSD78bKZCaKxjM",
   authDomain: "elianasnailstudio.firebaseapp.com",
   projectId: "elianasnailstudio",
   storageBucket: "elianasnailstudio.firebasestorage.app",
