@@ -222,11 +222,17 @@ document.addEventListener("DOMContentLoaded", function () {
       createdAt: new Date().toISOString()
     };
 
-    await addDoc(collection(db, "appointments"), appointment);
+   try {
+  await addDoc(collection(db, "appointments"), appointment);
 
-    const popup = document.getElementById("bookingPopup");
-    if (popup) popup.style.display = "flex";
+  const popup = document.getElementById("bookingPopup");
+  if (popup) popup.style.display = "flex";
 
+} catch (error) {
+  console.error("BOOKING SAVE FAILED:", error);
+  alert(error.message);
+  return;
+}
     document.getElementById("clientName").value = "";
     document.getElementById("clientPhone").value = "";
     document.getElementById("appointmentDate").value = "";
