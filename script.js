@@ -93,28 +93,48 @@ document.addEventListener("DOMContentLoaded", function () {
   async function loadTimes(date) {
   if (!timeSlots) return;
 
+  selectedTime = "";
   timeSlots.innerHTML = "";
 
-  let bookedAppointments = {};
-
-  try {
-    bookedAppointments = await getBookedAppointments();
-  } catch (error) {
-    console.error("Could not load booked appointments:", error);
-  }
-
-  const bookedTimes = bookedAppointments[date] || [];
-
+  // Show all time slots instantly
   allTimes.forEach(function (time) {
     const button = document.createElement("button");
     button.type = "button";
     button.textContent = time;
     button.classList.add("time-slot");
+    button.dataset.time = time;
 
-    if (bookedTimes.includes(time)) {
-      button.classList.add("booked");
-      button.disabled = true;
-    }
+    button.addEventListener("click", function () {
+      if (button.classList.contains("booked")) return;
+
+      document.querySelectorAll(".time-slot").forEach(function (btn) {
+        btn.classList.remove("selected");
+      });
+
+      button.classList.add("selected");
+      selectedTime = time;
+    });
+
+    timeSlots.appendChild(button);
+  });
+  try {
+    const bookedAppointments = await getBookedAppointments();
+    const bookedTimes = bookedAppointments[date] || [];
+
+    bookedTimes.forEach(function (time) {
+      const button = document.querySelector(
+        `.time-slot[data-time="${time}"]`
+      );
+
+      if (button) {
+        button.classList.add("booked");
+        button.disabled = true;
+      }
+    });
+  } catch (error) {
+    console.error("Could not load booked appointments:", error);
+  }
+}
 
     button.addEventListener("click", function () {
       if (button.classList.contains("booked")) return;
