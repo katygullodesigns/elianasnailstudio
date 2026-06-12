@@ -8,7 +8,7 @@ import {
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 const firebaseConfig = {
-   apiKey: "AIzaSyAyQ7X2sgfhJMt7pv_N2eSD78bKZCaKxjM",
+  apiKey: "AIzaSyAyQ7X2sgfhJMt7pv_N2eSD78bKZCaKxjM",
   authDomain: "elianasnailstudio.firebaseapp.com",
   projectId: "elianasnailstudio",
   storageBucket: "elianasnailstudio.firebasestorage.app",
@@ -54,7 +54,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
   async function getBookedAppointments() {
     const snapshot = await getDocs(collection(db, "appointments"));
-
     const bookedAppointments = {};
 
     snapshot.forEach(function (doc) {
@@ -74,96 +73,15 @@ document.addEventListener("DOMContentLoaded", function () {
     return bookedAppointments;
   }
 
-  if (
-    typeof flatpickr !== "undefined" &&
-    document.getElementById("appointmentDate")
-  ) {
-    flatpickr("#appointmentDate", {
-      dateFormat: "Y-m-d",
-      minDate: "today",
+  function renderTimeButtons() {
+    timeSlots.innerHTML = "";
 
-      onChange: async function (selectedDates, dateStr) {
-        selectedDate = dateStr;
-        selectedTime = "";
-        await loadTimes(dateStr);
-      }
-    });
-  }
-
-  async function loadTimes(date) {
-  if (!timeSlots) return;
-
-  timeSlots.innerHTML = "";
-
-  let bookedAppointments = {};
-
-  try {
-    bookedAppointments = await getBookedAppointments();
-  } catch (error) {
-    console.error("Could not load booked appointments:", error);
-  }
-
-  const bookedTimes = bookedAppointments[date] || [];
-
-  allTimes.forEach(function (time) {
-    const button = document.createElement("button");
-    button.type = "button";
-    button.textContent = time;
-    button.classList.add("time-slot");
-
-    if (bookedTimes.includes(time)) {
-      button.classList.add("booked");
-      button.disabled = true;
-    }
-
-    button.addEventListener("click", function () {
-      if (button.classList.contains("booked")) return;
-
-      document.querySelectorAll(".time-slot").forEach(function (btn) {
-        btn.classList.remove("selected");
-      });
-
-      button.classList.add("selected");
-      selectedTime = time;
-    });
-
-    timeSlots.appendChild(button);
-  });
-}
-  
-  try {
-    const bookedAppointments = await getBookedAppointments();
-    const bookedTimes = bookedAppointments[date] || [];
-
-    bookedTimes.forEach(function (time) {
-      const button = document.querySelector(
-        `.time-slot[data-time="${time}"]`
-      );
-
-      if (button) {
-        button.classList.add("booked");
-        button.disabled = true;
-      }
-    });
-  } catch (error) {
-    console.error("Could not load booked appointments:", error);
-  }
-}
-
-    button.addEventListener("click", function () {
-      if (button.classList.contains("booked")) return;
-
-      document.querySelectorAll(".time-slot").forEach(function (btn) {
-        btn.classList.remove("selected");
-      });
-
-      button.classList.add("selected");
-      selectedTime = time;
-    });
-
-    timeSlots.appendChild(button);
-  });
-}
+    allTimes.forEach(function (time) {
+      const button = document.createElement("button");
+      button.type = "button";
+      button.textContent = time;
+      button.classList.add("time-slot");
+      button.dataset.time = time;
 
       button.addEventListener("click", function () {
         if (button.classList.contains("booked")) return;
@@ -177,6 +95,47 @@ document.addEventListener("DOMContentLoaded", function () {
       });
 
       timeSlots.appendChild(button);
+    });
+  }
+
+  async function loadTimes(date) {
+    if (!timeSlots) return;
+
+    selectedTime = "";
+
+    // Show buttons immediately
+    renderTimeButtons();
+
+    // Then mark booked ones after Firebase responds
+    try {
+      const bookedAppointments = await getBookedAppointments();
+      const bookedTimes = bookedAppointments[date] || [];
+
+      bookedTimes.forEach(function (time) {
+        const button = document.querySelector(`.time-slot[data-time="${time}"]`);
+
+        if (button) {
+          button.classList.add("booked");
+          button.disabled = true;
+        }
+      });
+    } catch (error) {
+      console.error("Could not load booked appointments:", error);
+    }
+  }
+
+  if (
+    typeof flatpickr !== "undefined" &&
+    document.getElementById("appointmentDate")
+  ) {
+    flatpickr("#appointmentDate", {
+      dateFormat: "Y-m-d",
+      minDate: "today",
+
+      onChange: async function (selectedDates, dateStr) {
+        selectedDate = dateStr;
+        await loadTimes(dateStr);
+      }
     });
   }
 
@@ -220,10 +179,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const startIndex = allTimes.indexOf(selectedTime);
     const slotsNeeded = duration * 2;
 
-    let timesToBook = allTimes.slice(
-      startIndex,
-      startIndex + slotsNeeded
-    );
+    let timesToBook = allTimes.slice(startIndex, startIndex + slotsNeeded);
 
     if (
       selectedTime === "8:00 AM" ||
