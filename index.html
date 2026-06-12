@@ -4,10 +4,11 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="Content-Security-Policy" content="
-default-src 'self';
-script-src 'self' 'unsafe-inline' https://www.gstatic.com;
-connect-src 'self' https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://firestore.googleapis.com https://www.googleapis.com;
-style-src 'self' 'unsafe-inline';
+default-src 'self' https:;
+script-src 'self' 'unsafe-inline' https://www.gstatic.com https://cdn.jsdelivr.net;
+connect-src 'self' https://firestore.googleapis.com https://www.googleapis.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com;
+style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://fonts.googleapis.com;
+font-src 'self' https://fonts.gstatic.com;
 img-src 'self' data: https:;
 ">
   <title>Eliana's Nail Studio</title>
@@ -140,8 +141,8 @@ Hi! My name is Eliana Navejas, I'm located in the downtown Kenosha and I graduat
     </p>
 </footer>
 </div>
- <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
-<script type="module" src="script.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+<script type="module" src="script.js?v=21"></script>
 </body>
 
 </html>
