@@ -1,0 +1,950 @@
+html {
+  scroll-behavior: smooth;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+font-family: 'Cormorant Garamond', serif;
+  background: black;
+  color: #AF5B5E;
+  overflow-x: hidden;
+}
+
+.logo-container {
+  position: relative;
+
+  width: fit-content;
+
+  margin: 20px auto 0 auto;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+#logohead {
+  width: 500px;
+  height: auto;
+}
+
+#logohead2 {
+  position: absolute;
+
+  top: 105px;
+  left: 25px; 
+
+  width: 35px;
+  height: auto;
+
+  animation: sparkleTwinkle 1.5s ease-in-out infinite;
+}
+
+body.lock-scroll {
+  overflow: hidden;
+  height: 100vh;
+}
+
+.background {
+  position: fixed;
+  inset: 0;
+  background:
+    radial-gradient(circle at top, #000000, transparent 55%),
+    linear-gradient(to bottom, #AF5B5E, #000000 60%);
+  z-index: -1;
+}
+
+.floating-sparkle {
+  position: absolute;
+  top: 25%;
+  left: 25%;
+  z-index: 10;
+  pointer-events: none;
+
+  animation: sparkleMove 3s ease-in-out infinite;
+}
+
+.floating-sparkle img {
+  width: 45px;
+  height: auto;
+
+  animation: sparkleTwinkle 2s ease-in-out infinite;
+}
+
+@keyframes sparkleMove {
+  0%, 100% {
+    transform: translate(-50%, -50%);
+  }
+
+  50% {
+    transform: translate(-50%, -65%);
+  }
+}
+
+@keyframes sparkleTwinkle {
+  0%, 100% {
+    opacity: 0.2;
+    transform: scale(0.6) rotate(45deg);
+    filter: drop-shadow(100 0 100px #ffd6df);
+  }
+
+  50% {
+    opacity: 1;
+    transform: scale(1.3) rotate(25deg);
+    filter: drop-shadow(0 0 10px #ffd6df);
+  }
+}
+
+header {
+  min-height: 50vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  text-align: center;
+  position: relative;
+  
+}
+
+.top-text {
+  letter-spacing: 4px;
+  font-size: 12px;
+  text-transform: uppercase;
+  opacity: 0.8;
+}
+
+h1 img {
+  margin-top: 70px;
+  width: 900px;
+  height: auto;
+}
+
+h1 span {
+  display: block;
+  font-family: 'Pinyon Script', cursive;
+  font-size: 70px;
+  color: #f2a3b4;
+}
+
+.sub-text {
+  margin-top: 10px;
+  letter-spacing: 6px;
+  font-size: 13px;
+  text-transform: uppercase;
+}
+
+nav a {
+  margin: 0 20px;
+  text-decoration: none;
+  color: #e7b0b0;
+  transition: 0.3s;
+}
+
+nav a:hover {
+  color: white;
+}
+
+nav {
+  margin-top: 60px;
+  font-size: 30px;
+  display: flex;
+  justify-content: center;
+  gap: 40px;
+}
+.service-page nav,
+.portfolio-page nav {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+
+  margin-top: 35px;
+}
+
+.service-page nav a,
+.portfolio-page nav a {
+  display: block;
+  margin: 0;
+}
+.login-btn {
+  position: absolute;
+  top: 20px;
+  right: 30px;
+
+  padding: 10px 20px;
+  border: 1px solid #f2a3b4;
+  border-radius: 30px;
+
+  color: #f2a3b4;
+  text-decoration: none;
+
+  transition: 0.3s;
+}
+
+.login-btn:hover {
+  background: #f2a3b4;
+  color: white;
+}
+.scroll-arrow {
+  display: block;
+  width: fit-content;
+  margin: 20px auto 0 auto;
+
+  font-size: 50px;
+  color: #AF5B5E;
+  text-decoration: none;
+
+  animation: glow 1.5s infinite;
+}
+
+.scroll-arrow:hover {
+  opacity: 1;
+  color: white;
+}
+
+@keyframes glow {
+  30%, 60% {
+    filter:
+      drop-shadow(0 0 5px #AF5B5E)
+      drop-shadow(0 0 10px #AF5B5E);
+  }
+
+  50% {
+    filter:
+      drop-shadow(0 0 10px #AF5B5E)
+      drop-shadow(0 0 20px #AF5B5E)
+      drop-shadow(0 0 30px #AF5B5E);
+  }
+}
+
+
+.portfolio {
+  width: 75%;
+  max-width: 700px;
+}
+
+.booking {
+  width: 95%;
+  max-width: 1400px;
+  margin: 100px auto;
+}
+h2 {
+  font-size: 48px;
+  margin-bottom: 30px auto;
+  color: #f0b2b2;
+  text-decoration: none;
+  display: flex;
+  justify-content: left;
+  align-items: left;
+}
+.intro-bio {
+  width: 90%;
+  max-width: 1200px;
+  margin: 120px auto;
+  color: #f0b2b2;
+}
+
+.intro-bio h2 {
+  display: block;
+  margin-bottom: 40px;
+}
+
+.bio-layout {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 50px;
+}
+.bio-layout .box {
+  flex: 0 0 350px;
+}
+.bio-layout img {
+  width: 100%;
+  max-width: 350px;
+  height: auto;
+  border-radius: 12px;
+}
+.bio-layout p {
+  flex: 1;
+  font-size: 22px;
+  line-height: 1.7;
+  color: #f2a3b4;
+}
+
+.intro-bio h2,
+.portfolio h2 {
+  text-align: left;
+  margin-bottom: 40px;
+}
+
+.intro-bio,
+.portfolio {
+  width: 90%;
+  max-width: 1200px;
+  margin: 120px auto;
+}
+
+.portfolio-arrow {
+  text-decoration: none;
+  color:#AF5B5E;
+  margin-left: 12px;
+  font-size: 0.8em;
+  transition: 0.3s;
+  animation: glow 1.5s infinite;
+}
+
+.portfolio-arrow:hover {
+  color: white;
+  transform: translateX(5px);
+}
+
+h3 {
+  font-size: 30px;
+  margin: 50px;
+  color:#ffff;
+  align-items: left;
+  justify-items: left;
+}
+.grid-in {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+  max-width: 700px;
+  margin: 0 auto;
+}
+.grid {
+  display: flex;
+  justify-content: center;
+}
+
+.grid-port {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+  max-width: 700px;
+  margin: 0 auto;
+}
+.grid-ser img {
+  width: 100%;
+  max-width: 1200px;
+  height: auto;
+}
+.image-modal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.9);
+  z-index: 9999;
+  justify-content: center;
+  align-items: center;
+}
+
+.image-modal img {
+  max-width: 90%;
+  max-height: 90%;
+  border-radius: 15px;
+}
+
+.close-modal {
+  position: absolute;
+  top: 20px;
+  right: 35px;
+  color: white;
+  font-size: 50px;
+  cursor: pointer;
+}
+.grid-port1 img,
+.grid-port2 img,
+.grid-port3 img,
+.grid-port4 img {
+  cursor: pointer;
+  transition: transform 0.3s ease;
+}
+
+.grid-port1 img:hover,
+.grid-port2 img:hover,
+.grid-port3 img:hover,
+.grid-port4 img:hover {
+  transform: scale(1.03);
+}
+
+.grid-port1 {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+}
+
+.grid-port2 {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+}
+
+.grid-port3 {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+}
+
+.grid-port4 {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+}
+
+.box {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  background: transparent;
+  border: none;
+}
+
+.box img {
+  width: 100%;
+  max-width: 250px;  /* make images smaller */
+  height: auto;
+
+  border-radius: 12px;
+}
+
+.time-slots {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  margin: 15px 0;
+}
+
+.time-slot {
+  padding: 12px;
+  border: 1px solid #d78b9c;
+  background: transparent;
+  color: #f0b2b2;
+  cursor: pointer;
+}
+
+.time-slot.selected {
+  background: #d78b9c;
+  color: black;
+}
+.time-slots .time-slot.selected {
+  background: #AF5B5E !important;
+  color: black !important;
+  border: 2px solid #f0b2b2 !important;
+  box-shadow: 0 0 12px rgba(215, 139, 156, 0.7);
+}
+
+.time-slot.booked {
+  text-decoration: line-through;
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.booking {
+  display: flex;
+  flex-direction: column;
+}
+
+.booking input,
+.booking select {
+  background: rgba(255,255,255,0.08);
+  border: none;
+  color: white;
+  padding: 14px;
+  margin-bottom: 15px;
+}
+
+.booking button {
+  background: #d78b9c;
+  border: none;
+  padding: 15px;
+  color: black;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.booking button:hover {
+  background: #f0b2b2;
+}
+.booking-layout {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 100px;
+  width: 100%;
+}
+
+.work {
+  flex: 1.8;
+  display: flex;
+  justify-content: center;
+}
+
+.work img {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+  max-width: 700px;
+  margin: 0 auto;
+}
+
+.booking-form {
+  flex: 1.2;
+  display: flex;
+  flex-direction: column;
+  transform: translateX(-100px);
+}
+.popup {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.75);
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+
+.popup-box {
+  background: #1a0000;
+  border: 1px solid #d78b9c;
+  color: #f0b2b2;
+  padding: 35px;
+  border-radius: 18px;
+  text-align: center;
+  max-width: 350px;
+}
+
+.popup-box button {
+  margin-top: 20px;
+}
+
+footer {
+  flex-direction: column;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 26px;
+  margin-top: 80px;
+  padding: 40px 0;
+  width: 100%;
+}
+
+footer a,
+footer p {
+  color: #f2a3b4;
+  text-decoration: none;
+  font-size: 22px;
+  text-align: center;
+  margin: 8px 0; 
+}
+footer a:hover {
+  color: white;
+}
+.credit {
+  font-size: 14px;
+  color:#AF5B5E;
+  margin-top: 50px;
+  letter-spacing: 1px;
+}
+
+.appointment-summary {
+  cursor: pointer;
+}
+
+.appointment-summary h3 {
+  margin-bottom: 6px;
+  margin-top: 0px;
+  font-size: 30px;
+}
+
+.appointment-summary p {
+  color: #f0b2b2;
+}
+
+.appointment-details {
+  margin-top: 20px;
+}
+.appointment-counter {
+  color: #f2a3b4;
+  font-size: 24px;
+  margin-bottom: 30px;
+}
+
+.appointment-edit textarea {
+  width: 100%;
+  min-height: 100px;
+  margin-top: 12px;
+  padding: 12px;
+  background: rgba(255,255,255,0.08);
+  border: 1px solid #d78b9c;
+  color: white;
+  font-family: 'Cormorant Garamond', serif;
+  resize: vertical;
+}
+
+.owner-notes {
+  padding: 10px;
+  margin-top: 6px;
+  background: rgba(255,255,255,0.06);
+  border-left: 3px solid #d78b9c;
+}
+.appointment-card {
+  background:
+    radial-gradient(circle at top, #000000, transparent 55%),
+    linear-gradient(to bottom, #2a0000, #000000 60%);
+
+  border: 1px solid #d78b9c;
+  border-radius: 12px;
+
+  padding: 25px;
+
+  margin: 30px 0;
+
+  color: #f0b2b2;
+}
+.appointment-card input {
+  width: 100%;
+  margin-bottom: 12px;
+  padding: 10px;
+  background: rgba(255,255,255,0.08);
+  border: 1px solid #d78b9c;
+  color: white;
+  font-family: 'Cormorant Garamond', serif;
+}
+
+.appointment-card input:disabled {
+  opacity: 0.8;
+  cursor: default;
+  color: #f0b2b2;
+}
+
+.appointment-card input:not(:disabled) {
+  background: rgba(255,255,255,0.16);
+  border: 1px solid white;
+  color: white;
+  cursor: text;
+}
+.appointment-view h3 {
+  font-size: 28px;
+  margin-bottom: 12px;
+}
+
+.appointment-view p {
+  margin-bottom: 8px;
+  color: #f0b2b2;
+}
+
+.appointment-edit {
+  margin-top: 15px;
+}
+
+.button-group {
+  display: flex;
+  gap: 12px;
+  margin-top: 25px;
+}
+
+.delete-container {
+  margin-top: 25px;
+}
+
+.back-link {
+  display: inline-block;
+  margin-top: 60px;
+  color: #f2a3b4;
+  text-decoration: none;
+  font-size: 20px;
+  transition: 0.3s;
+}
+
+.back-link:hover {
+  color: white;
+}
+
+.logout-btn {
+  position: fixed;
+  top: 25px;
+  right: 25px;
+
+  background: transparent;
+  border: 1px solid #d78b9c;
+
+  color: #f0b2b2;
+
+  padding: 12px 22px;
+  border-radius: 30px;
+
+  font-size: 16px;
+  letter-spacing: 1px;
+
+  cursor: pointer;
+  transition: 0.3s;
+
+  backdrop-filter: blur(8px);
+
+  z-index: 999;
+}
+
+.logout-btn:hover {
+  background: #d78b9c;
+  color: black;
+
+  box-shadow: 0 0 18px rgba(215, 139, 156, 0.5);
+}
+
+@media (max-width: 1024px) {
+
+.grid-port1,
+.grid-port2,
+.grid-port3,
+.grid-port4 {
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+}
+
+.box img {
+  max-width: 100%;
+}
+
+.portfolio {
+  width: 95%;
+  max-width: 900px;
+  margin: 80px auto;
+}
+
+h2 {
+  font-size: 42px;
+}
+
+nav {
+  font-size: 26px;
+}
+
+.bio-layout {
+  gap: 30px;
+}
+
+.bio-layout .box {
+  flex: 0 0 280px;
+}
+
+.bio-layout img {
+  max-width: 280px;
+}
+#logohead {
+  width: 100%;
+  max-width: 650px;
+}
+.portfolio-page #logohead2 {
+  top: 230px;
+  left: 55px;
+}
+
+.floating-sparkle {
+  position: absolute;
+  top: 14%;
+  left: 15%;
+  z-index: 10;
+  pointer-events: none;
+  animation: sparkleMove 3s ease-in-out infinite;
+}
+
+.floating-sparkle img {
+  width: 45px;
+  height: auto;
+
+  animation: sparkleTwinkle 2s ease-in-out infinite;
+}
+.scroll-arrow {
+    opacity: 0%;
+}
+
+.owner-page header {
+    min-height: auto;
+    padding-top: 30px;
+  }
+
+  .owner-page nav {
+    font-size: 24px;
+    margin-top: 20px;
+    gap: 20px;
+  }
+
+  .owner-page .booking {
+    width: 92%;
+    margin: 50px auto;
+  }
+
+  .owner-page h2 {
+    font-size: 38px;
+    justify-content: center;
+    text-align: center;
+  }
+
+  .owner-page .appointment-card {
+    padding: 18px;
+  }
+
+  .owner-page .button-group {
+    flex-direction: column;
+  }
+
+  .owner-page .button-group button {
+    width: 100%;
+  }
+
+  .owner-page .logout-btn {
+    position: static;
+    display: block;
+    margin: 30px auto;
+  }
+
+}
+
+@media (max-width: 500px) {
+
+  .logo-container {
+    width: 90%;
+    margin: 20px auto;
+  }
+
+  #logohead {
+    width: 100%;
+    max-width: 420px;
+  }
+
+  #logohead2 {
+    top: 80px;
+    left: 20px;
+    width: 28px;
+  }
+.floating-sparkle {
+  position: absolute;
+  top: 17%;
+  left: 14%;
+  z-index: 10;
+  pointer-events: none;
+
+  animation: sparkleMove 3s ease-in-out infinite;
+}
+
+.floating-sparkle img {
+  width: 45px;
+  height: auto;
+
+  animation: sparkleTwinkle 2s ease-in-out infinite;
+}
+  h1 img {
+    width: 90%;
+    max-width: 500px;
+  }
+
+  nav {
+    font-size: 24px;
+    margin-top: 30px;
+  }
+
+  nav a {
+    display: inline-block;
+    margin: 10px 12px;
+  }
+
+  .portfolio {
+    width: 90%;
+    max-width: 700px;
+    margin: 80px auto;
+  }
+
+  .grid-in {
+    grid-template-columns: 1fr;
+  }
+
+  
+.bio-layout {
+  flex-direction: column;
+  text-align: center;
+  gap: 25px;
+}
+
+.bio-layout .box {
+  flex: none;
+}
+
+.bio-layout img {
+  max-width: 280px;
+  margin: 0 auto;
+}
+
+.bio-layout p {
+  width: 100%;
+  font-size: 18px;
+}
+  .booking {
+    width: 92%;
+    margin: 80px auto;
+  }
+
+  .booking-layout {
+    flex-direction: column;
+    gap: 40px;
+  }
+
+  .booking-form {
+    width: 100%;
+    transform: none;
+  }
+
+  .work img {
+    max-width: 420px;
+  }
+
+  .time-slots {
+    grid-template-columns: 1fr;
+  }
+.owner-page header {
+    min-height: auto;
+    padding-top: 30px;
+  }
+
+  .owner-page nav {
+    font-size: 24px;
+    margin-top: 20px;
+    gap: 20px;
+  }
+
+  .owner-page .booking {
+    width: 92%;
+    margin: 50px auto;
+  }
+
+  .owner-page h2 {
+    font-size: 38px;
+    justify-content: center;
+    text-align: center;
+  }
+
+  .owner-page .appointment-card {
+    padding: 18px;
+  }
+
+  .owner-page .button-group {
+    flex-direction: column;
+  }
+
+  .owner-page .button-group button {
+    width: 100%;
+  }
+
+  .owner-page .logout-btn {
+    position: static;
+    display: block;
+    margin: 30px auto;
+  }
+  footer a {
+    font-size: 22px;
+  }
+}
