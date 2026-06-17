@@ -335,17 +335,24 @@ h3 {
 .image-modal {
   display: none;
   position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,0.9);
-  z-index: 9999;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+
+  background: rgba(0, 0, 0, 0.95);
+
   justify-content: center;
   align-items: center;
+
+  z-index: 99999;
 }
 
 .image-modal img {
-  max-width: 90%;
-  max-height: 90%;
-  border-radius: 15px;
+  max-width: 90vw;
+  max-height: 90vh;
+  object-fit: contain;
+  border-radius: 12px;
 }
 
 .close-modal {
