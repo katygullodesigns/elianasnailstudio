@@ -5,30 +5,32 @@ const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 console.log("Eliana's Nail Studio Loaded");
 
-document.body.style.overflow = "hidden";
-
-const modal = document.getElementById("imageModal");
-const modalImg = document.getElementById("expandedImage");
+if (document.body.classList.contains("home-page")) {
+  document.body.style.overflow = "hidden";
+}
 
 const scrollArrow = document.getElementById("scrollArrow");
 
 if (scrollArrow) {
-    scrollArrow.addEventListener("click", () => {
-        document.body.style.overflow = "auto";
-    });
+  scrollArrow.addEventListener("click", () => {
+    document.body.style.overflow = "auto";
+    document.body.classList.remove("lock-scroll");
+  });
 }
 
 function toggleMenu() {
-    document.querySelector("nav").classList.toggle("mobile-open");
-    document.body.classList.toggle("menu-open");
+  const nav = document.querySelector("nav");
+  const btn = document.querySelector(".mobile-menu-btn");
 
-    const btn = document.querySelector(".mobile-menu-btn");
+  nav.classList.toggle("mobile-open");
 
-    if (document.querySelector("nav").classList.contains("mobile-open")) {
-        btn.innerHTML = "✕";
-    } else {
-        btn.innerHTML = "☰";
-    }
+  if (nav.classList.contains("mobile-open")) {
+    document.body.classList.add("menu-open");
+    btn.innerHTML = "✕";
+  } else {
+    document.body.classList.remove("menu-open");
+    btn.innerHTML = "☰";
+  }
 }
 
 document.querySelectorAll("nav a").forEach(link => {
