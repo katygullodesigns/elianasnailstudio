@@ -18,29 +18,29 @@ img-src 'self' data: https:;
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;600&family=Pinyon+Script&display=swap" rel="stylesheet">
 </head>
 
-<body>
-<div class="floating-sparkle">
-    <img src="images/sparkle.svg" alt="sparkle">
-</div>
+<body class="home-page">
   <div class="background"></div>
 
 <header>
 
-  <a href="login.html" class="login-btn">Login</a>
+  <div class="logo-container">
+    <img src="images/Elianalogo.svg" alt="Eliana Logo" id="logohead">
+    <img src="images/sparkle.svg" alt="Sparkle" id="logohead2">
+  </div>
 
-  <h1>
-    <img src="images/Elianalogo.svg" alt="eliana Logo">
-  </h1>
+  <button class="mobile-menu-btn" onclick="toggleMenu()">☰</button>
 
   <nav>
+    <a href="index.html">Home</a>
     <a href="services.html">Services</a>
-    <a href="#book">Book</a>
     <a href="portfolio.html">Portfolio</a>
+    <a href="login.html" class="mobile-login">Login</a>
   </nav>
-<div id="mainContent">
-  <a href="#intro-bio" class="scroll-arrow" id="scrollArrow">
-    ↓
-  </a>
+
+  <a href="login.html" class="login-btn">Login</a>
+
+  <a href="#intro-bio" class="scroll-arrow" id="scrollArrow">↓</a>
+
 </header>
 
 <section id="intro-bio" class="intro-bio">
