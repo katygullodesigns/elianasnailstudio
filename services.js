@@ -5,6 +5,27 @@ const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 console.log("Eliana's Nail Studio Loaded");
 
+function toggleMenu() {
+    document.querySelector("nav").classList.toggle("mobile-open");
+    document.body.classList.toggle("menu-open");
+
+    const btn = document.querySelector(".mobile-menu-btn");
+
+    if (document.querySelector("nav").classList.contains("mobile-open")) {
+        btn.innerHTML = "✕";
+    } else {
+        btn.innerHTML = "☰";
+    }
+}
+
+document.querySelectorAll("nav a").forEach(link => {
+    link.addEventListener("click", () => {
+        document.querySelector("nav").classList.remove("mobile-open");
+        document.body.classList.remove("menu-open");
+        document.querySelector(".mobile-menu-btn").innerHTML = "☰";
+    });
+});
+
 document.addEventListener("DOMContentLoaded", function () {
   let selectedDate = "";
   let selectedTime = "";
