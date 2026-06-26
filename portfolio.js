@@ -1,6 +1,11 @@
 const modal = document.getElementById("imageModal");
 const modalImg = document.getElementById("expandedImage");
 
+document.body.style.overflow = "hidden";
+
+const modal = document.getElementById("imageModal");
+const modalImg = document.getElementById("expandedImage");
+
 const scrollArrow = document.getElementById("scrollArrow");
 
 if (scrollArrow) {
