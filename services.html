@@ -14,17 +14,27 @@ img-src 'self' data: https:;
   <title>Eliana's Nails</title>
   <link rel="stylesheet" href="styles.css">
 </head>
-<body class="service-page">
-<div class="logo-container">
-  <img src="images/Elianalogo.svg" alt="eliana Logo" id="logohead">
-  <img src="images/sparkle.svg" alt="sparkle" id="logohead2">
-   <header>
-    <nav>
-      <a href="index.html">Home</a>
-      <a href="index.html#book">Book</a>
-      <a href="portfolio.html">Portfolio</a>
-    </nav>
-  </header>
+<header>
+
+  <div class="logo-container">
+    <img src="images/Elianalogo.svg" alt="Eliana Logo" id="logohead">
+    <img src="images/sparkle.svg" alt="Sparkle" id="logohead2">
+  </div>
+
+  <button class="mobile-menu-btn" onclick="toggleMenu()">☰</button>
+
+  <nav>
+    <a href="index.html">Home</a>
+    <a href="services.html">Services</a>
+    <a href="portfolio.html">Portfolio</a>
+    <a href="login.html" class="mobile-login">Login</a>
+  </nav>
+
+  <a href="login.html" class="login-btn">Login</a>
+
+  <a href="#intro-bio" class="scroll-arrow" id="scrollArrow">↓</a>
+
+</header>
 </div>
   <div class="background"></div>
 
@@ -106,5 +116,10 @@ img-src 'self' data: https:;
 <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="services.js?v=1"></script>
+<script>
+  function toggleMenu() {
+    document.querySelector("nav").classList.toggle("mobile-open");
+  }
+</script>
 </body>
 </html>
