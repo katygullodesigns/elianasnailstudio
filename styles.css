@@ -730,7 +730,7 @@ footer a:hover {
   }
 
   .scroll-arrow {
-    opacity: 0;
+    opacity: 1;
     font-size: 42px;
     margin-top: 25px;
   }
