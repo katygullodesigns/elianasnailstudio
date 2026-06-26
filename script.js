@@ -5,6 +5,19 @@ const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 console.log("Eliana's Nail Studio Loaded");
 
+document.body.style.overflow = "hidden";
+
+const modal = document.getElementById("imageModal");
+const modalImg = document.getElementById("expandedImage");
+
+const scrollArrow = document.getElementById("scrollArrow");
+
+if (scrollArrow) {
+    scrollArrow.addEventListener("click", () => {
+        document.body.style.overflow = "auto";
+    });
+}
+
 function toggleMenu() {
     document.querySelector("nav").classList.toggle("mobile-open");
     document.body.classList.toggle("menu-open");
