@@ -3,19 +3,6 @@ const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBh
 
 const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-document.body.style.overflow = "hidden";
-
-const modal = document.getElementById("imageModal");
-const modalImg = document.getElementById("expandedImage");
-
-const scrollArrow = document.getElementById("scrollArrow");
-
-if (scrollArrow) {
-    scrollArrow.addEventListener("click", () => {
-        document.body.style.overflow = "auto";
-    });
-}
-
 function toggleMenu() {
     document.querySelector("nav").classList.toggle("mobile-open");
     document.body.classList.toggle("menu-open");
