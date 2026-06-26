@@ -3,7 +3,10 @@ const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBh
 
 const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-console.log("Eliana's Nail Studio Loaded");
+document.body.style.overflow = "hidden";
+
+const modal = document.getElementById("imageModal");
+const modalImg = document.getElementById("expandedImage");
 
 const scrollArrow = document.getElementById("scrollArrow");
 
