@@ -415,101 +415,219 @@ footer a:hover {
 
 /* OWNER / ADMIN PAGES */
 
-.appointment-summary {
-  cursor: pointer;
+.owner-page header {
+  min-height: auto;
+  padding: 30px 20px 10px;
 }
 
-.appointment-summary h3 {
-  margin-bottom: 6px;
+.owner-page nav {
   margin-top: 0;
-  font-size: 30px;
 }
 
-.appointment-summary p,
-.appointment-view p {
-  color: #f0b2b2;
-}
-
-.appointment-details {
-  margin-top: 20px;
+.owner-page .booking {
+  width: 96%;
+  max-width: 1500px;
+  margin: 50px auto 80px;
 }
 
 .appointment-counter {
   color: #f2a3b4;
   font-size: 24px;
-  margin-bottom: 30px;
+  margin-bottom: 25px;
+  text-align: center;
 }
 
-.appointment-card {
-  background:
-    radial-gradient(circle at top, #000000, transparent 55%),
-    linear-gradient(to bottom, #2a0000, #000000 60%);
-  border: 1px solid #d78b9c;
-  border-radius: 12px;
-  padding: 25px;
-  margin: 30px 0;
-  color: #f0b2b2;
-}
-
-.appointment-card input,
-.appointment-edit textarea {
+.calendar-layout {
+  display: grid;
+  grid-template-columns: 300px 1fr 380px;
+  gap: 24px;
   width: 100%;
-  margin-bottom: 12px;
-  padding: 10px;
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid #d78b9c;
+}
+
+.calendar-panel,
+.appointments-panel,
+.details-panel {
+  background:
+    radial-gradient(circle at top, rgba(175, 91, 94, 0.18), transparent 45%),
+    linear-gradient(to bottom, rgba(42, 0, 0, 0.95), rgba(0, 0, 0, 0.95));
+  border: 1px solid rgba(215, 139, 156, 0.65);
+  border-radius: 18px;
+  padding: 22px;
+  color: #f0b2b2;
+  box-shadow: 0 0 25px rgba(0, 0, 0, 0.45);
+}
+
+.calendar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.calendar-header h3,
+.appointments-panel h3,
+.details-panel h3 {
+  margin: 0;
+  font-size: 26px;
   color: white;
+  text-align: center;
+}
+
+.calendar-header button {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  padding: 0;
+  font-size: 22px;
+}
+
+.calendar-weekdays,
+.calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 8px;
+}
+
+.calendar-weekdays div {
+  text-align: center;
+  font-size: 14px;
+  color: #f2a3b4;
+  opacity: 0.8;
+  margin-bottom: 8px;
+}
+
+.calendar-day {
+  min-height: 44px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.06);
+  color: #f0b2b2;
+  border: 1px solid transparent;
+  padding: 6px;
+  cursor: pointer;
+  font-family: 'Cormorant Garamond', serif;
+  position: relative;
+}
+
+.calendar-day:hover {
+  border-color: #f2a3b4;
+  background: rgba(215, 139, 156, 0.18);
+}
+
+.calendar-day small {
+  display: block;
+  width: 18px;
+  height: 18px;
+  line-height: 18px;
+  margin: 4px auto 0;
+  border-radius: 50%;
+  background: #d78b9c;
+  color: black;
+  font-size: 12px;
+}
+
+.blank-day {
+  visibility: hidden;
+}
+
+.selected-day {
+  background: #d78b9c !important;
+  color: black !important;
+  box-shadow: 0 0 18px rgba(215, 139, 156, 0.75);
+}
+
+.today-day {
+  border: 1px solid white;
+}
+
+#dailyAppointments {
+  margin-top: 22px;
+}
+
+.daily-appointment {
+  width: 100%;
+  display: grid;
+  grid-template-columns: 90px 1fr;
+  gap: 15px;
+  text-align: left;
+  margin-bottom: 14px;
+  border-radius: 14px;
+  border: 1px solid rgba(215, 139, 156, 0.45);
+  background: rgba(255, 255, 255, 0.07);
+  color: #f0b2b2;
+  padding: 16px;
   font-family: 'Cormorant Garamond', serif;
 }
 
-.appointment-edit textarea {
-  min-height: 100px;
-  margin-top: 12px;
-  resize: vertical;
+.daily-appointment:hover,
+.selected-appointment {
+  background: rgba(215, 139, 156, 0.22);
+  border-color: #f2a3b4;
 }
 
-.appointment-card input:disabled {
-  opacity: 0.8;
-  cursor: default;
-  color: #f0b2b2;
-}
-
-.appointment-card input:not(:disabled) {
-  background: rgba(255, 255, 255, 0.16);
-  border: 1px solid white;
+.daily-time {
+  font-size: 20px;
   color: white;
-  cursor: text;
 }
 
-.appointment-view h3 {
-  font-size: 28px;
-  margin-bottom: 12px;
+.daily-appointment h4 {
+  font-size: 24px;
+  margin: 0 0 5px;
+  color: white;
 }
 
-.appointment-edit {
-  margin-top: 15px;
+.daily-appointment p {
+  margin: 0;
+  font-size: 18px;
 }
 
-.owner-notes {
-  padding: 10px;
-  margin-top: 6px;
-  background: rgba(255, 255, 255, 0.06);
-  border-left: 3px solid #d78b9c;
+.no-selection {
+  color: #f2a3b4;
+  font-size: 20px;
+  text-align: center;
+  margin-top: 30px;
+}
+
+.details-view label {
+  display: block;
+  color: #f2a3b4;
+  font-size: 18px;
+  margin: 14px 0 6px;
+}
+
+.details-view input,
+.details-view textarea {
+  width: 100%;
+  padding: 12px;
+  border-radius: 10px;
+  border: 1px solid rgba(215, 139, 156, 0.65);
+  background: rgba(255, 255, 255, 0.08);
+  color: white;
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 18px;
+}
+
+.details-view textarea {
+  min-height: 120px;
+  resize: vertical;
 }
 
 .button-group {
   display: flex;
   gap: 12px;
   margin-top: 25px;
+  flex-wrap: wrap;
 }
 
-.delete-container {
-  margin-top: 25px;
+.button-group button {
+  flex: 1;
+  min-width: 110px;
+  border-radius: 12px;
 }
 
 .back-link {
   display: inline-block;
-  margin-top: 60px;
+  margin-top: 45px;
   color: #f2a3b4;
   text-decoration: none;
   font-size: 20px;
@@ -530,17 +648,25 @@ footer a:hover {
   padding: 12px 22px;
   border-radius: 30px;
   font-size: 16px;
-  letter-spacing: 1px;
   cursor: pointer;
-  transition: 0.3s;
-  backdrop-filter: blur(8px);
   z-index: 999;
 }
 
 .logout-btn:hover {
   background: #d78b9c;
   color: black;
-  box-shadow: 0 0 18px rgba(215, 139, 156, 0.5);
+}
+
+@media (max-width: 1100px) {
+  .calendar-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .calendar-panel,
+  .appointments-panel,
+  .details-panel {
+    width: 100%;
+  }
 }
 
 /* ANIMATIONS */
@@ -846,5 +972,62 @@ footer a:hover {
   footer a,
   footer p {
     font-size: 18px;
+  }
+}
+
+/* OWNER CALENDAR MOBILE OVERRIDES */
+
+@media (max-width: 500px) {
+  .owner-page .booking {
+    width: 92%;
+    margin: 45px auto;
+  }
+
+  .owner-page h2 {
+    font-size: 36px;
+    text-align: center;
+  }
+
+  .appointment-counter {
+    font-size: 20px;
+  }
+
+  .calendar-layout {
+    grid-template-columns: 1fr;
+    gap: 18px;
+  }
+
+  .calendar-panel,
+  .appointments-panel,
+  .details-panel {
+    padding: 16px;
+  }
+
+  .calendar-header h3,
+  .appointments-panel h3,
+  .details-panel h3 {
+    font-size: 24px;
+  }
+
+  .calendar-weekdays,
+  .calendar-grid {
+    gap: 5px;
+  }
+
+  .calendar-day {
+    min-height: 40px;
+    font-size: 15px;
+  }
+
+  .daily-appointment {
+    grid-template-columns: 1fr;
+  }
+
+  .button-group {
+    flex-direction: column;
+  }
+
+  .button-group button {
+    width: 100%;
   }
 }
