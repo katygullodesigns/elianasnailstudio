@@ -1,8 +1,9 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
   <meta http-equiv="Content-Security-Policy" content="
 default-src 'self' https:;
 script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net;
@@ -10,34 +11,104 @@ connect-src 'self' https://*.supabase.co;
 style-src 'self' 'unsafe-inline';
 img-src 'self' data: https:;
 ">
-  <title>Eliana's Nails</title>
+
+  <title>Eliana's Nails - Owner</title>
+
   <link rel="stylesheet" href="styles.css">
 </head>
+
 <body class="owner-page">
+
 <header>
     <nav>
-      <a href="appointments.html"><u>Current</u></a>
-      <a href="apptpast.html">Past</a>
+        <a href="appointments.html"><u>Current</u></a>
+        <a href="apptpast.html">Past</a>
     </nav>
 </header>
-  <div class="background"></div>
 
-  <section class="booking">
-<h2>Booked Appointments</h2>
+<div class="background"></div>
+
+<section class="booking">
+
+<h2>Appointment Manager</h2>
 
 <p id="appointmentCounter" class="appointment-counter">
-  Total Appointments: 0
+    Total Appointments: 0
 </p>
 
-<div id="appointmentsList"></div>
+<div class="calendar-layout">
 
-    <a href="index.html" class="back-link">
-      Back to Website
-    </a>
-  </section>
+    <!-- LEFT PANEL -->
+    <div class="calendar-panel">
+
+        <div class="calendar-header">
+
+            <button id="prevMonth">&lt;</button>
+
+            <h3 id="monthYear"></h3>
+
+            <button id="nextMonth">&gt;</button>
+
+        </div>
+
+        <div class="calendar-weekdays">
+            <div>Sun</div>
+            <div>Mon</div>
+            <div>Tue</div>
+            <div>Wed</div>
+            <div>Thu</div>
+            <div>Fri</div>
+            <div>Sat</div>
+        </div>
+
+        <div id="calendarGrid" class="calendar-grid"></div>
+
+    </div>
+
+    <!-- MIDDLE PANEL -->
+    <div class="appointments-panel">
+
+        <h3 id="selectedDateTitle">
+            Select a Day
+        </h3>
+
+        <div id="dailyAppointments">
+
+            <p class="no-selection">
+                Click a date on the calendar.
+            </p>
+
+        </div>
+
+    </div>
+
+    <!-- RIGHT PANEL -->
+    <div class="details-panel">
+
+        <h3>Appointment Details</h3>
+
+        <div id="appointmentDetails">
+
+            <p class="no-selection">
+                Select an appointment.
+            </p>
+
+        </div>
+
+    </div>
+
+</div>
+
+<br>
+
+<a href="index.html" class="back-link">
+    Back to Website
+</a>
+
+</section>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="appointments.js?v=1"></script>
+<script src="appointments.js?v=2"></script>
 
 </body>
 </html>
