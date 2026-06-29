@@ -486,7 +486,7 @@ footer a:hover {
 .calendar-grid {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
-  gap: 8px;
+  gap: 5px;
 }
 
 .calendar-weekdays div {
@@ -494,12 +494,12 @@ footer a:hover {
   font-size: 14px;
   color: #f2a3b4;
   opacity: 0.8;
-  margin-bottom: 8px;
+  margin-bottom: 5px;
 }
 
 .calendar-day {
-  min-height: 44px;
-  border-radius: 12px;
+  min-height: 40px;
+  border-radius: 10px;
   background: rgba(255, 255, 255, 0.06);
   color: #f0b2b2;
   border: 1px solid transparent;
