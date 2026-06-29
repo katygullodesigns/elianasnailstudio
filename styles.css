@@ -439,7 +439,7 @@ footer a:hover {
 
 .calendar-layout {
   display: grid;
-  grid-template-columns: 300px 1fr 380px;
+  grid-template-columns: 380px 1fr 380px;
   gap: 24px;
   width: 100%;
 }
@@ -498,7 +498,7 @@ footer a:hover {
 }
 
 .calendar-day {
-  min-height: 40px;
+  min-height: 52px;
   border-radius: 10px;
   background: rgba(255, 255, 255, 0.06);
   color: #f0b2b2;
