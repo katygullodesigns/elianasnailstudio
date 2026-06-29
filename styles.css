@@ -484,9 +484,10 @@ footer a:hover {
 
 .calendar-weekdays,
 .calendar-grid {
-  display: grid;
-  grid-template-columns: repeat(7, 1fr);
-  gap: 5px;
+    display: grid;
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+    gap: 4px;
+    width: 100%;
 }
 
 .calendar-weekdays div {
@@ -507,6 +508,13 @@ footer a:hover {
   cursor: pointer;
   font-family: 'Cormorant Garamond', serif;
   position: relative;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  min-height: unset;
+  padding: 4px;
+  border-radius: 10px;
+  font-size: 15px;
+  overflow: hidden;
 }
 
 .calendar-day:hover {
