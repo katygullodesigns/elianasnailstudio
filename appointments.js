@@ -41,7 +41,7 @@ async function loadAppointments() {
   const { data, error } = await supabaseClient
     .from("appointments")
     .select("*")
-    .neq("status", "past");
+    .or("status.is.null,status.neq.past");
 
   if (error) {
     console.error("Load appointments error:", error);
