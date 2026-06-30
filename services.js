@@ -20,7 +20,9 @@ document.querySelectorAll("nav a").forEach(link => {
   link.addEventListener("click", () => {
     document.querySelector("nav").classList.remove("mobile-open");
     document.body.classList.remove("menu-open");
-    document.querySelector(".mobile-menu-btn").innerHTML = "☰";
+
+    const btn = document.querySelector(".mobile-menu-btn");
+    if (btn) btn.innerHTML = "☰";
   });
 });
 
@@ -54,30 +56,41 @@ document.addEventListener("DOMContentLoaded", function () {
     "Max Design": 2.5
   };
 
-function isPastTime(date, time) {
-  if (!date || !time) return false;
+  function isPastTime(date, time) {
+    if (!date || !time) return false;
 
-  const dateParts = date.split("-");
-  const year = Number(dateParts[0]);
-  const month = Number(dateParts[1]) - 1;
-  const day = Number(dateParts[2]);
+    const dateParts = date.split("-");
+    const year = Number(dateParts[0]);
+    const month = Number(dateParts[1]) - 1;
+    const day = Number(dateParts[2]);
 
-  const timeParts = time.match(/(\d+):(\d+)\s(AM|PM)/);
+    const timeParts = time.match(/(\d+):(\d+)\s(AM|PM)/);
 
-  if (!timeParts) return false;
+    if (!timeParts) return false;
 
-  let hour = Number(timeParts[1]);
-  const minute = Number(timeParts[2]);
-  const ampm = timeParts[3];
+    let hour = Number(timeParts[1]);
+    const minute = Number(timeParts[2]);
+    const ampm = timeParts[3];
 
-  if (ampm === "PM" && hour !== 12) hour += 12;
-  if (ampm === "AM" && hour === 12) hour = 0;
+    if (ampm === "PM" && hour !== 12) hour += 12;
+    if (ampm === "AM" && hour === 12) hour = 0;
 
-  const selectedDateTime = new Date(year, month, day, hour, minute, 0);
-  const now = new Date();
+    const selectedDateTime = new Date(year, month, day, hour, minute, 0);
+    const now = new Date();
 
-  return selectedDateTime.getTime() <= now.getTime();
-}
+    return selectedDateTime.getTime() <= now.getTime();
+  }
+
+  async function getBookedAppointments() {
+    const { data, error } = await supabaseClient
+      .from("appointments")
+      .select("*");
+
+    if (error) {
+      console.error("Supabase read error:", error);
+      return {};
+    }
+
     const bookedAppointments = {};
 
     data.forEach(function (appointment) {
@@ -109,12 +122,12 @@ function isPastTime(date, time) {
       button.textContent = time;
       button.classList.add("time-slot");
 
-const timeAlreadyPassed = selectedDate && isPastTime(selectedDate, time);
+      const timeAlreadyPassed = selectedDate && isPastTime(selectedDate, time);
 
-if (bookedTimes.includes(time) || timeAlreadyPassed) {
-  button.classList.add("booked");
-  button.disabled = true;
-}
+      if (bookedTimes.includes(time) || timeAlreadyPassed) {
+        button.classList.add("booked");
+        button.disabled = true;
+      }
 
       button.addEventListener("click", function () {
         if (button.classList.contains("booked")) return;
