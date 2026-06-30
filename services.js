@@ -56,30 +56,38 @@ document.addEventListener("DOMContentLoaded", function () {
     "Max Design": 2.5
   };
 
-  function isPastTime(date, time) {
-    if (!date || !time) return false;
+  function timeToMinutes(time) {
+  const timeParts = time.match(/(\d+):(\d+)\s(AM|PM)/);
 
-    const dateParts = date.split("-");
-    const year = Number(dateParts[0]);
-    const month = Number(dateParts[1]) - 1;
-    const day = Number(dateParts[2]);
+  if (!timeParts) return 0;
 
-    const timeParts = time.match(/(\d+):(\d+)\s(AM|PM)/);
+  let hour = Number(timeParts[1]);
+  const minute = Number(timeParts[2]);
+  const ampm = timeParts[3];
 
-    if (!timeParts) return false;
+  if (ampm === "PM" && hour !== 12) hour += 12;
+  if (ampm === "AM" && hour === 12) hour = 0;
 
-    let hour = Number(timeParts[1]);
-    const minute = Number(timeParts[2]);
-    const ampm = timeParts[3];
+  return hour * 60 + minute;
+}
 
-    if (ampm === "PM" && hour !== 12) hour += 12;
-    if (ampm === "AM" && hour === 12) hour = 0;
+function isPastTime(date, time) {
+  if (!date || !time) return false;
 
-    const selectedDateTime = new Date(year, month, day, hour, minute, 0);
-    const now = new Date();
+  const today = new Date();
+  const todayString =
+    today.getFullYear() + "-" +
+    String(today.getMonth() + 1).padStart(2, "0") + "-" +
+    String(today.getDate()).padStart(2, "0");
 
-    return selectedDateTime.getTime() <= now.getTime();
-  }
+  if (date < todayString) return true;
+  if (date > todayString) return false;
+
+  const currentMinutes = today.getHours() * 60 + today.getMinutes();
+  const slotMinutes = timeToMinutes(time);
+
+  return slotMinutes <= currentMinutes;
+}
 
   async function getBookedAppointments() {
     const { data, error } = await supabaseClient
