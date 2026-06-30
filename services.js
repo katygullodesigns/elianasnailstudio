@@ -109,13 +109,12 @@ function isPastTime(date, time) {
       button.textContent = time;
       button.classList.add("time-slot");
 
-      const timeAlreadyPassed =
-        selectedDate && isPastTime(selectedDate, time);
+const timeAlreadyPassed = selectedDate && isPastTime(selectedDate, time);
 
-      if (bookedTimes.includes(time) || timeAlreadyPassed) {
-        button.classList.add("booked");
-        button.disabled = true;
-      }
+if (bookedTimes.includes(time) || timeAlreadyPassed) {
+  button.classList.add("booked");
+  button.disabled = true;
+}
 
       button.addEventListener("click", function () {
         if (button.classList.contains("booked")) return;
