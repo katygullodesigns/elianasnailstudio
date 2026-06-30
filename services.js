@@ -4,24 +4,24 @@ const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBh
 const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 function toggleMenu() {
-    document.querySelector("nav").classList.toggle("mobile-open");
-    document.body.classList.toggle("menu-open");
+  document.querySelector("nav").classList.toggle("mobile-open");
+  document.body.classList.toggle("menu-open");
 
-    const btn = document.querySelector(".mobile-menu-btn");
+  const btn = document.querySelector(".mobile-menu-btn");
 
-    if (document.querySelector("nav").classList.contains("mobile-open")) {
-        btn.innerHTML = "✕";
-    } else {
-        btn.innerHTML = "☰";
-    }
+  if (document.querySelector("nav").classList.contains("mobile-open")) {
+    btn.innerHTML = "✕";
+  } else {
+    btn.innerHTML = "☰";
+  }
 }
 
 document.querySelectorAll("nav a").forEach(link => {
-    link.addEventListener("click", () => {
-        document.querySelector("nav").classList.remove("mobile-open");
-        document.body.classList.remove("menu-open");
-        document.querySelector(".mobile-menu-btn").innerHTML = "☰";
-    });
+  link.addEventListener("click", () => {
+    document.querySelector("nav").classList.remove("mobile-open");
+    document.body.classList.remove("menu-open");
+    document.querySelector(".mobile-menu-btn").innerHTML = "☰";
+  });
 });
 
 document.addEventListener("DOMContentLoaded", function () {
@@ -53,6 +53,13 @@ document.addEventListener("DOMContentLoaded", function () {
     "Minimal Design": 1,
     "Max Design": 2.5
   };
+
+  function isPastTime(date, time) {
+    const selectedDateTime = new Date(`${date} ${time}`);
+    const now = new Date();
+
+    return selectedDateTime <= now;
+  }
 
   async function getBookedAppointments() {
     const { data, error } = await supabaseClient
@@ -95,7 +102,10 @@ document.addEventListener("DOMContentLoaded", function () {
       button.textContent = time;
       button.classList.add("time-slot");
 
-      if (bookedTimes.includes(time)) {
+      const timeAlreadyPassed =
+        selectedDate && isPastTime(selectedDate, time);
+
+      if (bookedTimes.includes(time) || timeAlreadyPassed) {
         button.classList.add("booked");
         button.disabled = true;
       }
@@ -116,16 +126,13 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   async function loadTimes(date) {
-    console.log("loadTimes fired", date);
-
     selectedTime = "";
 
     renderTimeButtons([]);
 
     const bookedAppointments = await getBookedAppointments();
-    console.log("Supabase booked appointments:", bookedAppointments);
-
     const bookedTimes = bookedAppointments[date] || [];
+
     renderTimeButtons(bookedTimes);
   }
 
@@ -149,23 +156,11 @@ document.addEventListener("DOMContentLoaded", function () {
   };
 
   window.bookAppointment = async function () {
-    console.log("Book button clicked");
-
     const name = document.getElementById("clientName").value.trim();
     const phone = document.getElementById("clientPhone").value.trim();
     const service = document.getElementById("serviceSelect").value;
     const polish = document.getElementById("polishSelect").value;
     const design = document.getElementById("designSelect").value;
-
-    console.log({
-      name,
-      phone,
-      selectedDate,
-      selectedTime,
-      service,
-      polish,
-      design
-    });
 
     if (!name) {
       alert("Please enter your name.");
@@ -184,6 +179,12 @@ document.addEventListener("DOMContentLoaded", function () {
 
     if (!service || !design) {
       alert("Please select a service and design.");
+      return;
+    }
+
+    if (isPastTime(selectedDate, selectedTime)) {
+      alert("That time has already passed. Please choose another time.");
+      await loadTimes(selectedDate);
       return;
     }
 
@@ -206,6 +207,16 @@ document.addEventListener("DOMContentLoaded", function () {
       timesToBook = [selectedTime];
     } else if (timesToBook.length < slotsNeeded) {
       alert("That service requires more time than is available. Please choose an earlier appointment.");
+      return;
+    }
+
+    const pastConflict = timesToBook.some(function (time) {
+      return isPastTime(selectedDate, time);
+    });
+
+    if (pastConflict) {
+      alert("That appointment time frame has already passed. Please choose another time.");
+      await loadTimes(selectedDate);
       return;
     }
 
