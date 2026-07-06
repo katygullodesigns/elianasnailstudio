@@ -247,21 +247,14 @@ document.addEventListener("DOMContentLoaded", function () {
       serviceDurations[design] || 1
     );
 
-    const startIndex = allTimes.indexOf(selectedTime);
-    const slotsNeeded = duration * 2;
+const slotsNeeded = duration * 2;
 
-    let timesToBook = allTimes.slice(startIndex, startIndex + slotsNeeded);
+const timesToBook = allTimes.slice(startIndex, startIndex + slotsNeeded);
 
-    if (
-      selectedTime === "8:00 AM" ||
-      selectedTime === "6:00 PM" ||
-      startIndex === allTimes.length - 1
-    ) {
-      timesToBook = [selectedTime];
-    } else if (timesToBook.length < slotsNeeded) {
-      alert("That service requires more time than is available. Please choose an earlier appointment.");
-      return;
-    }
+if (timesToBook.length < slotsNeeded) {
+  alert("That service requires more time than is available. Please choose an earlier appointment.");
+  return;
+}
 
     const bookedAppointments = await getBookedAppointments();
 
