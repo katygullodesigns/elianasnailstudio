@@ -6,7 +6,7 @@ const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 console.log("Eliana's Nail Studio Loaded");
 
 if (document.body.classList.contains("home-page")) {
-  document.body.style.overflow = "hidden";
+  document.body.style.overflow = "auto";
 }
 
 const scrollArrow = document.getElementById("scrollArrow");
