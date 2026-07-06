@@ -148,40 +148,42 @@ document.addEventListener("DOMContentLoaded", function () {
     return bookedAppointments;
   }
 
-  function renderTimeButtons(bookedTimes) {
-    if (!timeSlots) return;
+function renderTimeButtons(bookedTimes) {
+  if (!timeSlots) return;
 
-    timeSlots.innerHTML = "";
+  timeSlots.innerHTML = "";
 
-    allTimes.forEach(function (time) {
-      const button = document.createElement("button");
+  allTimes.forEach(function (time) {
+    const button = document.createElement("button");
 
-      button.type = "button";
-      button.textContent = time;
-      button.classList.add("time-slot");
+    button.type = "button";
+    button.textContent = time;
+    button.classList.add("time-slot");
 
-      const timeAlreadyPassed = isPastTime(selectedDate, time);
-      const alreadyBooked = bookedTimes.includes(time);
+    const timeAlreadyPassed = isPastTime(selectedDate, time);
+    const alreadyBooked = bookedTimes.some(function (bookedTime) {
+      return bookedTime === time;
+    });
 
-      if (timeAlreadyPassed || alreadyBooked) {
-        button.classList.add("booked");
-        button.disabled = true;
-      }
+    if (timeAlreadyPassed || alreadyBooked) {
+      button.classList.add("booked");
+      button.disabled = true;
+    }
 
-      button.addEventListener("click", function () {
-        if (button.disabled || button.classList.contains("booked")) return;
+    button.addEventListener("click", function () {
+      if (button.disabled || button.classList.contains("booked")) return;
 
-        document.querySelectorAll(".time-slot").forEach(function (btn) {
-          btn.classList.remove("selected");
-        });
-
-        button.classList.add("selected");
-        selectedTime = time;
+      document.querySelectorAll(".time-slot").forEach(function (btn) {
+        btn.classList.remove("selected");
       });
 
-      timeSlots.appendChild(button);
+      button.classList.add("selected");
+      selectedTime = time;
     });
-  }
+
+    timeSlots.appendChild(button);
+  });
+}
 
   async function loadTimes(date) {
     selectedTime = "";
