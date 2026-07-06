@@ -12,7 +12,7 @@ if (document.body.classList.contains("home-page")) {
 const scrollArrow = document.getElementById("scrollArrow");
 
 if (scrollArrow) {
-  scrollArrow.addEventListener("click", () => {
+  scrollArrow.addEventListener("click", function () {
     document.body.style.overflow = "auto";
     document.body.classList.remove("lock-scroll");
   });
@@ -22,26 +22,30 @@ function toggleMenu() {
   const nav = document.querySelector("nav");
   const btn = document.querySelector(".mobile-menu-btn");
 
-  nav.classList.toggle("mobile-open");
+  if (!nav) return;
 
-  if (nav.classList.contains("mobile-open")) {
-    document.body.classList.add("menu-open");
-    btn.innerHTML = "✕";
-  } else {
-    document.body.classList.remove("menu-open");
-    btn.innerHTML = "☰";
+  nav.classList.toggle("mobile-open");
+  document.body.classList.toggle("menu-open");
+
+  if (btn) {
+    btn.innerHTML = nav.classList.contains("mobile-open") ? "✕" : "☰";
   }
 }
 
-document.querySelectorAll("nav a").forEach(link => {
-    link.addEventListener("click", () => {
-        document.querySelector("nav").classList.remove("mobile-open");
-        document.body.classList.remove("menu-open");
-        document.querySelector(".mobile-menu-btn").innerHTML = "☰";
-    });
-});
-
 document.addEventListener("DOMContentLoaded", function () {
+  document.querySelectorAll("nav a").forEach(function (link) {
+    link.addEventListener("click", function () {
+      const nav = document.querySelector("nav");
+      const btn = document.querySelector(".mobile-menu-btn");
+
+      if (nav) nav.classList.remove("mobile-open");
+
+      document.body.classList.remove("menu-open");
+
+      if (btn) btn.innerHTML = "☰";
+    });
+  });
+
   let selectedDate = "";
   let selectedTime = "";
 
@@ -71,10 +75,53 @@ document.addEventListener("DOMContentLoaded", function () {
     "Max Design": 2.5
   };
 
+  function timeToMinutes(time) {
+    const match = time.match(/(\d+):(\d+)\s(AM|PM)/);
+
+    if (!match) return 0;
+
+    let hour = Number(match[1]);
+    const minute = Number(match[2]);
+    const ampm = match[3];
+
+    if (ampm === "PM" && hour !== 12) hour += 12;
+    if (ampm === "AM" && hour === 12) hour = 0;
+
+    return hour * 60 + minute;
+  }
+
+  function getTodayString() {
+    const today = new Date();
+
+    return (
+      today.getFullYear() +
+      "-" +
+      String(today.getMonth() + 1).padStart(2, "0") +
+      "-" +
+      String(today.getDate()).padStart(2, "0")
+    );
+  }
+
+  function isPastTime(date, time) {
+    if (!date || !time) return false;
+
+    const todayString = getTodayString();
+
+    if (date < todayString) return true;
+    if (date > todayString) return false;
+
+    const now = new Date();
+    const currentMinutes = now.getHours() * 60 + now.getMinutes();
+    const slotMinutes = timeToMinutes(time);
+
+    return slotMinutes <= currentMinutes;
+  }
+
   async function getBookedAppointments() {
     const { data, error } = await supabaseClient
       .from("appointments")
-      .select("*");
+      .select("*")
+      .or("status.is.null,status.neq.past");
 
     if (error) {
       console.error("Supabase read error:", error);
@@ -108,17 +155,21 @@ document.addEventListener("DOMContentLoaded", function () {
 
     allTimes.forEach(function (time) {
       const button = document.createElement("button");
+
       button.type = "button";
       button.textContent = time;
       button.classList.add("time-slot");
 
-      if (bookedTimes.includes(time)) {
+      const timeAlreadyPassed = isPastTime(selectedDate, time);
+      const alreadyBooked = bookedTimes.includes(time);
+
+      if (timeAlreadyPassed || alreadyBooked) {
         button.classList.add("booked");
         button.disabled = true;
       }
 
       button.addEventListener("click", function () {
-        if (button.classList.contains("booked")) return;
+        if (button.disabled || button.classList.contains("booked")) return;
 
         document.querySelectorAll(".time-slot").forEach(function (btn) {
           btn.classList.remove("selected");
@@ -133,23 +184,15 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   async function loadTimes(date) {
-    console.log("loadTimes fired", date);
-
     selectedTime = "";
 
-    renderTimeButtons([]);
-
     const bookedAppointments = await getBookedAppointments();
-    console.log("Supabase booked appointments:", bookedAppointments);
-
     const bookedTimes = bookedAppointments[date] || [];
+
     renderTimeButtons(bookedTimes);
   }
 
-  if (
-    typeof flatpickr !== "undefined" &&
-    document.getElementById("appointmentDate")
-  ) {
+  if (typeof flatpickr !== "undefined" && document.getElementById("appointmentDate")) {
     flatpickr("#appointmentDate", {
       dateFormat: "Y-m-d",
       minDate: "today",
@@ -166,23 +209,11 @@ document.addEventListener("DOMContentLoaded", function () {
   };
 
   window.bookAppointment = async function () {
-    console.log("Book button clicked");
-
     const name = document.getElementById("clientName").value.trim();
     const phone = document.getElementById("clientPhone").value.trim();
     const service = document.getElementById("serviceSelect").value;
     const polish = document.getElementById("polishSelect").value;
     const design = document.getElementById("designSelect").value;
-
-    console.log({
-      name,
-      phone,
-      selectedDate,
-      selectedTime,
-      service,
-      polish,
-      design
-    });
 
     if (!name) {
       alert("Please enter your name.");
@@ -201,6 +232,12 @@ document.addEventListener("DOMContentLoaded", function () {
 
     if (!service || !design) {
       alert("Please select a service and design.");
+      return;
+    }
+
+    if (isPastTime(selectedDate, selectedTime)) {
+      alert("That time has already passed. Please choose another time.");
+      await loadTimes(selectedDate);
       return;
     }
 
