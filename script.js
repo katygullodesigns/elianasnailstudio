@@ -247,6 +247,7 @@ document.addEventListener("DOMContentLoaded", function () {
       serviceDurations[design] || 1
     );
 
+const startIndex = allTimes.indexOf(selectedTime);
 const slotsNeeded = duration * 2;
 
 const timesToBook = allTimes.slice(startIndex, startIndex + slotsNeeded);
