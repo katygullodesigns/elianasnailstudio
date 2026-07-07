@@ -12,9 +12,7 @@ function toggleMenu() {
   nav.classList.toggle("mobile-open");
   document.body.classList.toggle("menu-open");
 
-  if (btn) {
-    btn.innerHTML = nav.classList.contains("mobile-open") ? "✕" : "☰";
-  }
+  if (btn) btn.innerHTML = nav.classList.contains("mobile-open") ? "✕" : "☰";
 }
 
 document.addEventListener("DOMContentLoaded", function () {
@@ -45,11 +43,32 @@ document.addEventListener("DOMContentLoaded", function () {
     "No": 0
   };
 
+  document.querySelectorAll("nav a").forEach(function (link) {
+    link.addEventListener("click", function () {
+      const nav = document.querySelector("nav");
+      const btn = document.querySelector(".mobile-menu-btn");
+
+      if (nav) nav.classList.remove("mobile-open");
+      document.body.classList.remove("menu-open");
+      if (btn) btn.innerHTML = "☰";
+    });
+  });
+
+  function getValue(id) {
+    const element = document.getElementById(id);
+    return element ? element.value : "";
+  }
+
+  function setValue(id, value) {
+    const element = document.getElementById(id);
+    if (element) element.value = value;
+  }
+
   function getSelectedDuration() {
-    const service = document.getElementById("serviceSelect").value;
-    const polish = document.getElementById("polishSelect").value;
-    const design = document.getElementById("designSelect").value;
-    const additionalService = document.getElementById("additionalServiceSelect").value;
+    const service = getValue("serviceSelect");
+    const polish = getValue("polishSelect");
+    const design = getValue("designSelect");
+    const additionalService = getValue("additionalServiceSelect");
 
     const baseDuration = Math.max(
       serviceDurations[service] || 0,
@@ -117,7 +136,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     const bookedAppointments = {};
 
-    data.forEach(function (appointment) {
+    (data || []).forEach(function (appointment) {
       const blockedTimes =
         appointment.blockedTimes || appointment.blocked_times || [];
 
@@ -167,7 +186,7 @@ document.addEventListener("DOMContentLoaded", function () {
       }
 
       button.addEventListener("click", function () {
-        if (button.disabled || button.classList.contains("booked")) return;
+        if (button.disabled) return;
 
         document.querySelectorAll(".time-slot").forEach(function (btn) {
           btn.classList.remove("selected");
@@ -193,7 +212,7 @@ document.addEventListener("DOMContentLoaded", function () {
   const additionalServiceSelect = document.getElementById("additionalServiceSelect");
 
   if (additionalServiceSelect) {
-    additionalServiceSelect.addEventListener("change", async function () {
+    additionalServiceSelect.addEventListener("change", function () {
       const popup = document.getElementById("additionalServicePopup");
 
       if (this.value !== "No" && this.value !== "") {
@@ -201,21 +220,16 @@ document.addEventListener("DOMContentLoaded", function () {
       } else {
         additionalPolish = "";
         additionalDesign = "";
-
-        const polish = document.getElementById("additionalPolishSelect");
-        const design = document.getElementById("additionalDesignSelect");
-
-        if (polish) polish.value = "";
-        if (design) design.value = "";
+        setValue("additionalPolishSelect", "");
+        setValue("additionalDesignSelect", "");
+        if (popup) popup.style.display = "none";
       }
-
+    });
+  }
 
   window.saveAdditionalServiceOptions = function () {
-    const polish = document.getElementById("additionalPolishSelect");
-    const design = document.getElementById("additionalDesignSelect");
-
-    additionalPolish = polish ? polish.value : "";
-    additionalDesign = design ? design.value : "";
+    additionalPolish = getValue("additionalPolishSelect");
+    additionalDesign = getValue("additionalDesignSelect");
 
     if (!additionalPolish || !additionalDesign) {
       alert("Please select polish and design for the additional service.");
@@ -224,13 +238,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     const popup = document.getElementById("additionalServicePopup");
     if (popup) popup.style.display = "none";
-
-    if (selectedDate) {
-      loadTimes(selectedDate);
-    }
   };
-
-
 
   if (typeof flatpickr !== "undefined" && document.getElementById("appointmentDate")) {
     flatpickr("#appointmentDate", {
@@ -251,10 +259,11 @@ document.addEventListener("DOMContentLoaded", function () {
   window.bookAppointment = async function () {
     const name = document.getElementById("clientName").value.trim();
     const phone = document.getElementById("clientPhone").value.trim();
-    const service = document.getElementById("serviceSelect").value;
-    const polish = document.getElementById("polishSelect").value;
-    const design = document.getElementById("designSelect").value;
-    const additionalService = document.getElementById("additionalServiceSelect").value;
+
+    const service = getValue("serviceSelect");
+    const polish = getValue("polishSelect");
+    const design = getValue("designSelect");
+    const additionalService = getValue("additionalServiceSelect");
 
     if (!name) {
       alert("Please enter your name.");
@@ -271,23 +280,26 @@ document.addEventListener("DOMContentLoaded", function () {
       return;
     }
 
-    if (!service || !design) {
-      alert("Please select a service and design.");
+    if (!service || !polish || !design) {
+      alert("Please select service, polish, and design.");
       return;
     }
 
     if (additionalService !== "No" && additionalService !== "") {
       if (!additionalPolish || !additionalDesign) {
         alert("Please choose polish and design for the additional service.");
-
         const popup = document.getElementById("additionalServicePopup");
         if (popup) popup.style.display = "flex";
-
         return;
       }
     }
 
     const duration = getSelectedDuration();
+
+    if (duration <= 0) {
+      alert("Please select a valid service.");
+      return;
+    }
 
     const startIndex = allTimes.indexOf(selectedTime);
 
@@ -349,22 +361,22 @@ document.addEventListener("DOMContentLoaded", function () {
 
     if (error) {
       console.error("Supabase insert error:", error);
-      alert(error.message);
+      alert(error.message || "Could not book appointment.");
       return;
     }
 
     const popup = document.getElementById("bookingPopup");
     if (popup) popup.style.display = "flex";
 
-    document.getElementById("clientName").value = "";
-    document.getElementById("clientPhone").value = "";
-    document.getElementById("appointmentDate").value = "";
-    document.getElementById("serviceSelect").value = "";
-    document.getElementById("polishSelect").value = "";
-    document.getElementById("designSelect").value = "";
-    document.getElementById("additionalServiceSelect").value = "No";
-    document.getElementById("additionalPolishSelect").value = "";
-    document.getElementById("additionalDesignSelect").value = "";
+    setValue("clientName", "");
+    setValue("clientPhone", "");
+    setValue("appointmentDate", "");
+    setValue("serviceSelect", "");
+    setValue("polishSelect", "");
+    setValue("designSelect", "");
+    setValue("additionalServiceSelect", "No");
+    setValue("additionalPolishSelect", "");
+    setValue("additionalDesignSelect", "");
 
     additionalPolish = "";
     additionalDesign = "";
