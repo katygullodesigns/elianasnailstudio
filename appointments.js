@@ -144,11 +144,16 @@ function renderDailyAppointments() {
       appointmentButton.classList.add("selected-appointment");
     }
 
+    const additionalText =
+      appointment.additional_service && appointment.additional_service !== "No"
+        ? ` + ${appointment.additional_service}`
+        : "";
+
     appointmentButton.innerHTML = `
       <div class="daily-time">${appointment.time || ""}</div>
       <div>
         <h4>${appointment.name || "No Name"}</h4>
-        <p>${appointment.service || "No service listed"}</p>
+        <p>${appointment.service || "No service listed"}${additionalText}</p>
       </div>
     `;
 
@@ -186,6 +191,15 @@ function renderDetails(appointment) {
 
       <label>Design</label>
       <input id="detailDesign" type="text" value="${escapeInput(appointment.design || "")}">
+
+      <label>Additional Service</label>
+      <input id="detailAdditionalService" type="text" value="${escapeInput(appointment.additional_service || "No")}">
+
+      <label>Additional Polish</label>
+      <input id="detailAdditionalPolish" type="text" value="${escapeInput(appointment.additional_polish || "")}">
+
+      <label>Additional Design</label>
+      <input id="detailAdditionalDesign" type="text" value="${escapeInput(appointment.additional_design || "")}">
 
       <label>Duration</label>
       <input id="detailDuration" type="text" value="${escapeInput(appointment.duration || "1")}">
@@ -233,6 +247,9 @@ window.saveSelectedAppointment = async function () {
       service: document.getElementById("detailService").value,
       polish: document.getElementById("detailPolish").value,
       design: document.getElementById("detailDesign").value,
+      additional_service: document.getElementById("detailAdditionalService").value,
+      additional_polish: document.getElementById("detailAdditionalPolish").value,
+      additional_design: document.getElementById("detailAdditionalDesign").value,
       duration: document.getElementById("detailDuration").value,
       notes: document.getElementById("detailNotes").value
     })
