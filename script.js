@@ -39,9 +39,15 @@ document.addEventListener("DOMContentLoaded", function () {
     "6:00 PM", "6:30 PM"
   ];
 const blockedDates = [
-  "2026-07-10",
-  "2026-07-15",
-  "2026-07-20"
+  "2026-07-26",
+  "2026-07-27",
+  "2026-07-28"
+  "2026-07-29"
+  "2026-07-30"
+  "2026-07-31"
+  "2026-08-01"
+  "2026-08-02"
+  "2026-08-03"
 ];
   const serviceDurations = {
     "Manicure": 1.5,
