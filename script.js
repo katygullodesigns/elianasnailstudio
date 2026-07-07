@@ -22,8 +22,6 @@ document.addEventListener("DOMContentLoaded", function () {
   let selectedTime = "";
   let additionalPolish = "";
   let additionalDesign = "";
-  let calendarInstance = null;
-  let bookedCalendarDates = {};
 
   const timeSlots = document.getElementById("timeSlots");
 
@@ -62,24 +60,6 @@ document.addEventListener("DOMContentLoaded", function () {
     if (element) element.value = value;
   }
 
-  function getSelectedDuration() {
-    const service = getValue("serviceSelect");
-    const polish = getValue("polishSelect");
-    const design = getValue("designSelect");
-    const additionalService = getValue("additionalServiceSelect");
-
-    const baseDuration = Math.max(
-      serviceDurations[service] || 0,
-      serviceDurations[polish] || 0,
-      serviceDurations[design] || 0
-    );
-
-    const additionalDuration =
-      additionalService !== "No" ? serviceDurations[additionalService] || 0 : 0;
-
-    return baseDuration + additionalDuration;
-  }
-
   function getTodayString() {
     const today = new Date();
 
@@ -94,7 +74,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
   function timeToMinutes(time) {
     const match = time.match(/(\d+):(\d+)\s(AM|PM)/);
-
     if (!match) return 0;
 
     let hour = Number(match[1]);
@@ -122,11 +101,29 @@ document.addEventListener("DOMContentLoaded", function () {
     return slotMinutes <= currentMinutes;
   }
 
+  function getSelectedDuration() {
+    const service = getValue("serviceSelect");
+    const polish = getValue("polishSelect");
+    const design = getValue("designSelect");
+    const additionalService = getValue("additionalServiceSelect");
+
+    const baseDuration = Math.max(
+      serviceDurations[service] || 0,
+      serviceDurations[polish] || 0,
+      serviceDurations[design] || 0
+    );
+
+    const additionalDuration =
+      additionalService !== "No" ? serviceDurations[additionalService] || 0 : 0;
+
+    return baseDuration + additionalDuration;
+  }
+
   function getBlockedTimesForAppointment(appointment) {
     const savedBlockedTimes =
       appointment.blockedTimes || appointment.blocked_times || [];
 
-    if (savedBlockedTimes.length > 0) {
+    if (Array.isArray(savedBlockedTimes) && savedBlockedTimes.length > 0) {
       return savedBlockedTimes;
     }
 
@@ -176,17 +173,13 @@ document.addEventListener("DOMContentLoaded", function () {
     return bookedAppointments;
   }
 
-    (data || []).forEach(function (appointment) {
-      if (!appointment.date) return;
+  async function loadTimes(date) {
+    selectedTime = "";
 
-      if (!counts[appointment.date]) {
-        counts[appointment.date] = 0;
-      }
+    const bookedAppointments = await getBookedAppointments();
+    const bookedTimes = bookedAppointments[date] || [];
 
-      counts[appointment.date]++;
-    });
-
-    return counts;
+    renderTimeButtons(bookedTimes);
   }
 
   function renderTimeButtons(bookedTimes) {
@@ -196,7 +189,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
     allTimes.forEach(function (time) {
       const button = document.createElement("button");
-
       button.type = "button";
       button.textContent = time;
       button.classList.add("time-slot");
@@ -224,18 +216,6 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
-async function loadTimes(date) {
-  selectedTime = "";
-
-  if (Object.keys(bookedCalendarDates).length === 0) {
-    bookedCalendarDates = await getBookedAppointments();
-  }
-
-  const bookedTimes = bookedCalendarDates[date] || [];
-
-  renderTimeButtons(bookedTimes);
-}
-
   document.querySelectorAll("nav a").forEach(function (link) {
     link.addEventListener("click", function () {
       const nav = document.querySelector("nav");
@@ -260,7 +240,6 @@ async function loadTimes(date) {
         additionalDesign = "";
         setValue("additionalPolishSelect", "");
         setValue("additionalDesignSelect", "");
-
         if (popup) popup.style.display = "none";
       }
     });
@@ -276,47 +255,24 @@ async function loadTimes(date) {
     }
 
     const popup = document.getElementById("additionalServicePopup");
-
-    if (popup) {
-      popup.style.display = "none";
-    }
+    if (popup) popup.style.display = "none";
   };
 
-if (
-  typeof flatpickr !== "undefined" &&
-  document.getElementById("appointmentDate")
-) {
+  if (typeof flatpickr !== "undefined" && document.getElementById("appointmentDate")) {
+    flatpickr("#appointmentDate", {
+      dateFormat: "Y-m-d",
+      minDate: "today",
 
-  calendarInstance = flatpickr("#appointmentDate", {
-    dateFormat: "Y-m-d",
-    minDate: "today",
+      onChange: async function (selectedDates, dateStr) {
+        selectedDate = dateStr;
+        await loadTimes(dateStr);
+      }
+    });
+  }
 
-    onReady: async function () {
-      bookedCalendarDates = await getBookedAppointments();
-    },
-
-    onOpen: async function () {
-      bookedCalendarDates = await getBookedAppointments();
-    },
-
-    onChange: async function (selectedDates, dateStr) {
-      selectedDate = dateStr;
-
-      bookedCalendarDates = await getBookedAppointments();
-
-      const bookedTimes = bookedCalendarDates[dateStr] || [];
-
-      renderTimeButtons(bookedTimes);
-    }
-  });
-
-}
   window.closePopup = function () {
     const popup = document.getElementById("bookingPopup");
-
-    if (popup) {
-      popup.style.display = "none";
-    }
+    if (popup) popup.style.display = "none";
   };
 
   window.bookAppointment = async function () {
@@ -353,10 +309,7 @@ if (
         alert("Please choose polish and design for the additional service.");
 
         const popup = document.getElementById("additionalServicePopup");
-
-        if (popup) {
-          popup.style.display = "flex";
-        }
+        if (popup) popup.style.display = "flex";
 
         return;
       }
@@ -425,25 +378,18 @@ if (
       created_at: new Date().toISOString()
     };
 
-const { error } = await supabaseClient
-  .from("appointments")
-  .insert([appointment]);
+    const { error } = await supabaseClient
+      .from("appointments")
+      .insert([appointment]);
 
-if (error) {
-  console.error(error);
-  alert(error.message);
-  return;
-}
-  if (selectedDate) {
-    renderTimeButtons(bookedCalendarDates[selectedDate] || []);
-  }
-}
+    if (error) {
+      console.error("Supabase insert error:", error);
+      alert(error.message || "Could not book appointment.");
+      return;
+    }
 
     const popup = document.getElementById("bookingPopup");
-
-    if (popup) {
-      popup.style.display = "flex";
-    }
+    if (popup) popup.style.display = "flex";
 
     setValue("clientName", "");
     setValue("clientPhone", "");
