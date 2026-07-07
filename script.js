@@ -69,7 +69,7 @@ document.addEventListener("DOMContentLoaded", function () {
     "Manicure": 1.5,
     "Pedicure": 0.5,
     "Gel": 1.5,
-    "Acrylic": 1.5,
+    "Acrylic": 2.5,
     "Basic": 0.5,
     "Minimal Design": 1,
     "Max Design": 2.5
