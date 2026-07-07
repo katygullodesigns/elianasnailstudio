@@ -118,7 +118,24 @@ nav a:hover {
 .scroll-arrow:hover {
   color: white;
 }
+.flatpickr-day.has-bookings {
+  position: relative;
+  font-weight: bold;
+}
 
+.flatpickr-day .booking-dot {
+  position: absolute;
+  bottom: 2px;
+  right: 3px;
+  background: #d78b9c;
+  color: black;
+  border-radius: 50%;
+  font-size: 10px;
+  width: 16px;
+  height: 16px;
+  line-height: 16px;
+  text-align: center;
+}
 /* SECTIONS */
 
 .intro-bio,
