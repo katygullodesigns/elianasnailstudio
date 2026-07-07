@@ -176,16 +176,7 @@ document.addEventListener("DOMContentLoaded", function () {
     return bookedAppointments;
   }
 
-  async function getAppointmentCountsByDate() {
-    const { data, error } = await supabaseClient
-      .from("appointments")
-      .select("date")
-      .or("status.is.null,status.neq.past");
 
-    if (error) {
-      console.error("Calendar count error:", error);
-      return {};
-    }
 
     const counts = {};
 
@@ -246,14 +237,6 @@ document.addEventListener("DOMContentLoaded", function () {
     renderTimeButtons(bookedTimes);
   }
 
-  async function refreshCalendarDots() {
-    bookedCalendarDates = await getAppointmentCountsByDate();
-
-    if (calendarInstance) {
-      calendarInstance.redraw();
-    }
-  }
-
   document.querySelectorAll("nav a").forEach(function (link) {
     link.addEventListener("click", function () {
       const nav = document.querySelector("nav");
@@ -301,44 +284,19 @@ document.addEventListener("DOMContentLoaded", function () {
   };
 
   if (
-    typeof flatpickr !== "undefined" &&
-    document.getElementById("appointmentDate")
-  ) {
-    refreshCalendarDots().then(function () {
-      calendarInstance = flatpickr("#appointmentDate", {
-        dateFormat: "Y-m-d",
-        minDate: "today",
+  typeof flatpickr !== "undefined" &&
+  document.getElementById("appointmentDate")
+) {
+  flatpickr("#appointmentDate", {
+    dateFormat: "M-d-y",
+    minDate: "today",
 
-        onOpen: async function () {
-          await refreshCalendarDots();
-        },
-
-        onDayCreate: function (dObj, dStr, fp, dayElem) {
-          const year = dayElem.dateObj.getFullYear();
-          const month = String(dayElem.dateObj.getMonth() + 1).padStart(2, "0");
-          const day = String(dayElem.dateObj.getDate()).padStart(2, "0");
-          const dateString = `${year}-${month}-${day}`;
-
-          const count = bookedCalendarDates[dateString] || 0;
-
-          if (count > 0) {
-            dayElem.classList.add("has-bookings");
-
-            const marker = document.createElement("span");
-            marker.className = "booking-dot";
-            marker.textContent = count;
-
-            dayElem.appendChild(marker);
-          }
-        },
-
-        onChange: async function (selectedDates, dateStr) {
-          selectedDate = dateStr;
-          await loadTimes(dateStr);
-        }
-      });
-    });
-  }
+    onChange: async function (selectedDates, dateStr) {
+      selectedDate = dateStr;
+      await loadTimes(dateStr);
+    }
+  });
+}
 
   window.closePopup = function () {
     const popup = document.getElementById("bookingPopup");
@@ -488,7 +446,5 @@ document.addEventListener("DOMContentLoaded", function () {
     if (timeSlots) {
       timeSlots.innerHTML = "";
     }
-
-    await refreshCalendarDots();
   };
 });
