@@ -43,7 +43,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
   const serviceDurations = {
     "Manicure": 1.5,
-    "Pedicure": 0.5,
+    "Pedicure": 1.5,
     "Gel": 1.5,
     "Acrylic": 2.5,
     "Basic": 0.5,
