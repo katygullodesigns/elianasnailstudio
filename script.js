@@ -176,10 +176,6 @@ document.addEventListener("DOMContentLoaded", function () {
     return bookedAppointments;
   }
 
-
-
-    const counts = {};
-
     (data || []).forEach(function (appointment) {
       if (!appointment.date) return;
 
