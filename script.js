@@ -288,7 +288,7 @@ document.addEventListener("DOMContentLoaded", function () {
   document.getElementById("appointmentDate")
 ) {
   flatpickr("#appointmentDate", {
-    dateFormat: "M-d-y",
+    dateFormat: "Y-m-d",
     minDate: "today",
 
     onChange: async function (selectedDates, dateStr) {
