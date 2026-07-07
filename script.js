@@ -429,9 +429,11 @@ const { error } = await supabaseClient
   .from("appointments")
   .insert([appointment]);
 
-if (!error) {
-  bookedCalendarDates = await getBookedAppointments();
-
+if (error) {
+  console.error(error);
+  alert(error.message);
+  return;
+}
   if (selectedDate) {
     renderTimeButtons(bookedCalendarDates[selectedDate] || []);
   }
