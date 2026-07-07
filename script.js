@@ -20,6 +20,8 @@ function toggleMenu() {
 document.addEventListener("DOMContentLoaded", function () {
   let selectedDate = "";
   let selectedTime = "";
+  let additionalPolish = "";
+  let additionalDesign = "";
 
   const timeSlots = document.getElementById("timeSlots");
 
@@ -77,6 +79,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
   function getTodayString() {
     const today = new Date();
+
     return (
       today.getFullYear() +
       "-" +
@@ -150,6 +153,7 @@ document.addEventListener("DOMContentLoaded", function () {
       const timesNeeded = allTimes.slice(startIndex, startIndex + slotsNeeded);
 
       const timeAlreadyPassed = isPastTime(selectedDate, time);
+
       const alreadyBooked = timesNeeded.some(function (slot) {
         return bookedTimes.includes(slot);
       });
@@ -186,7 +190,52 @@ document.addEventListener("DOMContentLoaded", function () {
     renderTimeButtons(bookedTimes);
   }
 
-  ["serviceSelect", "polishSelect", "designSelect", "additionalServiceSelect"].forEach(function (id) {
+  const additionalServiceSelect = document.getElementById("additionalServiceSelect");
+
+  if (additionalServiceSelect) {
+    additionalServiceSelect.addEventListener("change", async function () {
+      const popup = document.getElementById("additionalServicePopup");
+
+      if (this.value !== "No" && this.value !== "") {
+        if (popup) popup.style.display = "flex";
+      } else {
+        additionalPolish = "";
+        additionalDesign = "";
+
+        const polish = document.getElementById("additionalPolishSelect");
+        const design = document.getElementById("additionalDesignSelect");
+
+        if (polish) polish.value = "";
+        if (design) design.value = "";
+      }
+
+      if (selectedDate) {
+        await loadTimes(selectedDate);
+      }
+    });
+  }
+
+  window.saveAdditionalServiceOptions = function () {
+    const polish = document.getElementById("additionalPolishSelect");
+    const design = document.getElementById("additionalDesignSelect");
+
+    additionalPolish = polish ? polish.value : "";
+    additionalDesign = design ? design.value : "";
+
+    if (!additionalPolish || !additionalDesign) {
+      alert("Please select polish and design for the additional service.");
+      return;
+    }
+
+    const popup = document.getElementById("additionalServicePopup");
+    if (popup) popup.style.display = "none";
+
+    if (selectedDate) {
+      loadTimes(selectedDate);
+    }
+  };
+
+  ["serviceSelect", "polishSelect", "designSelect"].forEach(function (id) {
     const dropdown = document.getElementById(id);
 
     if (dropdown) {
@@ -242,9 +291,26 @@ document.addEventListener("DOMContentLoaded", function () {
       return;
     }
 
+    if (additionalService !== "No" && additionalService !== "") {
+      if (!additionalPolish || !additionalDesign) {
+        alert("Please choose polish and design for the additional service.");
+
+        const popup = document.getElementById("additionalServicePopup");
+        if (popup) popup.style.display = "flex";
+
+        return;
+      }
+    }
+
     const duration = getSelectedDuration();
 
     const startIndex = allTimes.indexOf(selectedTime);
+
+    if (startIndex === -1) {
+      alert("Invalid appointment time.");
+      return;
+    }
+
     const slotsNeeded = duration * 2;
     const timesToBook = allTimes.slice(startIndex, startIndex + slotsNeeded);
 
@@ -253,7 +319,9 @@ document.addEventListener("DOMContentLoaded", function () {
       return;
     }
 
-    if (timesToBook.some(time => isPastTime(selectedDate, time))) {
+    if (timesToBook.some(function (time) {
+      return isPastTime(selectedDate, time);
+    })) {
       alert("That appointment time frame has already passed. Please choose another time.");
       await loadTimes(selectedDate);
       return;
@@ -283,6 +351,8 @@ document.addEventListener("DOMContentLoaded", function () {
       polish: polish,
       design: design,
       additional_service: additionalService,
+      additional_polish: additionalPolish,
+      additional_design: additionalDesign,
       notes: "",
       status: "active",
       created_at: new Date().toISOString()
@@ -308,9 +378,14 @@ document.addEventListener("DOMContentLoaded", function () {
     document.getElementById("polishSelect").value = "";
     document.getElementById("designSelect").value = "";
     document.getElementById("additionalServiceSelect").value = "No";
+    document.getElementById("additionalPolishSelect").value = "";
+    document.getElementById("additionalDesignSelect").value = "";
 
+    additionalPolish = "";
+    additionalDesign = "";
     selectedDate = "";
     selectedTime = "";
+
     if (timeSlots) timeSlots.innerHTML = "";
   };
 });
