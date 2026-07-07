@@ -209,11 +209,6 @@ document.addEventListener("DOMContentLoaded", function () {
         if (design) design.value = "";
       }
 
-      if (selectedDate) {
-        await loadTimes(selectedDate);
-      }
-    });
-  }
 
   window.saveAdditionalServiceOptions = function () {
     const polish = document.getElementById("additionalPolishSelect");
