@@ -290,24 +290,31 @@ if (
   typeof flatpickr !== "undefined" &&
   document.getElementById("appointmentDate")
 ) {
+
   calendarInstance = flatpickr("#appointmentDate", {
     dateFormat: "Y-m-d",
     minDate: "today",
+
+    onReady: async function () {
+      bookedCalendarDates = await getBookedAppointments();
+    },
 
     onOpen: async function () {
       bookedCalendarDates = await getBookedAppointments();
     },
 
-    onChange: function (selectedDates, dateStr) {
+    onChange: async function (selectedDates, dateStr) {
       selectedDate = dateStr;
+
+      bookedCalendarDates = await getBookedAppointments();
 
       const bookedTimes = bookedCalendarDates[dateStr] || [];
 
       renderTimeButtons(bookedTimes);
     }
   });
-}
 
+}
   window.closePopup = function () {
     const popup = document.getElementById("bookingPopup");
 
@@ -422,15 +429,17 @@ if (
       created_at: new Date().toISOString()
     };
 
-    const { error } = await supabaseClient
-      .from("appointments")
-      .insert([appointment]);
+const { error } = await supabaseClient
+  .from("appointments")
+  .insert([appointment]);
 
-    if (error) {
-      console.error("Supabase insert error:", error);
-      alert(error.message || "Could not book appointment.");
-      return;
-    }
+if (!error) {
+  bookedCalendarDates = await getBookedAppointments();
+
+  if (selectedDate) {
+    renderTimeButtons(bookedCalendarDates[selectedDate] || []);
+  }
+}
 
     const popup = document.getElementById("bookingPopup");
 
