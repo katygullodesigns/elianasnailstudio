@@ -38,7 +38,11 @@ document.addEventListener("DOMContentLoaded", function () {
     "5:00 PM", "5:30 PM",
     "6:00 PM", "6:30 PM"
   ];
-
+const blockedDates = [
+  "2026-07-10",
+  "2026-07-15",
+  "2026-07-20"
+];
   const serviceDurations = {
     "Manicure": 1.5,
     "Pedicure": 1.5,
@@ -258,17 +262,18 @@ document.addEventListener("DOMContentLoaded", function () {
     if (popup) popup.style.display = "none";
   };
 
-  if (typeof flatpickr !== "undefined" && document.getElementById("appointmentDate")) {
-    flatpickr("#appointmentDate", {
-      dateFormat: "Y-m-d",
-      minDate: "today",
+if (typeof flatpickr !== "undefined" && document.getElementById("appointmentDate")) {
+  flatpickr("#appointmentDate", {
+    dateFormat: "Y-m-d",
+    minDate: "today",
+    disable: blockedDates,
 
-      onChange: async function (selectedDates, dateStr) {
-        selectedDate = dateStr;
-        await loadTimes(dateStr);
-      }
-    });
-  }
+    onChange: async function (selectedDates, dateStr) {
+      selectedDate = dateStr;
+      await loadTimes(dateStr);
+    }
+  });
+}
 
   window.closePopup = function () {
     const popup = document.getElementById("bookingPopup");
