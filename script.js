@@ -228,14 +228,17 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
-  async function loadTimes(date) {
-    selectedTime = "";
+async function loadTimes(date) {
+  selectedTime = "";
 
-    const bookedAppointments = await getBookedAppointments();
-    const bookedTimes = bookedAppointments[date] || [];
-
-    renderTimeButtons(bookedTimes);
+  if (Object.keys(bookedCalendarDates).length === 0) {
+    bookedCalendarDates = await getBookedAppointments();
   }
+
+  const bookedTimes = bookedCalendarDates[date] || [];
+
+  renderTimeButtons(bookedTimes);
+}
 
   document.querySelectorAll("nav a").forEach(function (link) {
     link.addEventListener("click", function () {
@@ -283,17 +286,24 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   };
 
-  if (
+if (
   typeof flatpickr !== "undefined" &&
   document.getElementById("appointmentDate")
 ) {
-  flatpickr("#appointmentDate", {
+  calendarInstance = flatpickr("#appointmentDate", {
     dateFormat: "Y-m-d",
     minDate: "today",
 
-    onChange: async function (selectedDates, dateStr) {
+    onOpen: async function () {
+      bookedCalendarDates = await getBookedAppointments();
+    },
+
+    onChange: function (selectedDates, dateStr) {
       selectedDate = dateStr;
-      await loadTimes(dateStr);
+
+      const bookedTimes = bookedCalendarDates[dateStr] || [];
+
+      renderTimeButtons(bookedTimes);
     }
   });
 }
