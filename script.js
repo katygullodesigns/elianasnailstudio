@@ -235,17 +235,7 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   };
 
-  ["serviceSelect", "polishSelect", "designSelect"].forEach(function (id) {
-    const dropdown = document.getElementById(id);
 
-    if (dropdown) {
-      dropdown.addEventListener("change", async function () {
-        if (selectedDate) {
-          await loadTimes(selectedDate);
-        }
-      });
-    }
-  });
 
   if (typeof flatpickr !== "undefined" && document.getElementById("appointmentDate")) {
     flatpickr("#appointmentDate", {
