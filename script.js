@@ -1,5 +1,5 @@
 const SUPABASE_URL = "https://kyonstvpolakjhrecqcj.supabase.co";
-const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imt5b25zdHZwb2xha2pocmVjcWNqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE2OTYxMjUsImV4cCI6MjA5NzI3MjEyNX0.oq6v7gEy8FJPh4NI3ngUYybwJcHF6rW6qkNtepCxr7Y";
+const SUPABASE_ANON_KEY = "YOUR_SUPABASE_ANON_KEY_HERE";
 
 const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
@@ -22,6 +22,8 @@ document.addEventListener("DOMContentLoaded", function () {
   let selectedTime = "";
   let additionalPolish = "";
   let additionalDesign = "";
+  let calendarInstance = null;
+  let bookedCalendarDates = {};
 
   const timeSlots = document.getElementById("timeSlots");
 
@@ -78,6 +80,18 @@ document.addEventListener("DOMContentLoaded", function () {
     return baseDuration + additionalDuration;
   }
 
+  function getTodayString() {
+    const today = new Date();
+
+    return (
+      today.getFullYear() +
+      "-" +
+      String(today.getMonth() + 1).padStart(2, "0") +
+      "-" +
+      String(today.getDate()).padStart(2, "0")
+    );
+  }
+
   function timeToMinutes(time) {
     const match = time.match(/(\d+):(\d+)\s(AM|PM)/);
 
@@ -91,18 +105,6 @@ document.addEventListener("DOMContentLoaded", function () {
     if (ampm === "AM" && hour === 12) hour = 0;
 
     return hour * 60 + minute;
-  }
-
-  function getTodayString() {
-    const today = new Date();
-
-    return (
-      today.getFullYear() +
-      "-" +
-      String(today.getMonth() + 1).padStart(2, "0") +
-      "-" +
-      String(today.getDate()).padStart(2, "0")
-    );
   }
 
   function isPastTime(date, time) {
@@ -174,6 +176,32 @@ document.addEventListener("DOMContentLoaded", function () {
     return bookedAppointments;
   }
 
+  async function getAppointmentCountsByDate() {
+    const { data, error } = await supabaseClient
+      .from("appointments")
+      .select("date")
+      .or("status.is.null,status.neq.past");
+
+    if (error) {
+      console.error("Calendar count error:", error);
+      return {};
+    }
+
+    const counts = {};
+
+    (data || []).forEach(function (appointment) {
+      if (!appointment.date) return;
+
+      if (!counts[appointment.date]) {
+        counts[appointment.date] = 0;
+      }
+
+      counts[appointment.date]++;
+    });
+
+    return counts;
+  }
+
   function renderTimeButtons(bookedTimes) {
     if (!timeSlots) return;
 
@@ -218,15 +246,21 @@ document.addEventListener("DOMContentLoaded", function () {
     renderTimeButtons(bookedTimes);
   }
 
+  async function refreshCalendarDots() {
+    bookedCalendarDates = await getAppointmentCountsByDate();
+
+    if (calendarInstance) {
+      calendarInstance.redraw();
+    }
+  }
+
   document.querySelectorAll("nav a").forEach(function (link) {
     link.addEventListener("click", function () {
       const nav = document.querySelector("nav");
       const btn = document.querySelector(".mobile-menu-btn");
 
       if (nav) nav.classList.remove("mobile-open");
-
       document.body.classList.remove("menu-open");
-
       if (btn) btn.innerHTML = "☰";
     });
   });
@@ -270,13 +304,39 @@ document.addEventListener("DOMContentLoaded", function () {
     typeof flatpickr !== "undefined" &&
     document.getElementById("appointmentDate")
   ) {
-    flatpickr("#appointmentDate", {
-      dateFormat: "Y-m-d",
-      minDate: "today",
-      onChange: async function (selectedDates, dateStr) {
-        selectedDate = dateStr;
-        await loadTimes(dateStr);
-      }
+    refreshCalendarDots().then(function () {
+      calendarInstance = flatpickr("#appointmentDate", {
+        dateFormat: "Y-m-d",
+        minDate: "today",
+
+        onOpen: async function () {
+          await refreshCalendarDots();
+        },
+
+        onDayCreate: function (dObj, dStr, fp, dayElem) {
+          const year = dayElem.dateObj.getFullYear();
+          const month = String(dayElem.dateObj.getMonth() + 1).padStart(2, "0");
+          const day = String(dayElem.dateObj.getDate()).padStart(2, "0");
+          const dateString = `${year}-${month}-${day}`;
+
+          const count = bookedCalendarDates[dateString] || 0;
+
+          if (count > 0) {
+            dayElem.classList.add("has-bookings");
+
+            const marker = document.createElement("span");
+            marker.className = "booking-dot";
+            marker.textContent = count;
+
+            dayElem.appendChild(marker);
+          }
+        },
+
+        onChange: async function (selectedDates, dateStr) {
+          selectedDate = dateStr;
+          await loadTimes(dateStr);
+        }
+      });
     });
   }
 
@@ -366,11 +426,11 @@ document.addEventListener("DOMContentLoaded", function () {
       return;
     }
 
-    if (
-      timesToBook.some(function (time) {
-        return isPastTime(selectedDate, time);
-      })
-    ) {
+    const pastConflict = timesToBook.some(function (time) {
+      return isPastTime(selectedDate, time);
+    });
+
+    if (pastConflict) {
       alert("That appointment time frame has already passed. Please choose another time.");
       await loadTimes(selectedDate);
       return;
@@ -428,5 +488,7 @@ document.addEventListener("DOMContentLoaded", function () {
     if (timeSlots) {
       timeSlots.innerHTML = "";
     }
+
+    await refreshCalendarDots();
   };
 });
