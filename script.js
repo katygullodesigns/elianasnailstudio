@@ -48,6 +48,7 @@ const blockedDates = [
   "2026-08-01",
   "2026-08-02",
   "2026-08-03",
+  "2026-08-14",
 ];
   const serviceDurations = {
     "Manicure": 1.5,
