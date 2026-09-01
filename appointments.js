@@ -1,4 +1,3 @@
-```javascript
 const SUPABASE_URL = "https://kyonstvpolakjhrecqcj.supabase.co";
 
 const SUPABASE_ANON_KEY =
@@ -923,4 +922,3 @@ function escapeHtml(value) {
     );
 
 }
-```
