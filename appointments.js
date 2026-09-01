@@ -1,28 +1,17 @@
-
 const SUPABASE_URL =
   "https://kyonstvpolakjhrecqcj.supabase.co";
 
 const SUPABASE_ANON_KEY =
-  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imt5b25zdHZwb2xha2pocmVjcWNqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE2OTYxMjUsImV4cCI6MjA5NzI3MjEyNX0.oq6v7gEy8FJPh4NI3ngUYybwJcHF6rW6qkNtepCxr7Y";
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imt5b25zdHZwb2xha2pocWNqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE2OTYxMjUsImV4cCI6MjA5NzI3MjEyNX0.oq6v7gEy8FJPh4NI3ngUYybwJcHF6rW6qkNtepCxr7Y";
 
-const supabaseClient =
-  supabase.createClient(
-    SUPABASE_URL,
-    SUPABASE_ANON_KEY
-  );
-
-
-// ==========================================
-// OWNER
-// ==========================================
-
-const OWNER_EMAIL =
-  "enavejas005@gmail.com";
+const supabaseClient = supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_ANON_KEY
+);
 
 let appointments = [];
 
-let currentDate =
-  new Date();
+let currentDate = new Date();
 
 let selectedDate = null;
 
@@ -31,18 +20,13 @@ let selectedDate = null;
 // START
 // ==========================================
 
-document.addEventListener(
-  "DOMContentLoaded",
-  function () {
+document.addEventListener("DOMContentLoaded", function () {
 
-    console.log(
-      "Owner appointment page loaded."
-    );
+  console.log("Appointments page loaded.");
 
-    checkOwnerLogin();
+  checkOwnerLogin();
 
-  }
-);
+});
 
 
 // ==========================================
@@ -51,94 +35,37 @@ document.addEventListener(
 
 async function checkOwnerLogin() {
 
-  try {
+  const {
+    data,
+    error
+  } = await supabaseClient.auth.getSession();
 
-    const {
-      data,
-      error
-    } =
-      await supabaseClient.auth.getSession();
+  console.log("Current session:", data.session);
 
+  if (error) {
 
-    if (error) {
+    console.error("Session error:", error);
 
-      console.error(
-        "Session error:",
-        error
-      );
-
-      window.location.href =
-        "login.html";
-
-      return;
-    }
-
-
-    const session =
-      data.session;
-
-
-    if (!session) {
-
-      console.log(
-        "No active login session."
-      );
-
-      window.location.href =
-        "login.html";
-
-      return;
-    }
-
-
-    const email =
-      session.user.email;
-
-
-    console.log(
-      "Logged in user:",
-      email
-    );
-
-
-    // Make sure this is the owner
-
-    if (
-      !email ||
-      email.toLowerCase() !==
-        OWNER_EMAIL.toLowerCase()
-    ) {
-
-      console.log(
-        "This account is not the owner."
-      );
-
-      window.location.href =
-        "myappointments.html";
-
-      return;
-    }
-
-
-    console.log(
-      "Owner verified."
-    );
-
-
-    await loadAppointments();
+    return;
 
   }
-  catch (error) {
 
-    console.error(
-      "Owner login check failed:",
-      error
-    );
+  if (!data.session) {
 
-    window.location.href =
-      "login.html";
+    console.log("No session found.");
+
+    window.location.href = "login.html";
+
+    return;
 
   }
+
+  console.log(
+    "Logged in as:",
+    data.session.user.email
+  );
+
+  loadAppointments();
 
 }
 
@@ -149,132 +76,128 @@ async function checkOwnerLogin() {
 
 async function loadAppointments() {
 
+  console.log("Loading appointments...");
+
   const calendarGrid =
-    document.getElementById(
-      "calendarGrid"
-    );
+    document.getElementById("calendarGrid");
 
   const appointmentCounter =
-    document.getElementById(
-      "appointmentCounter"
-    );
-
+    document.getElementById("appointmentCounter");
 
   if (!calendarGrid) {
 
     console.error(
-      "calendarGrid element not found."
+      "ERROR: calendarGrid was not found."
     );
 
     return;
+
   }
 
 
-  calendarGrid.innerHTML =
-    "<p>Loading appointments...</p>";
-
-
-  console.log(
-    "Loading appointments from Supabase..."
-  );
-
-
+  // Get ALL appointments
   const {
     data,
     error
-  } =
-    await supabaseClient
-      .from("appointments")
-      .select("*")
-      .order("date", {
-        ascending: true
-      });
+  } = await supabaseClient
+    .from("appointments")
+    .select("*")
+    .order("date", {
+      ascending: true
+    });
 
-
-  // ========================================
-  // DATABASE ERROR
-  // ========================================
 
   if (error) {
 
     console.error(
-      "SUPABASE APPOINTMENT ERROR:",
+      "SUPABASE ERROR:",
       error
     );
 
-    console.error(
-      "Error message:",
-      error.message
-    );
-
-    console.error(
-      "Error details:",
-      error.details
-    );
-
-    console.error(
-      "Error hint:",
-      error.hint
-    );
-
-
-    calendarGrid.innerHTML = `
-      <p>
-        Could not load appointments.
-      </p>
-
-      <p style="font-size:12px;">
-        ${escapeHtml(
-          error.message || "Unknown error"
-        )}
-      </p>
-    `;
+    calendarGrid.innerHTML =
+      "<p>Could not load appointments.</p>";
 
     return;
+
   }
 
 
-  // ========================================
-  // SUCCESS
-  // ========================================
-
-  appointments =
-    data || [];
-
-
   console.log(
-    "Appointments successfully loaded:",
-    appointments
+    "ALL APPOINTMENTS FROM SUPABASE:",
+    data
   );
 
 
-  // Only count current appointments
+  // Keep only current appointments
+  appointments = (data || []).filter(
+    function (appointment) {
 
-  const currentAppointments =
-    appointments.filter(
-      function (appointment) {
+      return appointment.status !== "past";
 
-        return (
-          appointment.status !==
-          "past"
-        );
+    }
+  );
 
-      }
-    );
+
+  console.log(
+    "CURRENT APPOINTMENTS:",
+    appointments
+  );
 
 
   if (appointmentCounter) {
 
     appointmentCounter.textContent =
-      `Total Appointments: ${currentAppointments.length}`;
+      `Total Appointments: ${appointments.length}`;
 
   }
 
 
-  // Calendar only shows current appointments
+  initializeCalendar();
 
-  appointments =
-    currentAppointments;
+}
+
+
+// ==========================================
+// CALENDAR
+// ==========================================
+
+function initializeCalendar() {
+
+  const prevMonth =
+    document.getElementById("prevMonth");
+
+  const nextMonth =
+    document.getElementById("nextMonth");
+
+
+  if (prevMonth) {
+
+    prevMonth.onclick = function () {
+
+      currentDate.setMonth(
+        currentDate.getMonth() - 1
+      );
+
+      renderCalendar();
+
+    };
+
+  }
+
+
+  if (nextMonth) {
+
+    nextMonth.onclick = function () {
+
+      currentDate.setMonth(
+        currentDate.getMonth() + 1
+      );
+
+      renderCalendar();
+
+    };
+
+  }
 
 
   renderCalendar();
@@ -289,31 +212,24 @@ async function loadAppointments() {
 function renderCalendar() {
 
   const calendarGrid =
-    document.getElementById(
-      "calendarGrid"
-    );
+    document.getElementById("calendarGrid");
 
   const monthYear =
-    document.getElementById(
-      "monthYear"
-    );
+    document.getElementById("monthYear");
 
 
-  if (
-    !calendarGrid ||
-    !monthYear
-  ) {
+  if (!calendarGrid || !monthYear) {
 
     console.error(
-      "Calendar elements are missing."
+      "Calendar elements missing."
     );
 
     return;
+
   }
 
 
-  calendarGrid.innerHTML =
-    "";
+  calendarGrid.innerHTML = "";
 
 
   const year =
@@ -353,9 +269,7 @@ function renderCalendar() {
     );
 
 
-  // ========================================
-  // EMPTY DAYS
-  // ========================================
+  // Empty spaces
 
   for (
     let i = 0;
@@ -363,24 +277,18 @@ function renderCalendar() {
     i++
   ) {
 
-    const emptyDay =
-      document.createElement(
-        "div"
-      );
+    const empty =
+      document.createElement("div");
 
-    emptyDay.className =
+    empty.className =
       "calendar-day empty";
 
-    calendarGrid.appendChild(
-      emptyDay
-    );
+    calendarGrid.appendChild(empty);
 
   }
 
 
-  // ========================================
-  // ACTUAL DAYS
-  // ========================================
+  // Days
 
   for (
     let day = 1;
@@ -389,47 +297,37 @@ function renderCalendar() {
   ) {
 
     const cell =
-      document.createElement(
-        "div"
-      );
-
+      document.createElement("div");
 
     cell.className =
       "calendar-day";
 
 
     const dateString =
-      `${year}-${String(
-        month + 1
-      ).padStart(2, "0")}-${String(
-        day
-      ).padStart(2, "0")}`;
+      `${year}-${String(month + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
 
 
-    cell.textContent =
-      day;
+    cell.textContent = day;
 
 
-    // Find appointments on this date
+    // Find appointments for this day
 
     const dayAppointments =
       appointments.filter(
         function (appointment) {
 
-          return (
-            appointment.date ===
-            dateString
-          );
+          return String(
+            appointment.date
+          ) === dateString;
 
         }
       );
 
 
-    // Mark days that have appointments
+    // Mark day if it has appointments
 
     if (
-      dayAppointments.length >
-      0
+      dayAppointments.length > 0
     ) {
 
       cell.classList.add(
@@ -439,100 +337,42 @@ function renderCalendar() {
     }
 
 
-    // Click date
+    cell.onclick = function () {
 
-    cell.addEventListener(
-      "click",
-      function () {
+      document
+        .querySelectorAll(
+          ".calendar-day"
+        )
+        .forEach(
+          function (otherDay) {
 
-        document
-          .querySelectorAll(
-            ".calendar-day"
-          )
-          .forEach(
-            function (dayCell) {
+            otherDay.classList.remove(
+              "selected"
+            );
 
-              dayCell.classList.remove(
-                "selected"
-              );
-
-            }
-          );
-
-
-        cell.classList.add(
-          "selected"
+          }
         );
 
 
-        selectedDate =
-          dateString;
+      cell.classList.add(
+        "selected"
+      );
 
 
-        showAppointmentsForDate(
-          dateString
-        );
-
-      }
-    );
+      selectedDate =
+        dateString;
 
 
-    calendarGrid.appendChild(
-      cell
-    );
+      showAppointmentsForDate(
+        dateString
+      );
+
+    };
+
+
+    calendarGrid.appendChild(cell);
 
   }
-
-}
-
-
-// ==========================================
-// PREVIOUS / NEXT MONTH
-// ==========================================
-
-const prevMonth =
-  document.getElementById(
-    "prevMonth"
-  );
-
-const nextMonth =
-  document.getElementById(
-    "nextMonth"
-  );
-
-
-if (prevMonth) {
-
-  prevMonth.addEventListener(
-    "click",
-    function () {
-
-      currentDate.setMonth(
-        currentDate.getMonth() - 1
-      );
-
-      renderCalendar();
-
-    }
-  );
-
-}
-
-
-if (nextMonth) {
-
-  nextMonth.addEventListener(
-    "click",
-    function () {
-
-      currentDate.setMonth(
-        currentDate.getMonth() + 1
-      );
-
-      renderCalendar();
-
-    }
-  );
 
 }
 
@@ -556,32 +396,42 @@ function showAppointmentsForDate(
     );
 
 
-  if (
-    !title ||
-    !container
-  ) {
+  if (!title || !container) {
 
     return;
+
   }
 
 
   const dateAppointments =
-    appointments.filter(
-      function (appointment) {
+    appointments
+      .filter(
+        function (appointment) {
 
-        return (
-          appointment.date ===
-          dateString
-        );
+          return String(
+            appointment.date
+          ) === dateString;
 
-      }
-    );
+        }
+      )
+      .sort(
+        function (a, b) {
+
+          return String(
+            a.time || ""
+          ).localeCompare(
+            String(
+              b.time || ""
+            )
+          );
+
+        }
+      );
 
 
   const displayDate =
     new Date(
-      dateString +
-      "T12:00:00"
+      dateString + "T12:00:00"
     ).toLocaleDateString(
       "en-US",
       {
@@ -597,48 +447,26 @@ function showAppointmentsForDate(
     displayDate;
 
 
-  container.innerHTML =
-    "";
+  container.innerHTML = "";
 
 
   if (
-    dateAppointments.length ===
-    0
+    dateAppointments.length === 0
   ) {
 
     container.innerHTML =
-      `
-      <p class="no-selection">
-        No appointments on this day.
-      </p>
-      `;
+      "<p class='no-selection'>No appointments on this day.</p>";
 
     return;
+
   }
-
-
-  // Sort by time
-
-  dateAppointments.sort(
-    function (a, b) {
-
-      return (
-        timeToMinutes(a.time) -
-        timeToMinutes(b.time)
-      );
-
-    }
-  );
 
 
   dateAppointments.forEach(
     function (appointment) {
 
       const card =
-        document.createElement(
-          "div"
-        );
-
+        document.createElement("div");
 
       card.className =
         "appointment-card";
@@ -667,21 +495,16 @@ function showAppointmentsForDate(
       `;
 
 
-      card.addEventListener(
-        "click",
-        function () {
+      card.onclick = function () {
 
-          showAppointmentDetails(
-            appointment
-          );
+        showAppointmentDetails(
+          appointment
+        );
 
-        }
-      );
+      };
 
 
-      container.appendChild(
-        card
-      );
+      container.appendChild(card);
 
     }
   );
@@ -690,7 +513,7 @@ function showAppointmentsForDate(
 
 
 // ==========================================
-// SHOW APPOINTMENT DETAILS
+// APPOINTMENT DETAILS
 // ==========================================
 
 function showAppointmentDetails(
@@ -706,6 +529,7 @@ function showAppointmentDetails(
   if (!details) {
 
     return;
+
   }
 
 
@@ -786,27 +610,21 @@ function showAppointmentDetails(
       )}
     </p>
 
-
     <div class="button-group">
 
       <button
-        type="button"
         onclick="editAppointment('${appointment.id}')"
       >
         Edit
       </button>
 
-
       <button
-        type="button"
         onclick="deleteAppointment('${appointment.id}')"
       >
         Delete
       </button>
 
-
       <button
-        type="button"
         onclick="completeAppointment('${appointment.id}')"
       >
         Complete
@@ -820,7 +638,7 @@ function showAppointmentDetails(
 
 
 // ==========================================
-// EDIT APPOINTMENT
+// EDIT
 // ==========================================
 
 window.editAppointment =
@@ -830,7 +648,8 @@ function (id) {
     appointments.find(
       function (item) {
 
-        return item.id === id;
+        return String(item.id) ===
+          String(id);
 
       }
     );
@@ -838,11 +657,8 @@ function (id) {
 
   if (!appointment) {
 
-    alert(
-      "Appointment not found."
-    );
-
     return;
+
   }
 
 
@@ -852,88 +668,72 @@ function (id) {
     );
 
 
-  if (!details) {
-
-    return;
-  }
-
-
   details.innerHTML = `
 
-    <h3>
-      Edit Appointment
-    </h3>
-
+    <h3>Edit Appointment</h3>
 
     <input
-      type="text"
       id="editName"
+      type="text"
       value="${escapeHtml(
         appointment.name || ""
       )}"
       placeholder="Name"
     >
 
-
     <input
-      type="text"
       id="editPhone"
+      type="text"
       value="${escapeHtml(
         appointment.phone || ""
       )}"
       placeholder="Phone"
     >
 
-
     <input
-      type="text"
       id="editDate"
+      type="text"
       value="${escapeHtml(
         appointment.date || ""
       )}"
       placeholder="Date"
     >
 
-
     <input
-      type="text"
       id="editTime"
+      type="text"
       value="${escapeHtml(
         appointment.time || ""
       )}"
       placeholder="Time"
     >
 
-
     <input
-      type="text"
       id="editService"
+      type="text"
       value="${escapeHtml(
         appointment.service || ""
       )}"
       placeholder="Service"
     >
 
-
     <input
-      type="text"
       id="editPolish"
+      type="text"
       value="${escapeHtml(
         appointment.polish || ""
       )}"
       placeholder="Polish"
     >
 
-
     <input
-      type="text"
       id="editDesign"
+      type="text"
       value="${escapeHtml(
         appointment.design || ""
       )}"
       placeholder="Design"
     >
-
 
     <textarea
       id="editNotes"
@@ -942,22 +742,18 @@ function (id) {
       appointment.notes || ""
     )}</textarea>
 
-
     <div class="button-group">
 
       <button
-        type="button"
         onclick="saveAppointment('${appointment.id}')"
       >
         Save
       </button>
 
-
       <button
-        type="button"
         onclick="showAppointmentDetails(
           appointments.find(
-            a => a.id === '${appointment.id}'
+            a => String(a.id) === String('${appointment.id}')
           )
         )"
       >
@@ -972,89 +768,63 @@ function (id) {
 
 
 // ==========================================
-// SAVE APPOINTMENT
+// SAVE
 // ==========================================
 
 window.saveAppointment =
 async function (id) {
 
-  const appointment =
-    appointments.find(
-      function (item) {
-
-        return item.id === id;
-
-      }
-    );
-
-
-  if (!appointment) {
-
-    alert(
-      "Appointment not found."
-    );
-
-    return;
-  }
-
-
-  const updatedAppointment = {
-
-    name:
-      document.getElementById(
-        "editName"
-      ).value.trim(),
-
-    phone:
-      document.getElementById(
-        "editPhone"
-      ).value.trim(),
-
-    date:
-      document.getElementById(
-        "editDate"
-      ).value.trim(),
-
-    time:
-      document.getElementById(
-        "editTime"
-      ).value.trim(),
-
-    service:
-      document.getElementById(
-        "editService"
-      ).value.trim(),
-
-    polish:
-      document.getElementById(
-        "editPolish"
-      ).value.trim(),
-
-    design:
-      document.getElementById(
-        "editDesign"
-      ).value.trim(),
-
-    notes:
-      document.getElementById(
-        "editNotes"
-      ).value.trim()
-
-  };
-
-
   const {
     error
-  } =
-    await supabaseClient
-      .from("appointments")
-      .update(
-        updatedAppointment
-      )
-      .eq(
-        "id",
-        id
-      );
+  } = await supabaseClient
+    .from("appointments")
+    .update({
+
+      name:
+        document.getElementById(
+          "editName"
+        ).value,
+
+      phone:
+        document.getElementById(
+          "editPhone"
+        ).value,
+
+      date:
+        document.getElementById(
+          "editDate"
+        ).value,
+
+      time:
+        document.getElementById(
+          "editTime"
+        ).value,
+
+      service:
+        document.getElementById(
+          "editService"
+        ).value,
+
+      polish:
+        document.getElementById(
+          "editPolish"
+        ).value,
+
+      design:
+        document.getElementById(
+          "editDesign"
+        ).value,
+
+      notes:
+        document.getElementById(
+          "editNotes"
+        ).value
+
+    })
+    .eq(
+      "id",
+      id
+    );
 
 
   if (error) {
@@ -1064,77 +834,45 @@ async function (id) {
       error
     );
 
-    alert(
-      "Could not save appointment:\n\n" +
-      error.message
-    );
+    alert(error.message);
 
     return;
+
   }
 
 
   await loadAppointments();
 
-
-  if (selectedDate) {
-
-    showAppointmentsForDate(
-      selectedDate
-    );
-
-  }
-
 };
 
 
 // ==========================================
-// DELETE APPOINTMENT
+// DELETE
 // ==========================================
 
 window.deleteAppointment =
 async function (id) {
 
-  const appointment =
-    appointments.find(
-      function (item) {
-
-        return item.id === id;
-
-      }
-    );
-
-
-  if (!appointment) {
+  if (
+    !confirm(
+      "Delete this appointment?"
+    )
+  ) {
 
     return;
-  }
 
-
-  const confirmed =
-    confirm(
-      `Delete the appointment for ${
-        appointment.name ||
-        "this customer"
-      }?`
-    );
-
-
-  if (!confirmed) {
-
-    return;
   }
 
 
   const {
     error
-  } =
-    await supabaseClient
-      .from("appointments")
-      .delete()
-      .eq(
-        "id",
-        id
-      );
+  } = await supabaseClient
+    .from("appointments")
+    .delete()
+    .eq(
+      "id",
+      id
+    );
 
 
   if (error) {
@@ -1144,99 +882,47 @@ async function (id) {
       error
     );
 
-    alert(
-      "Could not delete appointment:\n\n" +
-      error.message
-    );
+    alert(error.message);
 
     return;
-  }
-
-
-  const details =
-    document.getElementById(
-      "appointmentDetails"
-    );
-
-
-  if (details) {
-
-    details.innerHTML =
-      `
-      <p class="no-selection">
-        Select an appointment.
-      </p>
-      `;
 
   }
+
+
+  document.getElementById(
+    "appointmentDetails"
+  ).innerHTML =
+    "<p class='no-selection'>Select an appointment.</p>";
 
 
   await loadAppointments();
-
-
-  if (selectedDate) {
-
-    showAppointmentsForDate(
-      selectedDate
-    );
-
-  }
 
 };
 
 
 // ==========================================
-// COMPLETE APPOINTMENT
+// COMPLETE
 // ==========================================
 
 window.completeAppointment =
 async function (id) {
 
-  const appointment =
-    appointments.find(
-      function (item) {
-
-        return item.id === id;
-
-      }
-    );
-
-
-  if (!appointment) {
-
-    return;
-  }
-
-
-  const confirmed =
-    confirm(
-      `Mark ${appointment.name || "this appointment"} as completed?`
-    );
-
-
-  if (!confirmed) {
-
-    return;
-  }
-
-
   const {
     error
-  } =
-    await supabaseClient
-      .from("appointments")
-      .update({
+  } = await supabaseClient
+    .from("appointments")
+    .update({
 
-        status: "past",
+      status: "past",
 
-        completed_date:
-          new Date().toLocaleDateString()
+      completed_date:
+        new Date().toLocaleDateString()
 
-      })
-      .eq(
-        "id",
-        id
-      );
+    })
+    .eq(
+      "id",
+      id
+    );
 
 
   if (error) {
@@ -1246,31 +932,17 @@ async function (id) {
       error
     );
 
-    alert(
-      "Could not complete appointment:\n\n" +
-      error.message
-    );
+    alert(error.message);
 
     return;
-  }
-
-
-  const details =
-    document.getElementById(
-      "appointmentDetails"
-    );
-
-
-  if (details) {
-
-    details.innerHTML =
-      `
-      <p class="no-selection">
-        Select an appointment.
-      </p>
-      `;
 
   }
+
+
+  document.getElementById(
+    "appointmentDetails"
+  ).innerHTML =
+    "<p class='no-selection'>Select an appointment.</p>";
 
 
   await loadAppointments();
@@ -1279,86 +951,12 @@ async function (id) {
 
 
 // ==========================================
-// TIME CONVERSION
+// ESCAPE HTML
 // ==========================================
 
-function timeToMinutes(
-  time
-) {
+function escapeHtml(value) {
 
-  if (!time) {
-
-    return 0;
-  }
-
-
-  const match =
-    time.match(
-      /(\d+):(\d+)\s*(AM|PM)/i
-    );
-
-
-  if (!match) {
-
-    return 0;
-  }
-
-
-  let hour =
-    Number(
-      match[1]
-    );
-
-
-  const minute =
-    Number(
-      match[2]
-    );
-
-
-  const ampm =
-    match[3].toUpperCase();
-
-
-  if (
-    ampm === "PM" &&
-    hour !== 12
-  ) {
-
-    hour += 12;
-
-  }
-
-
-  if (
-    ampm === "AM" &&
-    hour === 12
-  ) {
-
-    hour = 0;
-
-  }
-
-
-  return (
-    hour * 60 +
-    minute
-  );
-
-}
-
-
-// ==========================================
-// HTML ESCAPE
-// ==========================================
-
-function escapeHtml(
-  value
-) {
-
-  return String(
-    value ?? ""
-  )
+  return String(value)
     .replace(
       /&/g,
       "&amp;"
