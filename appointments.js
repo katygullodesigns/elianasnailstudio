@@ -1,4 +1,3 @@
-```javascript
 const SUPABASE_URL =
   "https://kyonstvpolakjhrecqcj.supabase.co";
 
@@ -1314,4 +1313,3 @@ async function start() {
 
 
 start();
-```
