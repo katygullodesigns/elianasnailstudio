@@ -1,3 +1,4 @@
+```html
 <!DOCTYPE html>
 <html>
 <head>
@@ -10,20 +11,41 @@
 </head>
 
 <body>
+
   <div class="background"></div>
 
   <section class="booking">
-    <h2>Owner Login</h2>
 
-    <input type="text" id="username" placeholder="Email">
-    <input type="password" id="password" placeholder="Password">
+    <h2>Login</h2>
 
-<button id="loginBtn" type="button">Login</button>
+    <input
+      type="email"
+      id="username"
+      placeholder="Email"
+      autocomplete="email"
+    >
+
+    <input
+      type="password"
+      id="password"
+      placeholder="Password"
+      autocomplete="current-password"
+    >
+
+    <button id="loginBtn" type="button">
+      Login
+    </button>
+
+    <button id="createAccountBtn" type="button">
+      Create Account
+    </button>
 
     <p id="loginMessage"></p>
+
   </section>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="login.js?v=13"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="login.js?v=14"></script>
+
 </body>
 </html>
