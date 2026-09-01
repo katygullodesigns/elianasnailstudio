@@ -1,6 +1,8 @@
-const SUPABASE_URL = "https://kyonstvpolakjhrecqcj.supabase.co/rest/v1/";
+const SUPABASE_URL = "https://kyonstvpolakjhrecqcj.supabase.co";
+const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imt5b25zdHZwb2xha2pocmVjcWNqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE2OTYxMjUsImV4cCI6MjA5NzI3MjEyNX0.oq6v7gEy8FJPh4NI3ngUYybwJcHF6rW6qkNtepCxr7Y";
 
-const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imt5b25zdHZwb2xha2pocmVjcWNqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE2OTYxMjUsImV4cCI6MjA5NzI3MjEyNX0.oq6v7gEy8FJPh4NI3ngUYybwJcHF6rW6qkNtepCxr7Y"";
+const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJrdW9uc3R2cG9sYWtqaHJlY3FjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE2OTYxMjUsImV4cCI6MjA5NzI3MjEyNX0.oq6v7gEy8FJPh4NI3ngUYybwJcHF6rW6qkNtepCxr7Y";
 
 const supabaseClient = supabase.createClient(
   SUPABASE_URL,
@@ -28,16 +30,13 @@ document.getElementById("loginBtn").addEventListener("click", async function () 
   const { error } = await supabaseClient.auth.signInWithPassword({
     email: email,
     password: password
-  });
-
-  if (error) {
-    console.error(error);
-    message.textContent = error.message;
+@@ -19,5 +36,71 @@ document.getElementById("loginBtn").addEventListener("click", async function ()
     return;
   }
 
   // Login successful
   window.location.href = "appointments.html";
+});
 
 });
 
@@ -103,4 +102,3 @@ document.getElementById("createAccountBtn").addEventListener("click", async func
   }
 
 });
-```
