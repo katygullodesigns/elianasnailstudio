@@ -6,8 +6,8 @@ const SUPABASE_ANON_KEY =
     .replace(/\s/g, "");
 
 const supabaseClient = supabase.createClient(
-  SUPABASE_URL,
-  SUPABASE_ANON_KEY
+  "https://kyonstvpolakjhrecqcj.supabase.co",
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJrdW9uc3R2cG9sYWtqaHJlY3FjIiwicmVmIjoia3lvbnN0dnBvbGFramh ycmVjcWNqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE2OTYxMjUsImV4cCI6MjA5NzI3MjEyNX0.oq6v7gEy8FJPh4NI3ngUYybwJcHF6rW6qkNtepCxr7Y"
 );
 
 
