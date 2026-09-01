@@ -1,3 +1,4 @@
+```html
 <!DOCTYPE html>
 <html>
 <head>
@@ -71,206 +72,211 @@
   <script>
 
     const SUPABASE_URL =
-      "https://kyonstvpolakjhrecqcj.supabase.co";
+  "https://kyonstvpolakjhrecqcj.supabase.co";
+
+const SUPABASE_ANON_KEY =
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJrdW9uc3R2cG9sYWtqaHJlY3FjIiwicmVmIjoia3lvbnN0dnBvbGFramh ycmVjcWNqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE2OTYxMjUsImV4cCI6MjA5NzI3MjEyNX0.oq6v7gEy8FJPh4NI3ngUYybwJcHF6rW6qkNtepCxr7Y"
+    .replace(/\s/g, "");
+
+const supabaseClient = supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_ANON_KEY
+);
 
 
-    const SUPABASE_ANON_KEY =
-      "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imt5b25zdHZwb2xha2pocmVjcWNqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE2OTYxMjUsImV4cCI6MjA5NzI3MjEyNX0.oq6v7gEy8FJPh4NI3ngUYybwJcHF6rW6qkNtepCxr7Y";
+// ==========================================
+// OWNER EMAIL
+// ==========================================
+
+const OWNER_EMAIL = "enavejas005@gmail.com";
 
 
-    const supabaseClient =
-      supabase.createClient(
-        SUPABASE_URL,
-        SUPABASE_ANON_KEY
-      );
+// ==========================================
+// LOGIN
+// ==========================================
 
+document
+  .getElementById("loginBtn")
+  .addEventListener("click", async function () {
 
-    const loginBtn =
-      document.getElementById("loginBtn");
+    const email =
+      document
+        .getElementById("username")
+        .value
+        .trim()
+        .toLowerCase();
 
-
-    const createAccountBtn =
-      document.getElementById("createAccountBtn");
-
+    const password =
+      document.getElementById("password").value;
 
     const message =
       document.getElementById("loginMessage");
 
 
-    // =====================================
-    // LOGIN
-    // =====================================
-
-    loginBtn.addEventListener(
-      "click",
-      async function () {
-
-        const email =
-          document.getElementById("username")
-            .value
-            .trim();
+    message.textContent = "";
 
 
-        const password =
-          document.getElementById("password")
-            .value;
+    if (!email || !password) {
+
+      message.textContent =
+        "Please enter your email and password.";
+
+      return;
+    }
 
 
-        message.textContent = "";
+    const {
+      data,
+      error
+    } = await supabaseClient.auth.signInWithPassword({
+
+      email: email,
+
+      password: password
+
+    });
 
 
-        if (!email || !password) {
+    if (error) {
 
-          message.textContent =
-            "Please enter your email and password.";
+      console.error(
+        "Login error:",
+        error
+      );
 
-          return;
-        }
+      message.textContent =
+        error.message;
 
-
-        message.textContent =
-          "Logging in...";
-
-
-        const { data, error } =
-          await supabaseClient.auth
-            .signInWithPassword({
-
-              email: email,
-
-              password: password
-
-            });
+      return;
+    }
 
 
-        if (error) {
+    // ==========================================
+    // OWNER
+    // ==========================================
 
-          console.error(error);
+    if (
+      data.user.email.toLowerCase() ===
+      OWNER_EMAIL.toLowerCase()
+    ) {
 
-          message.textContent =
-            error.message;
+      window.location.href =
+        "appointments.html";
 
-          return;
-        }
-
-
-        console.log(
-          "Login successful:",
-          data.user
-        );
+      return;
+    }
 
 
-        message.textContent =
-          "Login successful!";
+    // ==========================================
+    // CUSTOMER
+    // ==========================================
 
+    window.location.href =
+      "myappointments.html";
+
+  });
+
+
+// ==========================================
+// CREATE ACCOUNT
+// ==========================================
+
+document
+  .getElementById("createAccountBtn")
+  .addEventListener("click", async function () {
+
+    const email =
+      document
+        .getElementById("username")
+        .value
+        .trim()
+        .toLowerCase();
+
+    const password =
+      document.getElementById("password").value;
+
+    const message =
+      document.getElementById("loginMessage");
+
+
+    message.textContent = "";
+
+
+    if (!email || !password) {
+
+      message.textContent =
+        "Enter an email and password to create your account.";
+
+      return;
+    }
+
+
+    if (password.length < 6) {
+
+      message.textContent =
+        "Password must be at least 6 characters.";
+
+      return;
+    }
+
+
+    const {
+      data,
+      error
+    } = await supabaseClient.auth.signUp({
+
+      email: email,
+
+      password: password
+
+    });
+
+
+    if (error) {
+
+      console.error(
+        "Create account error:",
+        error
+      );
+
+      message.textContent =
+        error.message;
+
+      return;
+    }
+
+
+    // Email confirmation required
+    if (
+      data.user &&
+      !data.session
+    ) {
+
+      message.textContent =
+        "Account created! Check your email to confirm your account.";
+
+      return;
+    }
+
+
+    // Account immediately logged in
+    if (data.session) {
+
+      if (
+        data.user.email.toLowerCase() ===
+        OWNER_EMAIL.toLowerCase()
+      ) {
+
+        window.location.href =
+          "appointments.html";
+
+      } else {
 
         window.location.href =
           "myappointments.html";
 
       }
-    );
 
+    }
 
-    // =====================================
-    // CREATE ACCOUNT
-    // =====================================
-
-    createAccountBtn.addEventListener(
-      "click",
-      async function () {
-
-        const email =
-          document.getElementById("username")
-            .value
-            .trim();
-
-
-        const password =
-          document.getElementById("password")
-            .value;
-
-
-        message.textContent = "";
-
-
-        if (!email || !password) {
-
-          message.textContent =
-            "Enter an email and password to create your account.";
-
-          return;
-        }
-
-
-        if (password.length < 6) {
-
-          message.textContent =
-            "Password must be at least 6 characters.";
-
-          return;
-        }
-
-
-        message.textContent =
-          "Creating account...";
-
-
-        const { data, error } =
-          await supabaseClient.auth
-            .signUp({
-
-              email: email,
-
-              password: password
-
-            });
-
-
-        if (error) {
-
-          console.error(error);
-
-          message.textContent =
-            error.message;
-
-          return;
-        }
-
-
-        console.log(
-          "Account created:",
-          data.user
-        );
-
-
-        // Email confirmation required
-
-        if (data.user && !data.session) {
-
-          message.textContent =
-            "Account created! Check your email to confirm your account.";
-
-          return;
-        }
-
-
-        // Confirmation not required
-
-        if (data.session) {
-
-          message.textContent =
-            "Account created!";
-
-
-          window.location.href =
-            "myappointments.html";
-
-        }
-
-      }
-    );
-
-  </script>
-
-</body>
-</html>
+  });
