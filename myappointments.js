@@ -1,11 +1,14 @@
-const SUPABASE_URL = "https://kyonstvpolakjhrecqcj.supabase.co/rest/v1/";
+const SUPABASE_URL =
+  "https://kyonstvpolakjhrecqcj.supabase.co";
 
-const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imt5b25zdHZwb2xha2pocmVjcWNqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE2OTYxMjUsImV4cCI6MjA5NzI3MjEyNX0.oq6v7gEy8FJPh4NI3ngUYybwJcHF6rW6qkNtepCxr7Y"";
+const SUPABASE_ANON_KEY =
+  "YOUR_EXACT_WORKING_SUPABASE_ANON_KEY";
 
-const supabaseClient = supabase.createClient(
-  SUPABASE_URL,
-  SUPABASE_ANON_KEY
-);
+const supabaseClient =
+  supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_ANON_KEY
+  );
 
 
 // ==========================================
@@ -25,13 +28,15 @@ async function loadAppointments() {
   const {
     data: { user },
     error
-  } = await supabaseClient.auth.getUser();
+  } =
+    await supabaseClient.auth.getUser();
 
 
   // Not logged in
   if (error || !user) {
 
-    window.location.href = "login.html";
+    window.location.href =
+      "login.html";
 
     return;
   }
@@ -42,22 +47,26 @@ async function loadAppointments() {
     `Logged in as ${user.email}`;
 
 
-  // Get ONLY this customer's appointments
+  // Get customer's appointments
   const {
     data: appointments,
     error: appointmentsError
-  } = await supabaseClient
-    .from("appointments")
-    .select("*")
-    .eq("user_id", user.id)
-    .order("appointment_date", {
-      ascending: true
-    });
+  } =
+    await supabaseClient
+      .from("appointments")
+      .select("*")
+      .eq("user_id", user.id)
+      .order("date", {
+        ascending: true
+      });
 
 
   if (appointmentsError) {
 
-    console.error(appointmentsError);
+    console.error(
+      "Appointment error:",
+      appointmentsError
+    );
 
     appointmentsContainer.innerHTML =
       "<p>Unable to load your appointments.</p>";
@@ -67,7 +76,10 @@ async function loadAppointments() {
 
 
   // No appointments
-  if (!appointments || appointments.length === 0) {
+  if (
+    !appointments ||
+    appointments.length === 0
+  ) {
 
     appointmentsContainer.innerHTML =
       "<p>You don't have any appointments scheduled.</p>";
@@ -80,34 +92,50 @@ async function loadAppointments() {
   appointmentsContainer.innerHTML = "";
 
 
-  appointments.forEach(function (appointment) {
+  appointments.forEach(
+    function (appointment) {
 
-    const div =
-      document.createElement("div");
+      const div =
+        document.createElement("div");
 
-    div.className = "appointment";
-
-
-    div.innerHTML = `
-      <h3>
-        ${appointment.service || "Appointment"}
-      </h3>
-
-      <p>
-        <strong>Date:</strong>
-        ${appointment.appointment_date || ""}
-      </p>
-
-      <p>
-        <strong>Time:</strong>
-        ${appointment.appointment_time || ""}
-      </p>
-    `;
+      div.className =
+        "appointment";
 
 
-    appointmentsContainer.appendChild(div);
+      div.innerHTML = `
 
-  });
+        <h3>
+          ${escapeHtml(
+            appointment.service ||
+            "Appointment"
+          )}
+        </h3>
+
+        <p>
+          <strong>Date:</strong>
+          ${escapeHtml(
+            appointment.date ||
+            ""
+          )}
+        </p>
+
+        <p>
+          <strong>Time:</strong>
+          ${escapeHtml(
+            appointment.time ||
+            ""
+          )}
+        </p>
+
+      `;
+
+
+      appointmentsContainer.appendChild(
+        div
+      );
+
+    }
+  );
 
 }
 
@@ -116,22 +144,92 @@ async function loadAppointments() {
 // LOGOUT
 // ==========================================
 
-document.getElementById("logoutBtn")
-  .addEventListener("click", async function () {
+const logoutBtn =
+  document.getElementById(
+    "logoutBtn"
+  );
 
-    const { error } =
-      await supabaseClient.auth.signOut();
 
-    if (error) {
+if (logoutBtn) {
 
-      console.error(error);
+  logoutBtn.addEventListener(
+    "click",
+    async function () {
 
-      return;
+      logoutBtn.disabled = true;
+
+      logoutBtn.textContent =
+        "Logging out...";
+
+
+      const {
+        error
+      } =
+        await supabaseClient.auth.signOut();
+
+
+      if (error) {
+
+        console.error(
+          "Logout error:",
+          error
+        );
+
+        alert(
+          "Could not log out: " +
+          error.message
+        );
+
+        logoutBtn.disabled = false;
+
+        logoutBtn.textContent =
+          "Logout";
+
+        return;
+      }
+
+
+      // Successfully logged out
+      window.location.href =
+        "login.html";
+
     }
+  );
 
-    window.location.href = "login.html";
+}
 
-  });
+
+// ==========================================
+// HTML ESCAPE
+// ==========================================
+
+function escapeHtml(value) {
+
+  return String(
+    value ?? ""
+  )
+    .replace(
+      /&/g,
+      "&amp;"
+    )
+    .replace(
+      /</g,
+      "&lt;"
+    )
+    .replace(
+      />/g,
+      "&gt;"
+    )
+    .replace(
+      /"/g,
+      "&quot;"
+    )
+    .replace(
+      /'/g,
+      "&#039;"
+    );
+
+}
 
 
 // ==========================================
