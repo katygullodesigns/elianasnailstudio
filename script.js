@@ -8,7 +8,10 @@ const supabaseClient = supabase.createClient(
   SUPABASE_URL,
   SUPABASE_ANON_KEY
 );
-
+supabaseClient.auth.getSession().then(({ data, error }) => {
+  console.log("INDEX SESSION:", data.session);
+  console.log("INDEX SESSION ERROR:", error);
+});
 
 console.log("Eliana's Nail Studio Loaded");
 
