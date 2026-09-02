@@ -8,6 +8,7 @@ const SUPABASE_URL =
 
 const SUPABASE_ANON_KEY =
   "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJreW9uc3R2cG9sYWtqaHJlY3FjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE2OTYxMjUsImV4cCI6MjA5NzI3MjEyNX0.oq6v7gEy8FPh4NI3ngUYybwJcHF6rW6qkNtepCxr7Y";
+
 const supabaseClient = supabase.createClient(
   SUPABASE_URL,
   SUPABASE_ANON_KEY
