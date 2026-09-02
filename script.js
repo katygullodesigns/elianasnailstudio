@@ -574,16 +574,21 @@ document.addEventListener(
       )
     ) {
 
-      flatpickr(
-        "#appointmentDate",
-        {
+     flatpickr(
+  "#appointmentDate",
+  {
 
-          dateFormat: "Y-m-d",
+    dateFormat: "Y-m-d",
 
-          minDate: "today",
+    minDate: "today",
 
+    disable: [
+      function(date) {
+        return date.getDay() === 0;
+      }
+    ],
 
-          onChange:
+    onChange:
             async function (
               selectedDates,
               dateStr
