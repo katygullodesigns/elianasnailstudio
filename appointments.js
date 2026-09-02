@@ -1,8 +1,9 @@
+
 const SUPABASE_URL =
   "https://kyonstvpolakjhrecqcj.supabase.co";
 
 const SUPABASE_ANON_KEY =
-  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imt5b25zdHZwb2xha2pocmVjcWNqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE2OTYxMjUsImV4cCI6MjA5NzI3MjEyNX0.oq6v7gEy8FJPh4NI3ngUYybwJcHF6rW6qkNtepCxr7Y";
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imt5b25zdHZwb2xha2pocmVjcWNqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE2OTYxMjUsImV4cCI6MjA5NzI3MjEyNX0.oq6v7gEy8FPh4NI3ngUYybwJcHF6rW6qkNtepCxr7Y";
 
 const supabaseClient =
   supabase.createClient(
@@ -38,10 +39,126 @@ document.addEventListener(
       "Owner appointment page loaded."
     );
 
+    setupButtons();
+
     checkOwnerLogin();
 
   }
 );
+
+
+// ==========================================
+// SETUP BUTTONS
+// ==========================================
+
+function setupButtons() {
+
+  const prevMonth =
+    document.getElementById(
+      "prevMonth"
+    );
+
+  const nextMonth =
+    document.getElementById(
+      "nextMonth"
+    );
+
+  const logoutBtn =
+    document.getElementById(
+      "logoutBtn"
+    );
+
+
+  // PREVIOUS MONTH
+
+  if (prevMonth) {
+
+    prevMonth.addEventListener(
+      "click",
+      function () {
+
+        currentDate.setMonth(
+          currentDate.getMonth() - 1
+        );
+
+        renderCalendar();
+
+      }
+    );
+
+  }
+
+
+  // NEXT MONTH
+
+  if (nextMonth) {
+
+    nextMonth.addEventListener(
+      "click",
+      function () {
+
+        currentDate.setMonth(
+          currentDate.getMonth() + 1
+        );
+
+        renderCalendar();
+
+      }
+    );
+
+  }
+
+
+  // LOGOUT
+
+  if (logoutBtn) {
+
+    logoutBtn.addEventListener(
+      "click",
+      async function () {
+
+        logoutBtn.disabled = true;
+
+        logoutBtn.textContent =
+          "Logging out...";
+
+
+        const {
+          error
+        } =
+          await supabaseClient.auth.signOut();
+
+
+        if (error) {
+
+          console.error(
+            "Logout error:",
+            error
+          );
+
+          alert(
+            "Could not log out:\n\n" +
+            error.message
+          );
+
+          logoutBtn.disabled = false;
+
+          logoutBtn.textContent =
+            "Logout";
+
+          return;
+        }
+
+
+        window.location.href =
+          "login.html";
+
+      }
+    );
+
+  }
+
+}
 
 
 // ==========================================
@@ -100,7 +217,7 @@ async function checkOwnerLogin() {
     );
 
 
-    // Make sure this is the owner
+    // OWNER ONLY
 
     if (
       !email ||
@@ -127,6 +244,7 @@ async function checkOwnerLogin() {
     await loadAppointments();
 
   }
+
   catch (error) {
 
     console.error(
@@ -190,30 +308,11 @@ async function loadAppointments() {
       });
 
 
-  // ========================================
-  // DATABASE ERROR
-  // ========================================
-
   if (error) {
 
     console.error(
       "SUPABASE APPOINTMENT ERROR:",
       error
-    );
-
-    console.error(
-      "Error message:",
-      error.message
-    );
-
-    console.error(
-      "Error details:",
-      error.details
-    );
-
-    console.error(
-      "Error hint:",
-      error.hint
     );
 
 
@@ -224,7 +323,8 @@ async function loadAppointments() {
 
       <p style="font-size:12px;">
         ${escapeHtml(
-          error.message || "Unknown error"
+          error.message ||
+          "Unknown error"
         )}
       </p>
     `;
@@ -232,10 +332,6 @@ async function loadAppointments() {
     return;
   }
 
-
-  // ========================================
-  // SUCCESS
-  // ========================================
 
   appointments =
     data || [];
@@ -247,7 +343,7 @@ async function loadAppointments() {
   );
 
 
-  // Only count current appointments
+  // REMOVE PAST APPOINTMENTS
 
   const currentAppointments =
     appointments.filter(
@@ -269,8 +365,6 @@ async function loadAppointments() {
 
   }
 
-
-  // Calendar only shows current appointments
 
   appointments =
     currentAppointments;
@@ -352,9 +446,7 @@ function renderCalendar() {
     );
 
 
-  // ========================================
   // EMPTY DAYS
-  // ========================================
 
   for (
     let i = 0;
@@ -377,9 +469,7 @@ function renderCalendar() {
   }
 
 
-  // ========================================
   // ACTUAL DAYS
-  // ========================================
 
   for (
     let day = 1;
@@ -409,7 +499,7 @@ function renderCalendar() {
       day;
 
 
-    // Find appointments on this date
+    // APPOINTMENTS ON THIS DATE
 
     const dayAppointments =
       appointments.filter(
@@ -424,8 +514,6 @@ function renderCalendar() {
       );
 
 
-    // Mark days that have appointments
-
     if (
       dayAppointments.length >
       0
@@ -438,7 +526,21 @@ function renderCalendar() {
     }
 
 
-    // Click date
+    // SELECTED DATE
+
+    if (
+      selectedDate ===
+      dateString
+    ) {
+
+      cell.classList.add(
+        "selected"
+      );
+
+    }
+
+
+    // CLICK DATE
 
     cell.addEventListener(
       "click",
@@ -481,57 +583,6 @@ function renderCalendar() {
     );
 
   }
-
-}
-
-
-// ==========================================
-// PREVIOUS / NEXT MONTH
-// ==========================================
-
-const prevMonth =
-  document.getElementById(
-    "prevMonth"
-  );
-
-const nextMonth =
-  document.getElementById(
-    "nextMonth"
-  );
-
-
-if (prevMonth) {
-
-  prevMonth.addEventListener(
-    "click",
-    function () {
-
-      currentDate.setMonth(
-        currentDate.getMonth() - 1
-      );
-
-      renderCalendar();
-
-    }
-  );
-
-}
-
-
-if (nextMonth) {
-
-  nextMonth.addEventListener(
-    "click",
-    function () {
-
-      currentDate.setMonth(
-        currentDate.getMonth() + 1
-      );
-
-      renderCalendar();
-
-    }
-  );
 
 }
 
@@ -616,7 +667,7 @@ function showAppointmentsForDate(
   }
 
 
-  // Sort by time
+  // SORT BY TIME
 
   dateAppointments.sort(
     function (a, b) {
@@ -954,11 +1005,7 @@ function (id) {
 
       <button
         type="button"
-        onclick="showAppointmentDetails(
-          appointments.find(
-            a => a.id === '${appointment.id}'
-          )
-        )"
+        onclick="cancelEdit('${appointment.id}')"
       >
         Cancel
       </button>
@@ -966,6 +1013,34 @@ function (id) {
     </div>
 
   `;
+
+};
+
+
+// ==========================================
+// CANCEL EDIT
+// ==========================================
+
+window.cancelEdit =
+function (id) {
+
+  const appointment =
+    appointments.find(
+      function (item) {
+
+        return item.id === id;
+
+      }
+    );
+
+
+  if (appointment) {
+
+    showAppointmentDetails(
+      appointment
+    );
+
+  }
 
 };
 
@@ -997,47 +1072,91 @@ async function (id) {
   }
 
 
+  const nameInput =
+    document.getElementById(
+      "editName"
+    );
+
+  const phoneInput =
+    document.getElementById(
+      "editPhone"
+    );
+
+  const dateInput =
+    document.getElementById(
+      "editDate"
+    );
+
+  const timeInput =
+    document.getElementById(
+      "editTime"
+    );
+
+  const serviceInput =
+    document.getElementById(
+      "editService"
+    );
+
+  const polishInput =
+    document.getElementById(
+      "editPolish"
+    );
+
+  const designInput =
+    document.getElementById(
+      "editDesign"
+    );
+
+  const notesInput =
+    document.getElementById(
+      "editNotes"
+    );
+
+
+  if (
+    !nameInput ||
+    !phoneInput ||
+    !dateInput ||
+    !timeInput ||
+    !serviceInput ||
+    !polishInput ||
+    !designInput ||
+    !notesInput
+  ) {
+
+    alert(
+      "Could not find the edit fields."
+    );
+
+    return;
+  }
+
+
   const updatedAppointment = {
 
     name:
-      document.getElementById(
-        "editName"
-      ).value.trim(),
+      nameInput.value.trim(),
 
     phone:
-      document.getElementById(
-        "editPhone"
-      ).value.trim(),
+      phoneInput.value.trim(),
 
     date:
-      document.getElementById(
-        "editDate"
-      ).value.trim(),
+      dateInput.value.trim(),
 
     time:
-      document.getElementById(
-        "editTime"
-      ).value.trim(),
+      timeInput.value.trim(),
 
     service:
-      document.getElementById(
-        "editService"
-      ).value.trim(),
+      serviceInput.value.trim(),
 
     polish:
-      document.getElementById(
-        "editPolish"
-      ).value.trim(),
+      polishInput.value.trim(),
 
     design:
-      document.getElementById(
-        "editDesign"
-      ).value.trim(),
+      designInput.value.trim(),
 
     notes:
-      document.getElementById(
-        "editNotes"
-      ).value.trim()
+      notesInput.value.trim()
 
   };
 
@@ -1073,6 +1192,10 @@ async function (id) {
 
 
   await loadAppointments();
+
+
+  selectedDate =
+    updatedAppointment.date;
 
 
   if (selectedDate) {
@@ -1209,7 +1332,10 @@ async function (id) {
 
   const confirmed =
     confirm(
-      `Mark ${appointment.name || "this appointment"} as completed?`
+      `Mark ${
+        appointment.name ||
+        "this appointment"
+      } as completed?`
     );
 
 
