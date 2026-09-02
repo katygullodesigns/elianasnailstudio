@@ -1,3 +1,4 @@
+
 // ==========================================
 // SUPABASE
 // ==========================================
@@ -6,8 +7,7 @@ const SUPABASE_URL =
   "https://kyonstvpolakjhrecqcj.supabase.co";
 
 const SUPABASE_ANON_KEY =
-  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFub24iLCJpYXQiOjE3ODE2OTYxMjUsImV4cCI6MjA5NzI3MjEyNX0.oq6v7gEy8FPh4NI3ngUYybwJcHF6rW6qkNtepCxr7Y";
-
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJreW9uc3R2cG9sYWtqaHJlY3FjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE2OTYxMjUsImV4cCI6MjA5NzI3MjEyNX0.oq6v7gEy8FPh4NI3ngUYybwJcHF6rW6qkNtepCxr7Y";
 const supabaseClient = supabase.createClient(
   SUPABASE_URL,
   SUPABASE_ANON_KEY
@@ -53,16 +53,37 @@ let selectedTime = null;
 
 
 // ==========================================
+// ERROR DISPLAY
+// ==========================================
+
+function showSupabaseError(title, error) {
+
+  console.error(title, error);
+
+  alert(
+    "SUPABASE ERROR\n\n" +
+    "Status: " + (error?.status || "none") + "\n\n" +
+    "Code: " + (error?.code || "none") + "\n\n" +
+    "Message: " + (error?.message || "none") + "\n\n" +
+    "Details: " + (error?.details || "none") + "\n\n" +
+    "Hint: " + (error?.hint || "none")
+  );
+}
+
+
+// ==========================================
 // TIME FUNCTIONS
 // ==========================================
 
 function timeToMinutes(timeString) {
 
-  const [time, modifier] =
-    timeString.split(" ");
+  const parts = timeString.split(" ");
+  const time = parts[0];
+  const modifier = parts[1];
 
-  let [hours, minutes] =
-    time.split(":").map(Number);
+  let timeParts = time.split(":");
+  let hours = Number(timeParts[0]);
+  let minutes = Number(timeParts[1]);
 
   if (modifier === "PM" && hours !== 12) {
     hours += 12;
@@ -78,11 +99,8 @@ function timeToMinutes(timeString) {
 
 function minutesToTime(totalMinutes) {
 
-  let hours =
-    Math.floor(totalMinutes / 60);
-
-  const minutes =
-    totalMinutes % 60;
+  let hours = Math.floor(totalMinutes / 60);
+  const minutes = totalMinutes % 60;
 
   let modifier = "AM";
 
@@ -98,28 +116,25 @@ function minutesToTime(totalMinutes) {
     hours = 12;
   }
 
-  return `${hours}:${String(minutes).padStart(2, "0")} ${modifier}`;
-}
-
-
-function isPastDateTime(dateString, timeString) {
-
-  const appointmentDate =
-    new Date(
-      `${dateString}T${convertTo24Hour(timeString)}:00`
-    );
-
-  return appointmentDate < new Date();
+  return (
+    hours +
+    ":" +
+    String(minutes).padStart(2, "0") +
+    " " +
+    modifier
+  );
 }
 
 
 function convertTo24Hour(timeString) {
 
-  const [time, modifier] =
-    timeString.split(" ");
+  const parts = timeString.split(" ");
+  const time = parts[0];
+  const modifier = parts[1];
 
-  let [hours, minutes] =
-    time.split(":").map(Number);
+  let timeParts = time.split(":");
+  let hours = Number(timeParts[0]);
+  let minutes = Number(timeParts[1]);
 
   if (modifier === "PM" && hours !== 12) {
     hours += 12;
@@ -129,7 +144,24 @@ function convertTo24Hour(timeString) {
     hours = 0;
   }
 
-  return `${String(hours).padStart(2, "0")}:${String(minutes).padStart(2, "0")}`;
+  return (
+    String(hours).padStart(2, "0") +
+    ":" +
+    String(minutes).padStart(2, "0")
+  );
+}
+
+
+function isPastDateTime(dateString, timeString) {
+
+  const appointmentDate = new Date(
+    dateString +
+    "T" +
+    convertTo24Hour(timeString) +
+    ":00"
+  );
+
+  return appointmentDate < new Date();
 }
 
 
@@ -139,20 +171,37 @@ function convertTo24Hour(timeString) {
 
 async function getCurrentUser() {
 
-  const {
-    data,
-    error
-  } = await supabaseClient.auth.getSession();
+  const result =
+    await supabaseClient.auth.getSession();
 
-  console.log("MY APPOINTMENTS SESSION:", data?.session);
-  console.log("MY APPOINTMENTS SESSION ERROR:", error);
+  const data = result.data;
+  const error = result.error;
+
+  console.log(
+    "MY APPOINTMENTS SESSION:",
+    data?.session
+  );
 
   if (error) {
-    console.error("Session error:", error);
+
+    showSupabaseError(
+      "SESSION ERROR",
+      error
+    );
+
     return null;
   }
 
-  return data?.session?.user || null;
+  if (!data?.session) {
+
+    console.error(
+      "NO SUPABASE SESSION FOUND"
+    );
+
+    return null;
+  }
+
+  return data.session.user;
 }
 
 
@@ -172,26 +221,25 @@ async function loadMyAppointments(user) {
   container.innerHTML =
     "<p>Loading appointments...</p>";
 
+  const result =
+    await supabaseClient
+      .from("appointments")
+      .select("*")
+      .eq("user_id", user.id)
+      .order("date", {
+        ascending: true
+      })
+      .order("time", {
+        ascending: true
+      });
 
-  const {
-    data,
-    error
-  } = await supabaseClient
-    .from("appointments")
-    .select("*")
-    .eq("user_id", user.id)
-    .order("date", {
-      ascending: true
-    })
-    .order("time", {
-      ascending: true
-    });
-
+  const data = result.data;
+  const error = result.error;
 
   if (error) {
 
-    console.error(
-      "APPOINTMENTS ERROR:",
+    showSupabaseError(
+      "LOADING APPOINTMENTS",
       error
     );
 
@@ -201,7 +249,6 @@ async function loadMyAppointments(user) {
     return;
   }
 
-
   if (!data || data.length === 0) {
 
     container.innerHTML =
@@ -210,9 +257,7 @@ async function loadMyAppointments(user) {
     return;
   }
 
-
   container.innerHTML = "";
-
 
   data.forEach(function (appointment) {
 
@@ -222,10 +267,8 @@ async function loadMyAppointments(user) {
     card.className =
       "appointment-card";
 
-
     let formattedDate =
       appointment.date || "";
-
 
     if (appointment.date) {
 
@@ -248,7 +291,6 @@ async function loadMyAppointments(user) {
           );
       }
     }
-
 
     card.innerHTML = `
       <h3>${appointment.service || "Appointment"}</h3>
@@ -293,30 +335,29 @@ async function loadMyAppointments(user) {
 
 
 // ==========================================
-// GET BOOKED TIMES FOR A DATE
+// GET BOOKED APPOINTMENTS
 // ==========================================
 
 async function getBookedAppointments(dateString) {
 
-  const {
-    data,
-    error
-  } = await supabaseClient
-    .from("appointments")
-    .select("*")
-    .eq("date", dateString);
+  const result =
+    await supabaseClient
+      .from("appointments")
+      .select("*")
+      .eq("date", dateString);
 
+  const data = result.data;
+  const error = result.error;
 
   if (error) {
 
-    console.error(
-      "BOOKED APPOINTMENTS ERROR:",
+    showSupabaseError(
+      "GET BOOKED APPOINTMENTS",
       error
     );
 
     return [];
   }
-
 
   return data || [];
 }
@@ -335,27 +376,22 @@ async function loadTimes(dateString) {
     return;
   }
 
-
   timeSlots.innerHTML =
     "<p>Loading times...</p>";
 
   selectedTime = null;
 
-
   const appointments =
-    await getBookedAppointments(dateString);
-
+    await getBookedAppointments(
+      dateString
+    );
 
   const bookedTimes = [];
-
 
   appointments.forEach(function (appointment) {
 
     let blocked =
-      appointment.blocked_times ||
-      appointment.blockedTimes ||
-      [];
-
+      appointment.blocked_times || [];
 
     if (typeof blocked === "string") {
 
@@ -366,20 +402,15 @@ async function loadTimes(dateString) {
       }
     }
 
-
     if (Array.isArray(blocked)) {
 
       blocked.forEach(function (time) {
-
         bookedTimes.push(time);
-
       });
     }
   });
 
-
   timeSlots.innerHTML = "";
-
 
   allTimes.forEach(function (time) {
 
@@ -393,30 +424,33 @@ async function loadTimes(dateString) {
     button.className =
       "time-slot";
 
-
-    // Already booked
     if (bookedTimes.includes(time)) {
 
       button.disabled = true;
 
       button.classList.add("booked");
 
+      timeSlots.appendChild(button);
+
       return;
     }
 
-
-    // Past time today
-    if (isPastDateTime(dateString, time)) {
+    if (
+      isPastDateTime(
+        dateString,
+        time
+      )
+    ) {
 
       button.disabled = true;
 
       button.classList.add("booked");
 
+      timeSlots.appendChild(button);
+
       return;
     }
 
-
-    // Available time
     button.addEventListener(
       "click",
       function () {
@@ -425,12 +459,15 @@ async function loadTimes(dateString) {
           .querySelectorAll(".time-slot")
           .forEach(function (btn) {
 
-            btn.classList.remove("selected");
+            btn.classList.remove(
+              "selected"
+            );
 
           });
 
-
-        button.classList.add("selected");
+        button.classList.add(
+          "selected"
+        );
 
         selectedTime = time;
 
@@ -441,12 +478,12 @@ async function loadTimes(dateString) {
       }
     );
 
-
     timeSlots.appendChild(button);
   });
 
-
-  if (timeSlots.children.length === 0) {
+  if (
+    timeSlots.children.length === 0
+  ) {
 
     timeSlots.innerHTML =
       "<p>No times available for this date.</p>";
@@ -455,34 +492,40 @@ async function loadTimes(dateString) {
 
 
 // ==========================================
-// INITIALIZE CALENDAR
+// CALENDAR
 // ==========================================
 
 function initializeCalendar() {
 
   const dateInput =
-    document.getElementById("appointmentDate");
-
+    document.getElementById(
+      "appointmentDate"
+    );
 
   if (!dateInput) {
 
     console.error(
-      "appointmentDate input was not found."
+      "appointmentDate input not found."
     );
 
     return;
   }
 
-
-  if (typeof flatpickr === "undefined") {
+  if (
+    typeof flatpickr ===
+    "undefined"
+  ) {
 
     console.error(
-      "Flatpickr is not loaded."
+      "Flatpickr is NOT loaded."
+    );
+
+    alert(
+      "Calendar could not load because Flatpickr is missing."
     );
 
     return;
   }
-
 
   flatpickr(
     dateInput,
@@ -492,7 +535,6 @@ function initializeCalendar() {
 
       minDate: "today",
 
-      // BLOCK SUNDAYS
       disable: [
         function (date) {
           return date.getDay() === 0;
@@ -505,15 +547,16 @@ function initializeCalendar() {
           dateStr
         ) {
 
-          selectedDate = dateStr;
+          selectedDate =
+            dateStr;
 
-          selectedTime = null;
+          selectedTime =
+            null;
 
           console.log(
             "Selected date:",
             selectedDate
           );
-
 
           await loadTimes(
             selectedDate
@@ -522,9 +565,8 @@ function initializeCalendar() {
     }
   );
 
-
   console.log(
-    "Calendar initialized successfully."
+    "CALENDAR INITIALIZED"
   );
 }
 
@@ -540,14 +582,8 @@ window.bookAppointment =
       "BOOK APPOINTMENT CLICKED"
     );
 
-
-    // --------------------------------------
-    // CHECK LOGIN
-    // --------------------------------------
-
     const user =
       await getCurrentUser();
-
 
     if (!user) {
 
@@ -561,45 +597,42 @@ window.bookAppointment =
       return;
     }
 
-
-    // --------------------------------------
-    // GET FORM VALUES
-    // --------------------------------------
+    console.log(
+      "BOOKING USER:",
+      user.id
+    );
 
     const name =
       document
         .getElementById("clientName")
-        ?.value.trim();
-
+        .value
+        .trim();
 
     const phone =
       document
         .getElementById("clientPhone")
-        ?.value.trim();
-
+        .value
+        .trim();
 
     const service =
       document
         .getElementById("serviceSelect")
-        ?.value;
-
+        .value;
 
     const polish =
       document
         .getElementById("polishSelect")
-        ?.value;
-
+        .value;
 
     const design =
       document
         .getElementById("designSelect")
-        ?.value;
-
+        .value;
 
     const additionalService =
       document
         .getElementById("additionalServiceSelect")
-        ?.value;
+        .value;
 
 
     // --------------------------------------
@@ -608,63 +641,66 @@ window.bookAppointment =
 
     if (!name) {
 
-      alert("Please enter your name.");
+      alert(
+        "Please enter your name."
+      );
 
       return;
     }
-
 
     if (!phone) {
 
-      alert("Please enter your phone number.");
+      alert(
+        "Please enter your phone number."
+      );
 
       return;
     }
-
 
     if (!selectedDate) {
 
-      alert("Please select a date.");
+      alert(
+        "Please select a date."
+      );
 
       return;
     }
-
 
     if (!selectedTime) {
 
-      alert("Please select a time.");
+      alert(
+        "Please select a time."
+      );
 
       return;
     }
-
 
     if (!service) {
 
-      alert("Please select a service.");
+      alert(
+        "Please select a service."
+      );
 
       return;
     }
-
 
     if (!polish) {
 
-      alert("Please select a polish.");
+      alert(
+        "Please select a polish."
+      );
 
       return;
     }
-
 
     if (!design) {
 
-      alert("Please select a design.");
+      alert(
+        "Please select a design."
+      );
 
       return;
     }
-
-
-    // --------------------------------------
-    // CHECK PAST TIME
-    // --------------------------------------
 
     if (
       isPastDateTime(
@@ -692,32 +728,33 @@ window.bookAppointment =
         durations[design] || 0
       );
 
-
-    // Additional service
     if (
       additionalService &&
       additionalService !== "No"
     ) {
 
       duration +=
-        durations[additionalService] || 0;
+        durations[
+          additionalService
+        ] || 0;
     }
 
 
     // --------------------------------------
-    // CREATE BLOCKED TIMES
+    // CALCULATE BLOCKED TIMES
     // --------------------------------------
 
     const startMinutes =
-      timeToMinutes(selectedTime);
-
+      timeToMinutes(
+        selectedTime
+      );
 
     const numberOfSlots =
-      Math.ceil(duration * 2);
-
+      Math.ceil(
+        duration * 2
+      );
 
     const timesToBook = [];
-
 
     for (
       let i = 0;
@@ -727,7 +764,8 @@ window.bookAppointment =
 
       timesToBook.push(
         minutesToTime(
-          startMinutes + i * 30
+          startMinutes +
+          i * 30
         )
       );
     }
@@ -742,27 +780,25 @@ window.bookAppointment =
         selectedDate
       );
 
-
     let conflict = false;
-
 
     existingAppointments.forEach(
       function (appointment) {
 
         let blocked =
-          appointment.blocked_times ||
-          appointment.blockedTimes ||
-          [];
-
+          appointment.blocked_times || [];
 
         if (
-          typeof blocked === "string"
+          typeof blocked ===
+          "string"
         ) {
 
           try {
 
             blocked =
-              JSON.parse(blocked);
+              JSON.parse(
+                blocked
+              );
 
           } catch (error) {
 
@@ -770,13 +806,11 @@ window.bookAppointment =
           }
         }
 
-
         if (
           !Array.isArray(blocked)
         ) {
           return;
         }
-
 
         timesToBook.forEach(
           function (time) {
@@ -791,7 +825,6 @@ window.bookAppointment =
         );
       }
     );
-
 
     if (conflict) {
 
@@ -808,49 +841,65 @@ window.bookAppointment =
 
 
     // --------------------------------------
-    // SAVE TO SUPABASE
+    // INSERT APPOINTMENT
     // --------------------------------------
 
-    const {
-      data,
-      error
-    } = await supabaseClient
-      .from("appointments")
-      .insert([{
+    console.log(
+      "SENDING APPOINTMENT TO SUPABASE..."
+    );
 
-        user_id: user.id,
+    const result =
+      await supabaseClient
+        .from("appointments")
+        .insert([{
 
-        name: name,
+          user_id:
+            user.id,
 
-        phone: phone,
+          name:
+            name,
 
-        date: selectedDate,
+          phone:
+            phone,
 
-        time: selectedTime,
+          date:
+            selectedDate,
 
-        duration: duration,
+          time:
+            selectedTime,
 
-        blocked_times: timesToBook,
+          duration:
+            duration,
 
-        service: service,
+          blocked_times:
+            timesToBook,
 
-        polish: polish,
+          service:
+            service,
 
-        design: design,
+          polish:
+            polish,
 
-        notes:
-          additionalService &&
-          additionalService !== "No"
-            ? `Additional service: ${additionalService}`
-            : "",
+          design:
+            design,
 
-        status: "active",
+          notes:
+            additionalService &&
+            additionalService !== "No"
+              ? `Additional service: ${additionalService}`
+              : "",
 
-        created_at:
-          new Date().toISOString()
+          status:
+            "active",
 
-      }])
-      .select();
+          created_at:
+            new Date().toISOString()
+
+        }])
+        .select();
+
+    const data = result.data;
+    const error = result.error;
 
 
     // --------------------------------------
@@ -859,34 +908,28 @@ window.bookAppointment =
 
     if (error) {
 
-      console.error(
-        "SUPABASE BOOKING ERROR:",
+      showSupabaseError(
+        "SUPABASE BOOKING ERROR",
         error
-      );
-
-      alert(
-        "There was a problem booking your appointment. Please try again."
       );
 
       return;
     }
 
 
+    // --------------------------------------
+    // SUCCESS
+    // --------------------------------------
+
     console.log(
       "APPOINTMENT CREATED:",
       data
     );
 
-
-    // --------------------------------------
-    // SUCCESS POPUP
-    // --------------------------------------
-
     const popup =
       document.getElementById(
         "bookingPopup"
       );
-
 
     if (popup) {
 
@@ -905,81 +948,57 @@ window.bookAppointment =
     // CLEAR FORM
     // --------------------------------------
 
-    const clientName =
-      document.getElementById(
+    document
+      .getElementById(
         "clientName"
-      );
+      )
+      .value = "";
 
-    const clientPhone =
-      document.getElementById(
+    document
+      .getElementById(
         "clientPhone"
-      );
+      )
+      .value = "";
 
-    const serviceSelect =
-      document.getElementById(
+    document
+      .getElementById(
         "serviceSelect"
-      );
+      )
+      .selectedIndex = 0;
 
-    const polishSelect =
-      document.getElementById(
+    document
+      .getElementById(
         "polishSelect"
-      );
+      )
+      .selectedIndex = 0;
 
-    const designSelect =
-      document.getElementById(
+    document
+      .getElementById(
         "designSelect"
-      );
+      )
+      .selectedIndex = 0;
 
-    const additionalServiceSelect =
-      document.getElementById(
+    document
+      .getElementById(
         "additionalServiceSelect"
-      );
-
-
-    if (clientName) {
-      clientName.value = "";
-    }
-
-    if (clientPhone) {
-      clientPhone.value = "";
-    }
-
-    if (serviceSelect) {
-      serviceSelect.selectedIndex = 0;
-    }
-
-    if (polishSelect) {
-      polishSelect.selectedIndex = 0;
-    }
-
-    if (designSelect) {
-      designSelect.selectedIndex = 0;
-    }
-
-    if (additionalServiceSelect) {
-      additionalServiceSelect.selectedIndex = 0;
-    }
-
+      )
+      .selectedIndex = 0;
 
     selectedDate = null;
-
     selectedTime = null;
-
 
     const timeSlots =
       document.getElementById(
         "timeSlots"
       );
 
-
     if (timeSlots) {
-
       timeSlots.innerHTML = "";
     }
 
-
-    // Refresh customer's appointments
-    await loadMyAppointments(user);
+    await loadMyAppointments(
+      user
+    );
   };
 
 
@@ -995,6 +1014,25 @@ window.closePopup =
         "bookingPopup"
       );
 
+    if (popup) {
+
+      popup.style.display =
+        "none";
+    }
+  };
+
+
+// ==========================================
+// ADDITIONAL SERVICE POPUP
+// ==========================================
+
+window.saveAdditionalServiceOptions =
+  function () {
+
+    const popup =
+      document.getElementById(
+        "additionalServicePopup"
+      );
 
     if (popup) {
 
@@ -1010,25 +1048,22 @@ window.closePopup =
 
 async function logout() {
 
-  const {
-    error
-  } = await supabaseClient.auth.signOut();
+  const result =
+    await supabaseClient
+      .auth
+      .signOut();
 
+  const error = result.error;
 
   if (error) {
 
-    console.error(
-      "LOGOUT ERROR:",
+    showSupabaseError(
+      "LOGOUT ERROR",
       error
-    );
-
-    alert(
-      "There was a problem logging out. Please try again."
     );
 
     return;
   }
-
 
   window.location.href =
     "login.html";
@@ -1047,14 +1082,8 @@ document.addEventListener(
       "MY APPOINTMENTS PAGE LOADED"
     );
 
-
-    // --------------------------------------
-    // GET USER
-    // --------------------------------------
-
     const user =
       await getCurrentUser();
-
 
     if (!user) {
 
@@ -1070,14 +1099,13 @@ document.addEventListener(
 
 
     // --------------------------------------
-    // SHOW EMAIL
+    // EMAIL
     // --------------------------------------
 
     const userEmail =
       document.getElementById(
         "userEmail"
       );
-
 
     if (userEmail) {
 
@@ -1103,14 +1131,13 @@ document.addEventListener(
 
 
     // --------------------------------------
-    // LOGOUT BUTTON
+    // LOGOUT
     // --------------------------------------
 
     const logoutBtn =
       document.getElementById(
         "logoutBtn"
       );
-
 
     if (logoutBtn) {
 
