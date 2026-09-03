@@ -374,7 +374,6 @@ async function loadAppointments() {
 
 }
 
-
 // ==========================================
 // RENDER CALENDAR
 // ==========================================
@@ -405,8 +404,7 @@ function renderCalendar() {
   }
 
 
-  calendarGrid.innerHTML =
-    "";
+  calendarGrid.innerHTML = "";
 
 
   const year =
@@ -432,6 +430,10 @@ function renderCalendar() {
     ).getDate();
 
 
+  // --------------------------------------
+  // MONTH / YEAR TITLE
+  // --------------------------------------
+
   monthYear.textContent =
     new Date(
       year,
@@ -446,7 +448,9 @@ function renderCalendar() {
     );
 
 
-  // EMPTY DAYS
+  // --------------------------------------
+  // EMPTY DAYS BEFORE MONTH STARTS
+  // --------------------------------------
 
   for (
     let i = 0;
@@ -465,11 +469,12 @@ function renderCalendar() {
     calendarGrid.appendChild(
       emptyDay
     );
-
   }
 
 
+  // --------------------------------------
   // ACTUAL DAYS
+  // --------------------------------------
 
   for (
     let day = 1;
@@ -482,10 +487,13 @@ function renderCalendar() {
         "div"
       );
 
-
     cell.className =
       "calendar-day";
 
+
+    // ------------------------------------
+    // DATE STRING
+    // ------------------------------------
 
     const dateString =
       `${year}-${String(
@@ -495,11 +503,9 @@ function renderCalendar() {
       ).padStart(2, "0")}`;
 
 
-    cell.textContent =
-      day;
-
-
-    // APPOINTMENTS ON THIS DATE
+    // ------------------------------------
+    // FIND APPOINTMENTS FOR THIS DAY
+    // ------------------------------------
 
     const dayAppointments =
       appointments.filter(
@@ -514,19 +520,67 @@ function renderCalendar() {
       );
 
 
+    const appointmentCount =
+      dayAppointments.length;
+
+
+    // ------------------------------------
+    // DAY NUMBER
+    // ------------------------------------
+
+    const dayNumber =
+      document.createElement(
+        "div"
+      );
+
+    dayNumber.className =
+      "calendar-day-number";
+
+    dayNumber.textContent =
+      day;
+
+
+    cell.appendChild(
+      dayNumber
+    );
+
+
+    // ------------------------------------
+    // APPOINTMENT COUNT
+    // ------------------------------------
+
     if (
-      dayAppointments.length >
-      0
+      appointmentCount > 0
     ) {
+
+      const count =
+        document.createElement(
+          "div"
+        );
+
+      count.className =
+        "appointment-count";
+
+      count.textContent =
+        appointmentCount === 1
+          ? "1"
+          : `${appointmentCount}`;
+
+
+      cell.appendChild(
+        count
+      );
+
 
       cell.classList.add(
         "has-appointments"
       );
-
     }
 
 
+    // ------------------------------------
     // SELECTED DATE
+    // ------------------------------------
 
     if (
       selectedDate ===
@@ -536,11 +590,12 @@ function renderCalendar() {
       cell.classList.add(
         "selected"
       );
-
     }
 
 
+    // ------------------------------------
     // CLICK DATE
+    // ------------------------------------
 
     cell.addEventListener(
       "click",
@@ -581,11 +636,9 @@ function renderCalendar() {
     calendarGrid.appendChild(
       cell
     );
-
   }
 
 }
-
 
 // ==========================================
 // SHOW APPOINTMENTS FOR DATE
