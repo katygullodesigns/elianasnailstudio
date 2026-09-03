@@ -1,143 +1,231 @@
-
 <!DOCTYPE html>
 <html lang="en">
 
- <head>
+<head>
+
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta http-equiv="Content-Security-Policy" content="
-default-src 'self' https:;
-script-src 'self' 'unsafe-inline' https://www.gstatic.com https://cdn.jsdelivr.net;
-connect-src 'self' https://*.supabase.co https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://firestore.googleapis.com https://www.googleapis.com https://www.gstatic.com;
-style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://fonts.googleapis.com;
-font-src 'self' https://fonts.gstatic.com;
-img-src 'self' data: https:;
-">
-  <title>Eliana's Nail Studio</title>
-  <link rel="stylesheet" href="styles.css">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;600&family=Pinyon+Script&display=swap" rel="stylesheet">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <meta
+    http-equiv="Content-Security-Policy"
+    content="
+      default-src 'self' https:;
+      script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net;
+      connect-src 'self' https://*.supabase.co;
+      style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
+      font-src 'self' https://fonts.gstatic.com;
+      img-src 'self' data: https:;
+    "
+  >
+
+  <title>Eliana's Nails - Owner</title>
+
+  <link
+    rel="stylesheet"
+    href="styles.css"
+  >
+
+  <link
+    rel="preconnect"
+    href="https://fonts.googleapis.com"
+  >
+
+  <link
+    href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;600&family=Pinyon+Script&display=swap"
+    rel="stylesheet"
+  >
+
 </head>
 
 
+<body class="owner-page">
 
-<body>
+
+  <!-- OWNER NAVIGATION -->
+
+  <header>
+
+    <nav>
+
+      <a href="appointments.html">
+        <u>Current</u>
+      </a>
+
+      <a href="apptpast.html">
+        Past
+      </a>
+
+    </nav>
+
+  </header>
+
 
   <div class="background"></div>
 
 
+  <!-- OWNER APPOINTMENT MANAGER -->
+
   <section class="booking">
 
-    <h2>My Appointments</h2>
 
-    <p id="userEmail"></p>
+    <h2>
+      Appointment Manager
+    </h2>
 
 
-    <div id="appointments">
+    <p
+      id="appointmentCounter"
+      class="appointment-counter"
+    >
+      Total Appointments: 0
+    </p>
 
-      <p>Loading appointments...</p>
+
+    <div class="calendar-layout">
+
+
+      <!-- CALENDAR -->
+
+      <div class="calendar-panel">
+
+        <div class="calendar-header">
+
+          <button
+            id="prevMonth"
+            type="button"
+          >
+            &lt;
+          </button>
+
+
+          <h3 id="monthYear">
+            Loading...
+          </h3>
+
+
+          <button
+            id="nextMonth"
+            type="button"
+          >
+            &gt;
+          </button>
+
+        </div>
+
+
+        <div class="calendar-weekdays">
+
+          <div>Sun</div>
+          <div>Mon</div>
+          <div>Tue</div>
+          <div>Wed</div>
+          <div>Thu</div>
+          <div>Fri</div>
+          <div>Sat</div>
+
+        </div>
+
+
+        <div
+          id="calendarGrid"
+          class="calendar-grid"
+        >
+
+          <p>
+            Loading calendar...
+          </p>
+
+        </div>
+
+      </div>
+
+
+      <!-- DAILY APPOINTMENTS -->
+
+      <div class="appointments-panel">
+
+        <h3 id="selectedDateTitle">
+          Select a Day
+        </h3>
+
+
+        <div id="dailyAppointments">
+
+          <p class="no-selection">
+            Click a date on the calendar to see
+            appointments.
+          </p>
+
+        </div>
+
+      </div>
+
+
+      <!-- APPOINTMENT DETAILS -->
+
+      <div class="details-panel">
+
+        <h3>
+          Appointment Details
+        </h3>
+
+
+        <div id="appointmentDetails">
+
+          <p class="no-selection">
+            Select an appointment.
+          </p>
+
+        </div>
+
+      </div>
 
     </div>
-    <section id="book" class="booking">
 
-  <div class="booking-layout">
-
-    <div class="work">
-      <img src="images/elianawork.svg" alt="Eliana">
-    </div>
-
-    <div class="booking-form">
-      <h2>Book</h2>
-
-      <input type="text" id="clientName" placeholder="Name">
-
-      <input type="tel" id="clientPhone" placeholder="Phone">
-
-      <input type="text" id="appointmentDate" placeholder="Select Date">
-
-      <div id="timeSlots" class="time-slots"></div>
-
-      <select id="serviceSelect">
-        <option value="">Service</option>
-        <option>Manicure</option>
-        <option>Pedicure</option>
-      </select>
-
-      <select id="polishSelect">
-        <option value="">Polish</option>
-        <option>Gel</option>
-        <option>Acrylic</option>
-      </select>
-
-      <select id="designSelect">
-        <option value="">Design</option>
-        <option>Basic</option>
-        <option>Minimal Design</option>
-        <option>Max Design</option>
-      </select>
-      
-<select id="additionalServiceSelect">
-  <option value="No">Additional Services</option>
-  <option>Manicure</option>
-  <option>Pedicure</option>
-  <option>No</option>
-</select>
-
-      <button onclick="bookAppointment()">Book Appointment</button>
-
-      <p id="message"></p>
-    </div>
-
-  </div>
-
-  <div id="bookingPopup" class="popup">
-  <div class="popup-box">
-    <h2>Appointment Booked!</h2>
-    <p>Your appointment has been successfully scheduled.</p>
-    <button onclick="closePopup()">OK</button>
-  </div>
-</div>
-
-<div id="additionalServicePopup" class="popup">
-  <div class="popup-box">
-    <h2>Additional Service Details</h2>
-
-    <select id="additionalPolishSelect">
-      <option value="">Additional Polish</option>
-      <option>Gel</option>
-      <option>Acrylic</option>
-    </select>
-
-    <select id="additionalDesignSelect">
-      <option value="">Additional Design</option>
-      <option>Basic</option>
-      <option>Minimal Design</option>
-      <option>Max Design</option>
-    </select>
-
-    <button type="button" onclick="saveAdditionalServiceOptions()">Save</button>
-</div>
-  </div>
-  
-</section>
 
     <br>
 
-    <button id="logoutBtn" type="button">
+
+    <!-- LOGOUT -->
+
+    <button
+      id="logoutBtn"
+      type="button"
+    >
       Logout
     </button>
 
 
     <br><br>
 
-    <a href="index.html" class="back-link">
+
+    <a
+      href="index.html"
+      class="back-link"
+    >
       Back to Website
     </a>
 
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
-<script src="myappointments.js?v=6"></script>
+  </section>
+
+
+  <!-- SUPABASE -->
+
+  <script
+    src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"
+  ></script>
+
+
+  <!-- OWNER APPOINTMENT JAVASCRIPT -->
+
+  <script src="appointments.js?v=5"></script>
+
+
+</body>
 
 </html>
