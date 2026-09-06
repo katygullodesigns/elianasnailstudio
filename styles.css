@@ -301,6 +301,14 @@ h3 {
   width: 100%;
 }
 
+.booking-layout-myappt {
+  display: flex;
+  align-items: left;
+  justify-content: left;
+  width: 100%;
+  margin-left: 8%;
+}
+
 .work {
   flex: 1.8;
   display: flex;
@@ -1065,6 +1073,12 @@ footer a:hover {
     flex-direction: column;
     gap: 40px;
   }
+
+  .booking-layout-myappt {
+ 
+  width: 90%;
+  margin-left: 8%;
+}
 
   .booking-form {
     width: 100%;
