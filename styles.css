@@ -378,10 +378,251 @@ h3 {
   opacity: 0.4;
   cursor: not-allowed;
 }
+/* ==========================================
+   SERVICE SELECTION
+   ========================================== */
+
+.additional-services-section {
+  width: 100%;
+  margin-bottom: 15px;
+}
 
 
+/* ADDITIONAL SERVICE BUTTON */
 
-/* POPUP */
+.additional-service-btn {
+  width: 100%;
+  padding: 14px;
+  margin-bottom: 10px;
+
+  background: transparent !important;
+  border: 1px solid #d78b9c !important;
+  color: #f0b2b2 !important;
+
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 18px;
+
+  cursor: pointer;
+  transition: 0.3s ease;
+}
+
+.additional-service-btn:hover {
+  background: rgba(215, 139, 156, 0.15) !important;
+  color: white !important;
+}
+
+
+/* SELECTED ADDITIONAL SERVICES */
+
+.selected-additional-services {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+}
+
+
+.selected-additional-service {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  width: 100%;
+  padding: 12px 14px;
+
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(215, 139, 156, 0.45);
+  border-radius: 10px;
+
+  color: #f0b2b2;
+}
+
+
+.additional-service-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  text-align: left;
+}
+
+
+.additional-service-info strong {
+  color: white;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+
+.additional-service-info span {
+  color: #f2a3b4;
+  font-size: 15px;
+  opacity: 0.85;
+}
+
+
+.selected-additional-service > button {
+  width: auto !important;
+
+  margin: 0 !important;
+  padding: 2px 8px !important;
+
+  background: transparent !important;
+  border: none !important;
+
+  color: #f2a3b4 !important;
+  font-size: 24px;
+
+  cursor: pointer;
+}
+
+
+.selected-additional-service > button:hover {
+  background: transparent !important;
+  color: white !important;
+}
+
+
+/* ==========================================
+   ADDITIONAL SERVICE POPUP
+   ========================================== */
+
+.additional-service-box {
+  width: min(90%, 500px);
+  max-width: 500px;
+
+  padding: 35px;
+
+  text-align: left;
+}
+
+
+.additional-service-box h2 {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+
+.additional-service-box label {
+  display: block;
+
+  margin: 15px 0 7px;
+
+  color: #f2a3b4;
+  font-size: 18px;
+}
+
+
+.additional-service-box select,
+.additional-service-box textarea {
+  width: 100%;
+
+  padding: 13px;
+
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(215, 139, 156, 0.6);
+  border-radius: 8px;
+
+  color: white;
+
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 17px;
+
+  outline: none;
+}
+
+
+.additional-service-box select:focus,
+.additional-service-box textarea:focus {
+  border-color: #f2a3b4;
+}
+
+
+.additional-service-box textarea {
+  resize: vertical;
+  min-height: 90px;
+}
+
+
+.additional-service-box option {
+  background: #1a0000;
+  color: white;
+}
+
+
+/* POPUP BUTTONS */
+
+.additional-service-buttons {
+  display: flex;
+  gap: 12px;
+
+  margin-top: 25px;
+}
+
+
+.additional-service-buttons button {
+  flex: 1;
+
+  margin: 0 !important;
+
+  padding: 13px;
+
+  border-radius: 8px;
+}
+
+
+/* CANCEL BUTTON */
+
+.additional-service-buttons button:first-child {
+  background: transparent !important;
+  border: 1px solid #d78b9c !important;
+  color: #f2a3b4 !important;
+}
+
+
+.additional-service-buttons button:first-child:hover {
+  background: rgba(215, 139, 156, 0.15) !important;
+}
+
+
+/* ADD SERVICE BUTTON */
+
+.additional-service-buttons button:last-child {
+  background: #d78b9c !important;
+  color: black !important;
+}
+
+
+.additional-service-buttons button:last-child:hover {
+  background: #f0b2b2 !important;
+}
+
+
+/* POPUP CLOSE X */
+
+.popup-close {
+  position: absolute;
+
+  top: 12px;
+  right: 18px;
+
+  background: transparent !important;
+  border: none !important;
+
+  color: #f2a3b4 !important;
+
+  font-size: 30px;
+
+  padding: 0 !important;
+  margin: 0 !important;
+
+  cursor: pointer;
+}
+
+
+.popup-close:hover {
+  background: transparent !important;
+  color: white !important;
+}
 
 .popup {
   display: none;
