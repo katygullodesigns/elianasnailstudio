@@ -1,3 +1,4 @@
+document.addEventListener("DOMContentLoaded", function () {
 const SUPABASE_URL =
   "https://kyonstvpolakjhrecqcj.supabase.co";
 
