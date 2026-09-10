@@ -616,13 +616,15 @@ document.addEventListener(
 let selectedAdditionalServices = [];
 
 
-// OPEN POPUP
+// ==========================================
+// OPEN ADDITIONAL SERVICE POPUP
+// ==========================================
+
 window.openAdditionalServicePopup = function () {
 
-  const popup =
-    document.getElementById(
-      "additionalServicePopup"
-    );
+  const popup = document.getElementById(
+    "additionalServicePopup"
+  );
 
   if (popup) {
     popup.style.display = "flex";
@@ -631,13 +633,15 @@ window.openAdditionalServicePopup = function () {
 };
 
 
-// CLOSE POPUP
+// ==========================================
+// CLOSE ADDITIONAL SERVICE POPUP
+// ==========================================
+
 window.closeAdditionalServicePopup = function () {
 
-  const popup =
-    document.getElementById(
-      "additionalServicePopup"
-    );
+  const popup = document.getElementById(
+    "additionalServicePopup"
+  );
 
   if (popup) {
     popup.style.display = "none";
@@ -646,28 +650,46 @@ window.closeAdditionalServicePopup = function () {
 };
 
 
+// ==========================================
 // SAVE ADDITIONAL SERVICE
+// ==========================================
+
 window.saveAdditionalServiceOptions = function () {
 
+  const serviceElement =
+    document.getElementById("additionalServiceType");
+
+  const polishElement =
+    document.getElementById("additionalPolishSelect");
+
+  const designElement =
+    document.getElementById("additionalDesignSelect");
+
+  const detailsElement =
+    document.getElementById("additionalDesignDetails");
+
+
+  if (!serviceElement) {
+    console.error(
+      "additionalServiceType element not found"
+    );
+    return;
+  }
+
+
   const service =
-    document.getElementById(
-      "additionalServiceType"
-    ).value;
+    serviceElement.value;
 
   const polish =
-    document.getElementById(
-      "additionalPolishSelect"
-    ).value;
+    polishElement ? polishElement.value : "";
 
   const design =
-    document.getElementById(
-      "additionalDesignSelect"
-    ).value;
+    designElement ? designElement.value : "";
 
   const designDetails =
-    document.getElementById(
-      "additionalDesignDetails"
-    ).value.trim();
+    detailsElement
+      ? detailsElement.value.trim()
+      : "";
 
 
   if (!service) {
@@ -684,15 +706,12 @@ window.saveAdditionalServiceOptions = function () {
   selectedAdditionalServices.push({
 
     service: service,
-  
+
     polish: polish,
 
     design: design,
 
-    additional_services:
-      selectedAdditionalServices,
-
-    notes: "",
+    designDetails: designDetails
 
   });
 
@@ -701,35 +720,38 @@ window.saveAdditionalServiceOptions = function () {
 
 
   // CLEAR POPUP
-  document.getElementById(
-    "additionalServiceType"
-  ).value = "";
 
-  document.getElementById(
-    "additionalPolishSelect"
-  ).value = "";
+  serviceElement.value = "";
 
-  document.getElementById(
-    "additionalDesignSelect"
-  ).value = "";
+  if (polishElement) {
+    polishElement.value = "";
+  }
 
-  document.getElementById(
-    "additionalDesignDetails"
-  ).value = "";
+  if (designElement) {
+    designElement.value = "";
+  }
+
+  if (detailsElement) {
+    detailsElement.value = "";
+  }
 
 
-  closeAdditionalServicePopup();
+  window.closeAdditionalServicePopup();
 
 };
 
 
+// ==========================================
 // DISPLAY SELECTED SERVICES
+// ==========================================
+
 function renderAdditionalServices() {
 
   const container =
     document.getElementById(
       "selectedAdditionalServices"
     );
+
 
   if (!container) return;
 
@@ -743,11 +765,12 @@ function renderAdditionalServices() {
       const service =
         document.createElement("div");
 
+
       service.className =
         "selected-additional-service";
 
 
-      let details = item.service;
+      let details = "";
 
 
       if (item.polish) {
@@ -777,10 +800,7 @@ function renderAdditionalServices() {
           </strong>
 
           <span>
-            ${details.replace(
-              item.service,
-              ""
-            )}
+            ${details}
           </span>
 
         </div>
@@ -802,16 +822,20 @@ function renderAdditionalServices() {
 };
 
 
-// REMOVE SERVICE
-window.removeAdditionalService =
-  function (index) {
+// ==========================================
+// REMOVE ADDITIONAL SERVICE
+// ==========================================
 
-    selectedAdditionalServices
-      .splice(index, 1);
+window.removeAdditionalService = function (index) {
 
-    renderAdditionalServices();
+  selectedAdditionalServices.splice(
+    index,
+    1
+  );
 
-  };
+  renderAdditionalServices();
+
+};
   
     // ==========================================
     // CLOSE BOOKING POPUP
