@@ -1,4 +1,3 @@
-
 // ==========================================
 // SUPABASE
 // ==========================================
@@ -40,15 +39,28 @@ const allTimes = [
 ];
 
 
-// These match the services used by index.html.
-const serviceDurations = {
-  Manicure: 1.5,
-  Pedicure: 0.5,
-  Gel: 1.5,
-  Acrylic: 1.5,
-  Basic: 0.5,
+// ==========================================
+// SERVICE DURATIONS
+// ==========================================
+
+const durations = {
+
+  // Main services
+  "Manicure": 1.5,
+  "Pedicure": 0.5,
+
+  // Polish
+  "Gel": 1.5,
+  "Acrylic": 1.5,
+
+  // Design
+  "Basic": 0.5,
   "Minimal Design": 1,
-  "Max Design": 2.5
+  "Max Design": 2.5,
+
+  // Additional services
+  "Nail Art": 1
+
 };
 
 
@@ -101,19 +113,28 @@ function timeToMinutes(timeString) {
   }
 
   const parts = timeString.split(" ");
+
   const time = parts[0];
   const modifier = parts[1];
 
   const timeParts = time.split(":");
 
   let hours = Number(timeParts[0]);
-  const minutes = Number(timeParts[1]);
 
-  if (modifier === "PM" && hours !== 12) {
+  const minutes =
+    Number(timeParts[1]);
+
+  if (
+    modifier === "PM" &&
+    hours !== 12
+  ) {
     hours += 12;
   }
 
-  if (modifier === "AM" && hours === 12) {
+  if (
+    modifier === "AM" &&
+    hours === 12
+  ) {
     hours = 0;
   }
 
@@ -123,9 +144,11 @@ function timeToMinutes(timeString) {
 
 function minutesToTime(totalMinutes) {
 
-  let hours = Math.floor(totalMinutes / 60);
+  let hours =
+    Math.floor(totalMinutes / 60);
 
-  const minutes = totalMinutes % 60;
+  const minutes =
+    totalMinutes % 60;
 
   let modifier = "AM";
 
@@ -157,21 +180,32 @@ function convertTo24Hour(timeString) {
     return "00:00";
   }
 
-  const parts = timeString.split(" ");
+  const parts =
+    timeString.split(" ");
 
   const time = parts[0];
   const modifier = parts[1];
 
-  const timeParts = time.split(":");
+  const timeParts =
+    time.split(":");
 
-  let hours = Number(timeParts[0]);
-  const minutes = Number(timeParts[1]);
+  let hours =
+    Number(timeParts[0]);
 
-  if (modifier === "PM" && hours !== 12) {
+  const minutes =
+    Number(timeParts[1]);
+
+  if (
+    modifier === "PM" &&
+    hours !== 12
+  ) {
     hours += 12;
   }
 
-  if (modifier === "AM" && hours === 12) {
+  if (
+    modifier === "AM" &&
+    hours === 12
+  ) {
     hours = 0;
   }
 
@@ -183,18 +217,25 @@ function convertTo24Hour(timeString) {
 }
 
 
-function isPastDateTime(dateString, timeString) {
+function isPastDateTime(
+  dateString,
+  timeString
+) {
 
-  if (!dateString || !timeString) {
+  if (
+    !dateString ||
+    !timeString
+  ) {
     return false;
   }
 
-  const appointmentDate = new Date(
-    dateString +
-    "T" +
-    convertTo24Hour(timeString) +
-    ":00"
-  );
+  const appointmentDate =
+    new Date(
+      dateString +
+      "T" +
+      convertTo24Hour(timeString) +
+      ":00"
+    );
 
   return appointmentDate < new Date();
 }
@@ -239,7 +280,9 @@ async function getCurrentUser() {
 async function loadMyAppointments(user) {
 
   const container =
-    document.getElementById("appointments");
+    document.getElementById(
+      "appointments"
+    );
 
   if (!container) {
     return;
@@ -327,8 +370,11 @@ async function loadMyAppointments(user) {
 
         additionalHTML = `
           <p>
-            <strong>Additional Services:</strong>
-            ${appointment.notes.replace(/\n/g, "<br>")}
+            <strong>Additional Services:</strong><br>
+            ${appointment.notes.replace(
+              /\n/g,
+              "<br>"
+            )}
           </p>
         `;
       }
@@ -402,7 +448,9 @@ async function loadMyAppointments(user) {
 // GET BOOKED APPOINTMENTS
 // ==========================================
 
-async function getBookedAppointments(dateString) {
+async function getBookedAppointments(
+  dateString
+) {
 
   const result =
     await supabaseClient
@@ -431,7 +479,9 @@ async function getBookedAppointments(dateString) {
 async function loadTimes(dateString) {
 
   const timeSlots =
-    document.getElementById("timeSlots");
+    document.getElementById(
+      "timeSlots"
+    );
 
   if (!timeSlots) {
     return;
@@ -443,7 +493,9 @@ async function loadTimes(dateString) {
   selectedTime = null;
 
   const appointments =
-    await getBookedAppointments(dateString);
+    await getBookedAppointments(
+      dateString
+    );
 
   const bookedTimes = [];
 
@@ -456,9 +508,14 @@ async function loadTimes(dateString) {
       if (typeof blocked === "string") {
 
         try {
-          blocked = JSON.parse(blocked);
+
+          blocked =
+            JSON.parse(blocked);
+
         } catch {
+
           blocked = [];
+
         }
       }
 
@@ -467,8 +524,12 @@ async function loadTimes(dateString) {
         blocked.forEach(
           function (time) {
 
-            if (!bookedTimes.includes(time)) {
+            if (
+              !bookedTimes.includes(time)
+            ) {
+
               bookedTimes.push(time);
+
             }
 
           }
@@ -483,23 +544,36 @@ async function loadTimes(dateString) {
     function (time) {
 
       const button =
-        document.createElement("button");
+        document.createElement(
+          "button"
+        );
 
       button.type = "button";
+
       button.textContent = time;
-      button.className = "time-slot";
+
+      button.className =
+        "time-slot";
+
 
       // Already booked
-      if (bookedTimes.includes(time)) {
+      if (
+        bookedTimes.includes(time)
+      ) {
 
         button.disabled = true;
 
-        button.classList.add("booked");
+        button.classList.add(
+          "booked"
+        );
 
-        timeSlots.appendChild(button);
+        timeSlots.appendChild(
+          button
+        );
 
         return;
       }
+
 
       // Time has already passed
       if (
@@ -511,12 +585,17 @@ async function loadTimes(dateString) {
 
         button.disabled = true;
 
-        button.classList.add("booked");
+        button.classList.add(
+          "booked"
+        );
 
-        timeSlots.appendChild(button);
+        timeSlots.appendChild(
+          button
+        );
 
         return;
       }
+
 
       // Available
       button.addEventListener(
@@ -524,7 +603,9 @@ async function loadTimes(dateString) {
         function () {
 
           document
-            .querySelectorAll(".time-slot")
+            .querySelectorAll(
+              ".time-slot"
+            )
             .forEach(
               function (btn) {
 
@@ -535,7 +616,9 @@ async function loadTimes(dateString) {
               }
             );
 
-          button.classList.add("selected");
+          button.classList.add(
+            "selected"
+          );
 
           selectedTime = time;
 
@@ -546,12 +629,16 @@ async function loadTimes(dateString) {
         }
       );
 
-      timeSlots.appendChild(button);
+      timeSlots.appendChild(
+        button
+      );
 
     }
   );
 
-  if (timeSlots.children.length === 0) {
+  if (
+    timeSlots.children.length === 0
+  ) {
 
     timeSlots.innerHTML =
       "<p>No times available for this date.</p>";
@@ -579,7 +666,9 @@ function initializeCalendar() {
     return;
   }
 
-  if (typeof flatpickr === "undefined") {
+  if (
+    typeof flatpickr === "undefined"
+  ) {
 
     console.error(
       "Flatpickr is NOT loaded."
@@ -601,12 +690,14 @@ function initializeCalendar() {
       minDate: "today",
 
       disable: [
+
         function (date) {
 
           // Sunday
           return date.getDay() === 0;
 
         }
+
       ],
 
       onChange:
@@ -615,9 +706,11 @@ function initializeCalendar() {
           dateStr
         ) {
 
-          selectedDate = dateStr;
+          selectedDate =
+            dateStr;
 
-          selectedTime = null;
+          selectedTime =
+            null;
 
           console.log(
             "Selected date:",
@@ -627,7 +720,6 @@ function initializeCalendar() {
           await loadTimes(
             selectedDate
           );
-
         }
 
     }
@@ -652,7 +744,9 @@ window.openAdditionalServicePopup =
       );
 
     if (popup) {
-      popup.style.display = "flex";
+
+      popup.style.display =
+        "flex";
     }
   };
 
@@ -666,7 +760,9 @@ window.closeAdditionalServicePopup =
       );
 
     if (popup) {
-      popup.style.display = "none";
+
+      popup.style.display =
+        "none";
     }
   };
 
@@ -698,6 +794,7 @@ window.saveAdditionalServiceOptions =
         "additionalDesignDetails"
       );
 
+
     if (!serviceElement) {
 
       console.error(
@@ -706,6 +803,7 @@ window.saveAdditionalServiceOptions =
 
       return;
     }
+
 
     const service =
       serviceElement.value;
@@ -725,6 +823,7 @@ window.saveAdditionalServiceOptions =
         ? detailsElement.value.trim()
         : "";
 
+
     if (!service) {
 
       alert(
@@ -733,6 +832,7 @@ window.saveAdditionalServiceOptions =
 
       return;
     }
+
 
     selectedAdditionalServices.push({
 
@@ -743,7 +843,9 @@ window.saveAdditionalServiceOptions =
 
     });
 
+
     renderSelectedAdditionalServices();
+
 
     // Reset popup fields
     serviceElement.value = "";
@@ -759,6 +861,7 @@ window.saveAdditionalServiceOptions =
     if (detailsElement) {
       detailsElement.value = "";
     }
+
 
     closeAdditionalServicePopup();
   };
@@ -785,24 +888,41 @@ function renderSelectedAdditionalServices() {
     function (item, index) {
 
       const service =
-        document.createElement("div");
+        document.createElement(
+          "div"
+        );
 
       service.className =
         "selected-additional-service";
 
+
       let details = "";
 
       if (item.polish) {
-        details += " • " + item.polish;
+
+        details +=
+          " • " +
+          item.polish;
       }
 
       if (item.design) {
-        details += " • " + item.design;
+
+        details +=
+          " • " +
+          item.design;
       }
 
       if (item.designDetails) {
-        details += " • " + item.designDetails;
+
+        details +=
+          " • " +
+          item.designDetails;
       }
+
+
+      const serviceDuration =
+        durations[item.service] || 0;
+
 
       service.innerHTML = `
 
@@ -816,6 +936,10 @@ function renderSelectedAdditionalServices() {
             ${details}
           </span>
 
+          <small>
+            ${serviceDuration} hour(s)
+          </small>
+
         </div>
 
         <button
@@ -828,7 +952,9 @@ function renderSelectedAdditionalServices() {
 
       `;
 
-      container.appendChild(service);
+      container.appendChild(
+        service
+      );
     }
   );
 }
@@ -843,8 +969,10 @@ window.removeAdditionalService =
 
     if (
       index < 0 ||
-      index >= selectedAdditionalServices.length
+      index >=
+        selectedAdditionalServices.length
     ) {
+
       return;
     }
 
@@ -869,7 +997,7 @@ function getAdditionalServicesDuration() {
     function (item) {
 
       totalDuration +=
-        serviceDurations[item.service] || 0;
+        durations[item.service] || 0;
 
     }
   );
@@ -887,16 +1015,20 @@ function getAdditionalServicesNotes() {
   if (
     selectedAdditionalServices.length === 0
   ) {
+
     return "";
   }
 
+
   const lines = [];
+
 
   selectedAdditionalServices.forEach(
     function (item) {
 
       let line =
         item.service;
+
 
       if (item.polish) {
 
@@ -905,12 +1037,14 @@ function getAdditionalServicesNotes() {
           item.polish;
       }
 
+
       if (item.design) {
 
         line +=
           " - Design: " +
           item.design;
       }
+
 
       if (item.designDetails) {
 
@@ -919,9 +1053,11 @@ function getAdditionalServicesNotes() {
           item.designDetails;
       }
 
+
       lines.push(line);
     }
   );
+
 
   return lines.join("\n");
 }
@@ -940,13 +1076,15 @@ window.closePopup =
       );
 
     if (popup) {
-      popup.style.display = "none";
+
+      popup.style.display =
+        "none";
     }
   };
 
 
 // ==========================================
-// CALCULATE MAIN SERVICE DURATION
+// CALCULATE MAIN BOOKING DURATION
 // ==========================================
 
 function getMainBookingDuration(
@@ -957,11 +1095,11 @@ function getMainBookingDuration(
 
   return Math.max(
 
-    serviceDurations[service] || 0,
+    durations[service] || 0,
 
-    serviceDurations[polish] || 0,
+    durations[polish] || 0,
 
-    serviceDurations[design] || 0
+    durations[design] || 0
 
   );
 }
@@ -978,12 +1116,14 @@ window.bookAppointment =
       "BOOK APPOINTMENT CLICKED"
     );
 
+
     // --------------------------------------
     // USER
     // --------------------------------------
 
     const user =
       await getCurrentUser();
+
 
     if (!user) {
 
@@ -1081,6 +1221,7 @@ window.bookAppointment =
       return;
     }
 
+
     if (!phone) {
 
       alert(
@@ -1089,6 +1230,7 @@ window.bookAppointment =
 
       return;
     }
+
 
     if (!selectedDate) {
 
@@ -1099,6 +1241,7 @@ window.bookAppointment =
       return;
     }
 
+
     if (!selectedTime) {
 
       alert(
@@ -1107,6 +1250,7 @@ window.bookAppointment =
 
       return;
     }
+
 
     if (!service) {
 
@@ -1117,6 +1261,7 @@ window.bookAppointment =
       return;
     }
 
+
     if (!polish) {
 
       alert(
@@ -1126,6 +1271,7 @@ window.bookAppointment =
       return;
     }
 
+
     if (!design) {
 
       alert(
@@ -1134,6 +1280,7 @@ window.bookAppointment =
 
       return;
     }
+
 
     if (
       isPastDateTime(
@@ -1151,7 +1298,7 @@ window.bookAppointment =
 
 
     // ======================================
-    // DURATION
+    // CALCULATE TOTAL DURATION
     // ======================================
 
     const mainDuration =
@@ -1161,8 +1308,10 @@ window.bookAppointment =
         design
       );
 
+
     const additionalDuration =
       getAdditionalServicesDuration();
+
 
     const duration =
       mainDuration +
@@ -1196,7 +1345,7 @@ window.bookAppointment =
 
 
     // ======================================
-    // BLOCKED TIME CALCULATION
+    // CALCULATE BLOCKED TIMES
     // ======================================
 
     const startMinutes =
@@ -1204,31 +1353,31 @@ window.bookAppointment =
         selectedTime
       );
 
-    const numberOfSlots =
-      Math.ceil(
-        duration * 2
-      );
 
-    const timesToBook = [];
+    const totalMinutes =
+      duration * 60;
+
+
+    const blockedTimes = [];
+
 
     for (
-      let i = 0;
-      i < numberOfSlots;
-      i++
+      let minutes = 0;
+      minutes < totalMinutes;
+      minutes += 30
     ) {
 
-      timesToBook.push(
+      blockedTimes.push(
         minutesToTime(
-          startMinutes +
-          i * 30
+          startMinutes + minutes
         )
       );
     }
 
 
     console.log(
-      "TIMES TO BOOK:",
-      timesToBook
+      "BLOCKED TIMES:",
+      blockedTimes
     );
 
 
@@ -1241,6 +1390,7 @@ window.bookAppointment =
         selectedDate
       );
 
+
     let conflict = false;
 
 
@@ -1250,21 +1400,33 @@ window.bookAppointment =
         let blocked =
           appointment.blocked_times || [];
 
-        if (typeof blocked === "string") {
+
+        if (
+          typeof blocked === "string"
+        ) {
 
           try {
+
             blocked =
               JSON.parse(blocked);
+
           } catch {
+
             blocked = [];
+
           }
         }
 
-        if (!Array.isArray(blocked)) {
+
+        if (
+          !Array.isArray(blocked)
+        ) {
+
           return;
         }
 
-        timesToBook.forEach(
+
+        blockedTimes.forEach(
           function (time) {
 
             if (
@@ -1272,8 +1434,8 @@ window.bookAppointment =
             ) {
 
               conflict = true;
-            }
 
+            }
           }
         );
       }
@@ -1286,9 +1448,11 @@ window.bookAppointment =
         "That time is no longer available. Please choose another time."
       );
 
+
       await loadTimes(
         selectedDate
       );
+
 
       return;
     }
@@ -1303,7 +1467,7 @@ window.bookAppointment =
 
 
     // ======================================
-    // INSERT
+    // INSERT APPOINTMENT
     // ======================================
 
     const result =
@@ -1331,7 +1495,7 @@ window.bookAppointment =
               duration,
 
             blocked_times:
-              timesToBook,
+              blockedTimes,
 
             service:
               service,
@@ -1382,6 +1546,7 @@ window.bookAppointment =
         "bookingPopup"
       );
 
+
     if (popup) {
 
       popup.style.display =
@@ -1400,21 +1565,24 @@ window.bookAppointment =
     // ======================================
 
     nameElement.value = "";
+
     phoneElement.value = "";
 
+
     serviceElement.selectedIndex = 0;
+
     polishElement.selectedIndex = 0;
+
     designElement.selectedIndex = 0;
 
 
-    // Additional services
     selectedAdditionalServices = [];
 
     renderSelectedAdditionalServices();
 
 
-    // Date/time
     selectedDate = null;
+
     selectedTime = null;
 
 
@@ -1423,9 +1591,11 @@ window.bookAppointment =
         "appointmentDate"
       );
 
+
     if (dateInput) {
 
       dateInput.value = "";
+
     }
 
 
@@ -1434,14 +1604,16 @@ window.bookAppointment =
         "timeSlots"
       );
 
+
     if (timeSlots) {
 
       timeSlots.innerHTML = "";
+
     }
 
 
     // ======================================
-    // REFRESH MY APPOINTMENTS
+    // REFRESH APPOINTMENTS
     // ======================================
 
     await loadMyAppointments(
@@ -1461,6 +1633,7 @@ async function logout() {
       .auth
       .signOut();
 
+
   if (result.error) {
 
     showSupabaseError(
@@ -1470,6 +1643,7 @@ async function logout() {
 
     return;
   }
+
 
   window.location.href =
     "login.html";
@@ -1496,6 +1670,7 @@ document.addEventListener(
     const user =
       await getCurrentUser();
 
+
     if (!user) {
 
       alert(
@@ -1518,10 +1693,12 @@ document.addEventListener(
         "userEmail"
       );
 
+
     if (userEmail) {
 
       userEmail.textContent =
         user.email || "";
+
     }
 
 
@@ -1549,6 +1726,7 @@ document.addEventListener(
       document.getElementById(
         "logoutBtn"
       );
+
 
     if (logoutBtn) {
 
