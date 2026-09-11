@@ -1709,13 +1709,78 @@ async function (id) {
 
 };
 
+function getAdditionalServiceDuration(service) {
+  if (!service) {
+    return 0;
+  }
 
+  // Simple string:
+  // "Pedicure"
+  if (typeof service === "string") {
+    return durations[service] || 0;
+  }
+
+  // If an explicit duration was saved, use it.
+  if (
+    service.duration !== undefined &&
+    service.duration !== null &&
+    service.duration !== ""
+  ) {
+    const savedDuration = Number(service.duration);
+
+    if (!Number.isNaN(savedDuration)) {
+      return savedDuration;
+    }
+  }
+
+  // Additional service can contain:
+  // {
+  //   service: "Pedicure",
+  //   polish: "Gel",
+  //   design: "Minimal Design"
+  // }
+  //
+  // Just like the main appointment, the
+  // service/polish/design combination uses
+  // the longest component.
+  const serviceDuration =
+    service.service && durations[service.service]
+      ? durations[service.service]
+      : 0;
+
+  const polishDuration =
+    service.polish && durations[service.polish]
+      ? durations[service.polish]
+      : 0;
+
+  const designDuration =
+    service.design && durations[service.design]
+      ? durations[service.design]
+      : 0;
+
+  const calculatedDuration = Math.max(
+    serviceDuration,
+    polishDuration,
+    designDuration
+  );
+
+  if (calculatedDuration > 0) {
+    return calculatedDuration;
+  }
+
+  // Older format:
+  // { name: "Pedicure" }
+  if (service.name && durations[service.name]) {
+    return durations[service.name];
+  }
+
+  return 0;
+}
 // ==========================================
 // GET MAIN BOOKING DURATION
 // ==========================================
 
 function getMainBookingDuration(
-  service,
   polish,
   design
 ) {
