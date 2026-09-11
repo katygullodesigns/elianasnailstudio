@@ -745,19 +745,16 @@ window.saveAdditionalServiceOptions = function () {
 // DISPLAY SELECTED SERVICES
 // ==========================================
 
-function renderAdditionalServices() {
+function renderSelectedAdditionalServices() {
 
   const container =
     document.getElementById(
       "selectedAdditionalServices"
     );
 
-
   if (!container) return;
 
-
   container.innerHTML = "";
-
 
   selectedAdditionalServices.forEach(
     function (item, index) {
@@ -765,31 +762,25 @@ function renderAdditionalServices() {
       const service =
         document.createElement("div");
 
-
       service.className =
         "selected-additional-service";
 
-
       let details = "";
-
 
       if (item.polish) {
         details +=
           " • " + item.polish;
       }
 
-
       if (item.design) {
         details +=
           " • " + item.design;
       }
 
-
       if (item.designDetails) {
         details +=
           " • " + item.designDetails;
       }
-
 
       service.innerHTML = `
 
@@ -813,13 +804,12 @@ function renderAdditionalServices() {
 
       `;
 
-
       container.appendChild(service);
 
     }
   );
 
-};
+}
 
 
 // ==========================================
