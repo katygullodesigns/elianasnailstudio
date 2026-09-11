@@ -1,9 +1,8 @@
-
 const SUPABASE_URL =
   "https://kyonstvpolakjhrecqcj.supabase.co";
 
 const SUPABASE_ANON_KEY =
-  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imt5b25zdHZwb2xha2pocmVjcWNqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE2OTYxMjUsImV4cCI6MjA5NzI3MjEyNX0.oq6v7gEy8FJPh4NI3ngUYybwJcHF6rW6qkNtepCxr7Y";
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imt5b25zdHZwb2xha2pocmVjcWNqIiwiaWF0IjoxNzgxNjk2MTI1LCJleHAiOjIwOTcyNzIxMjF9.oq6v7gEy8FJPh4NI3ngUYybwJcHF6rW6qkNtepCxr7Y";
 
 const supabaseClient =
   supabase.createClient(
@@ -94,8 +93,6 @@ function setupButtons() {
     );
 
 
-  // PREVIOUS MONTH
-
   if (prevMonth) {
 
     prevMonth.addEventListener(
@@ -114,8 +111,6 @@ function setupButtons() {
   }
 
 
-  // NEXT MONTH
-
   if (nextMonth) {
 
     nextMonth.addEventListener(
@@ -133,8 +128,6 @@ function setupButtons() {
 
   }
 
-
-  // LOGOUT
 
   if (logoutBtn) {
 
@@ -239,23 +232,11 @@ async function checkOwnerLogin() {
       session.user.email;
 
 
-    console.log(
-      "Logged in user:",
-      email
-    );
-
-
-    // OWNER ONLY
-
     if (
       !email ||
       email.toLowerCase() !==
         OWNER_EMAIL.toLowerCase()
     ) {
-
-      console.log(
-        "This account is not the owner."
-      );
 
       window.location.href =
         "myappointments.html";
@@ -308,10 +289,6 @@ async function loadAppointments() {
 
   if (!calendarGrid) {
 
-    console.error(
-      "calendarGrid element not found."
-    );
-
     return;
 
   }
@@ -319,11 +296,6 @@ async function loadAppointments() {
 
   calendarGrid.innerHTML =
     "<p>Loading appointments...</p>";
-
-
-  console.log(
-    "Loading appointments from Supabase..."
-  );
 
 
   const {
@@ -347,9 +319,7 @@ async function loadAppointments() {
 
 
     calendarGrid.innerHTML = `
-      <p>
-        Could not load appointments.
-      </p>
+      <p>Could not load appointments.</p>
 
       <p style="font-size:12px;">
         ${escapeHtml(
@@ -368,15 +338,7 @@ async function loadAppointments() {
     data || [];
 
 
-  console.log(
-    "Appointments successfully loaded:",
-    appointments
-  );
-
-
-  // REMOVE PAST APPOINTMENTS
-
-  const currentAppointments =
+  appointments =
     appointments.filter(
       function (appointment) {
 
@@ -392,13 +354,9 @@ async function loadAppointments() {
   if (appointmentCounter) {
 
     appointmentCounter.textContent =
-      `Total Appointments: ${currentAppointments.length}`;
+      `Total Appointments: ${appointments.length}`;
 
   }
-
-
-  appointments =
-    currentAppointments;
 
 
   renderCalendar();
@@ -427,10 +385,6 @@ function renderCalendar() {
     !calendarGrid ||
     !monthYear
   ) {
-
-    console.error(
-      "Calendar elements are missing."
-    );
 
     return;
 
@@ -464,8 +418,6 @@ function renderCalendar() {
     ).getDate();
 
 
-  // MONTH / YEAR
-
   monthYear.textContent =
     new Date(
       year,
@@ -479,8 +431,6 @@ function renderCalendar() {
       }
     );
 
-
-  // EMPTY DAYS
 
   for (
     let i = 0;
@@ -502,8 +452,6 @@ function renderCalendar() {
 
   }
 
-
-  // ACTUAL DAYS
 
   for (
     let day = 1;
@@ -545,8 +493,6 @@ function renderCalendar() {
       dayAppointments.length;
 
 
-    // DAY NUMBER
-
     const dayNumber =
       document.createElement(
         "div"
@@ -563,8 +509,6 @@ function renderCalendar() {
       dayNumber
     );
 
-
-    // APPOINTMENT COUNT
 
     if (
       appointmentCount > 0
@@ -594,8 +538,6 @@ function renderCalendar() {
     }
 
 
-    // SELECTED DATE
-
     if (
       selectedDate ===
       dateString
@@ -607,8 +549,6 @@ function renderCalendar() {
 
     }
 
-
-    // CLICK DATE
 
     cell.addEventListener(
       "click",
@@ -725,19 +665,16 @@ function showAppointmentsForDate(
     0
   ) {
 
-    container.innerHTML =
-      `
+    container.innerHTML = `
       <p class="no-selection">
         No appointments on this day.
       </p>
-      `;
+    `;
 
     return;
 
   }
 
-
-  // SORT BY TIME
 
   dateAppointments.sort(
     function (a, b) {
@@ -765,9 +702,9 @@ function showAppointmentsForDate(
 
 
       const duration =
-        Number(
-          appointment.duration
-        ) || 0;
+        getAppointmentDuration(
+          appointment
+        );
 
 
       const endTime =
@@ -869,15 +806,21 @@ function showAppointmentDetails(
 
 
   const duration =
-    Number(
-      appointment.duration
-    ) || 0;
+    getAppointmentDuration(
+      appointment
+    );
 
 
   const endTime =
     getEndTime(
       appointment.time,
       duration
+    );
+
+
+  const additionalServices =
+    getAdditionalServices(
+      appointment
     );
 
 
@@ -968,20 +911,72 @@ function showAppointmentDetails(
     </p>
 
 
+    ${
+      additionalServices.length > 0
+        ? `
+          <p>
+            <strong>Additional Services:</strong>
+          </p>
+
+          <ul>
+            ${
+              additionalServices
+                .map(
+                  function (service) {
+
+                    const name =
+                      typeof service ===
+                      "string"
+                        ? service
+                        : service.name ||
+                          service.service ||
+                          "Additional Service";
+
+                    const serviceDuration =
+                      getAdditionalServiceDuration(
+                        service
+                      );
+
+                    return `
+                      <li>
+                        ${escapeHtml(name)}
+                        ${
+                          serviceDuration
+                            ? ` (${escapeHtml(
+                                formatDuration(
+                                  serviceDuration
+                                )
+                              )})`
+                            : ""
+                        }
+                      </li>
+                    `;
+
+                  }
+                )
+                .join("")
+            }
+          </ul>
+        `
+        : ""
+    }
+
+
     <p>
       <strong>Notes:</strong>
     </p>
 
 
     <p class="owner-notes">
-      ${appointment.notes
-        ? escapeHtml(
-            appointment.notes
-          ).replace(
-            /\n/g,
-            "<br>"
-          )
-        : "No notes."
+      ${
+        appointment.notes
+          ? escapeHtml(
+              appointment.notes
+            ).replace(
+              /\n/g,
+              "<br>"
+            )
+          : "No notes."
       }
     </p>
 
@@ -1071,6 +1066,12 @@ function (id) {
   }
 
 
+  const additionalServices =
+    getAdditionalServices(
+      appointment
+    );
+
+
   details.innerHTML = `
 
     <h3>
@@ -1146,6 +1147,43 @@ function (id) {
       )}"
       placeholder="Design"
     >
+
+
+    <p>
+      <strong>Additional Services:</strong>
+    </p>
+
+    <div id="editAdditionalServices">
+
+      ${
+        additionalServices.length > 0
+          ? additionalServices
+              .map(
+                function (service) {
+
+                  const name =
+                    typeof service ===
+                    "string"
+                      ? service
+                      : service.name ||
+                        service.service ||
+                        "";
+
+                  return `
+                    <div>
+                      ${escapeHtml(
+                        name
+                      )}
+                    </div>
+                  `;
+
+                }
+              )
+              .join("")
+          : "<div>No additional services</div>"
+      }
+
+    </div>
 
 
     <textarea
@@ -1323,16 +1361,8 @@ async function (id) {
 
 
   // ========================================
-  // CALCULATE MAIN DURATION
+  // MAIN DURATION
   // ========================================
-
-  const oldMainDuration =
-    getMainBookingDuration(
-      appointment.service,
-      appointment.polish,
-      appointment.design
-    );
-
 
   const newMainDuration =
     getMainBookingDuration(
@@ -1343,45 +1373,32 @@ async function (id) {
 
 
   // ========================================
-  // PRESERVE ADDITIONAL-SERVICE DURATION
-  // ========================================
-  //
-  // The booking page already saved the total
-  // duration, including additional services.
-  //
-  // Therefore:
-  //
-  // existing total
-  // - old main duration
-  // + new main duration
-  //
-  // This preserves the additional-service time.
+  // ADDITIONAL SERVICE DURATION
   // ========================================
 
-  let newDuration =
-    Number(
-      appointment.duration
-    ) || 0;
+  const additionalServices =
+    getAdditionalServices(
+      appointment
+    );
 
 
-  if (
-    newMainDuration !==
-    oldMainDuration
-  ) {
-
-    newDuration =
-      Math.max(
-        0,
-        newDuration -
-        oldMainDuration +
-        newMainDuration
-      );
-
-  }
+  const additionalDuration =
+    getAdditionalServicesDuration(
+      additionalServices
+    );
 
 
   // ========================================
-  // REBUILD BLOCKED TIMES
+  // TOTAL DURATION
+  // ========================================
+
+  const newDuration =
+    newMainDuration +
+    additionalDuration;
+
+
+  // ========================================
+  // BLOCKED TIMES
   // ========================================
 
   const blockedTimes =
@@ -1392,27 +1409,22 @@ async function (id) {
 
 
   console.log(
-    "Old duration:",
-    appointment.duration
-  );
-
-  console.log(
-    "Old main duration:",
-    oldMainDuration
-  );
-
-  console.log(
-    "New main duration:",
+    "Main duration:",
     newMainDuration
   );
 
   console.log(
-    "New total duration:",
+    "Additional duration:",
+    additionalDuration
+  );
+
+  console.log(
+    "Total duration:",
     newDuration
   );
 
   console.log(
-    "New blocked times:",
+    "Blocked times:",
     blockedTimes
   );
 
@@ -1578,12 +1590,11 @@ async function (id) {
 
   if (details) {
 
-    details.innerHTML =
-      `
+    details.innerHTML = `
       <p class="no-selection">
         Select an appointment.
       </p>
-      `;
+    `;
 
   }
 
@@ -1687,12 +1698,11 @@ async function (id) {
 
   if (details) {
 
-    details.innerHTML =
-      `
+    details.innerHTML = `
       <p class="no-selection">
         Select an appointment.
       </p>
-      `;
+    `;
 
   }
 
@@ -1726,6 +1736,276 @@ function getMainBookingDuration(
 
 
 // ==========================================
+// GET ADDITIONAL SERVICES
+// ==========================================
+
+function getAdditionalServices(
+  appointment
+) {
+
+  if (
+    !appointment ||
+    !appointment.additional_services
+  ) {
+
+    return [];
+
+  }
+
+
+  let additionalServices =
+    appointment.additional_services;
+
+
+  if (
+    typeof additionalServices ===
+    "string"
+  ) {
+
+    try {
+
+      additionalServices =
+        JSON.parse(
+          additionalServices
+        );
+
+    }
+
+    catch (error) {
+
+      console.error(
+        "Could not parse additional services:",
+        error
+      );
+
+      return [];
+
+    }
+
+  }
+
+
+  if (
+    !Array.isArray(
+      additionalServices
+    )
+  ) {
+
+    return [];
+
+  }
+
+
+  return additionalServices;
+
+}
+
+
+// ==========================================
+// GET ONE ADDITIONAL SERVICE DURATION
+// ==========================================
+
+function getAdditionalServiceDuration(
+  service
+) {
+
+  if (
+    !service
+  ) {
+
+    return 0;
+
+  }
+
+
+  // If the saved service is just a string.
+
+  if (
+    typeof service ===
+    "string"
+  ) {
+
+    return (
+      durations[service] ||
+      0
+    );
+
+  }
+
+
+  // If the booking page saved:
+  // { name: "Pedicure" }
+
+  if (
+    service.name &&
+    durations[service.name]
+  ) {
+
+    return durations[
+      service.name
+    ];
+
+  }
+
+
+  // If it saved:
+  // { service: "Pedicure" }
+
+  if (
+    service.service &&
+    durations[service.service]
+  ) {
+
+    return durations[
+      service.service
+    ];
+
+  }
+
+
+  // If it already saved its duration.
+
+  if (
+    service.duration
+  ) {
+
+    return Number(
+      service.duration
+    ) || 0;
+
+  }
+
+
+  return 0;
+
+}
+
+
+// ==========================================
+// GET ALL ADDITIONAL SERVICE DURATION
+// ==========================================
+
+function getAdditionalServicesDuration(
+  additionalServices
+) {
+
+  if (
+    !Array.isArray(
+      additionalServices
+    )
+  ) {
+
+    return 0;
+
+  }
+
+
+  return additionalServices.reduce(
+    function (
+      total,
+      service
+    ) {
+
+      return (
+        total +
+        getAdditionalServiceDuration(
+          service
+        )
+      );
+
+    },
+    0
+  );
+
+}
+
+
+// ==========================================
+// GET TOTAL APPOINTMENT DURATION
+// ==========================================
+
+function getAppointmentDuration(
+  appointment
+) {
+
+  if (!appointment) {
+
+    return 0;
+
+  }
+
+
+  const mainDuration =
+    getMainBookingDuration(
+      appointment.service,
+      appointment.polish,
+      appointment.design
+    );
+
+
+  const additionalServices =
+    getAdditionalServices(
+      appointment
+    );
+
+
+  const additionalDuration =
+    getAdditionalServicesDuration(
+      additionalServices
+    );
+
+
+  /*
+    IMPORTANT:
+
+    Additional services are ADDED.
+
+    Example:
+
+    Manicure = 1.5
+    Pedicure = 0.5
+
+    Total = 2.0
+
+    Manicure = 1.5
+    Pedicure = 0.5
+    Nail Art = 1
+
+    Total = 3.0
+  */
+
+  const calculatedDuration =
+    mainDuration +
+    additionalDuration;
+
+
+  // If additional_services exists,
+  // the calculated value is authoritative.
+
+  if (
+    additionalServices.length > 0
+  ) {
+
+    return calculatedDuration;
+
+  }
+
+
+  // For older appointments that were
+  // created before additional_services
+  // existed, preserve their saved duration.
+
+  return (
+    Number(
+      appointment.duration
+    ) ||
+    mainDuration
+  );
+
+}
+
+
+// ==========================================
 // GET BLOCKED TIMES
 // ==========================================
 
@@ -1751,7 +2031,9 @@ function getBlockedTimes(
 
 
   const totalMinutes =
-    duration * 60;
+    Math.round(
+      duration * 60
+    );
 
 
   const blockedTimes = [];
@@ -1881,9 +2163,6 @@ function formatBlockedTimes(
 
   }
 
-
-  // Supabase may return this as
-  // an actual array or a JSON string.
 
   let times =
     blockedTimes;
