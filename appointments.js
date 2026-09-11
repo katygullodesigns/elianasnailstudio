@@ -4,7 +4,7 @@ const SUPABASE_URL =
 
 const SUPABASE_ANON_KEY =
   "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imt5b25zdHZwb2xha2pocmVjcWNqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE2OTYxMjUsImV4cCI6MjA5NzI3MjEyNX0.oq6v7gEy8FJPh4NI3ngUYybwJcHF6rW6qkNtepCxr7Y";
- 
+
 const supabaseClient =
   supabase.createClient(
     SUPABASE_URL,
@@ -26,6 +26,30 @@ let currentDate =
 
 let selectedDate = null;
 
+
+// ==========================================
+// DURATIONS
+// ==========================================
+
+const durations = {
+
+  "Manicure": 1.5,
+
+  "Pedicure": 0.5,
+
+  "Gel": 1.5,
+
+  "Acrylic": 1.5,
+
+  "Basic": 0.5,
+
+  "Minimal Design": 1,
+
+  "Max Design": 2.5,
+
+  "Nail Art": 1
+
+};
 
 
 // ==========================================
@@ -148,6 +172,7 @@ function setupButtons() {
             "Logout";
 
           return;
+
         }
 
 
@@ -188,6 +213,7 @@ async function checkOwnerLogin() {
         "login.html";
 
       return;
+
     }
 
 
@@ -205,6 +231,7 @@ async function checkOwnerLogin() {
         "login.html";
 
       return;
+
     }
 
 
@@ -234,6 +261,7 @@ async function checkOwnerLogin() {
         "myappointments.html";
 
       return;
+
     }
 
 
@@ -285,6 +313,7 @@ async function loadAppointments() {
     );
 
     return;
+
   }
 
 
@@ -331,6 +360,7 @@ async function loadAppointments() {
     `;
 
     return;
+
   }
 
 
@@ -375,6 +405,7 @@ async function loadAppointments() {
 
 }
 
+
 // ==========================================
 // RENDER CALENDAR
 // ==========================================
@@ -402,10 +433,12 @@ function renderCalendar() {
     );
 
     return;
+
   }
 
 
-  calendarGrid.innerHTML = "";
+  calendarGrid.innerHTML =
+    "";
 
 
   const year =
@@ -431,9 +464,7 @@ function renderCalendar() {
     ).getDate();
 
 
-  // --------------------------------------
-  // MONTH / YEAR TITLE
-  // --------------------------------------
+  // MONTH / YEAR
 
   monthYear.textContent =
     new Date(
@@ -449,9 +480,7 @@ function renderCalendar() {
     );
 
 
-  // --------------------------------------
-  // EMPTY DAYS BEFORE MONTH STARTS
-  // --------------------------------------
+  // EMPTY DAYS
 
   for (
     let i = 0;
@@ -470,12 +499,11 @@ function renderCalendar() {
     calendarGrid.appendChild(
       emptyDay
     );
+
   }
 
 
-  // --------------------------------------
   // ACTUAL DAYS
-  // --------------------------------------
 
   for (
     let day = 1;
@@ -492,10 +520,6 @@ function renderCalendar() {
       "calendar-day";
 
 
-    // ------------------------------------
-    // DATE STRING
-    // ------------------------------------
-
     const dateString =
       `${year}-${String(
         month + 1
@@ -503,10 +527,6 @@ function renderCalendar() {
         day
       ).padStart(2, "0")}`;
 
-
-    // ------------------------------------
-    // FIND APPOINTMENTS FOR THIS DAY
-    // ------------------------------------
 
     const dayAppointments =
       appointments.filter(
@@ -525,9 +545,7 @@ function renderCalendar() {
       dayAppointments.length;
 
 
-    // ------------------------------------
     // DAY NUMBER
-    // ------------------------------------
 
     const dayNumber =
       document.createElement(
@@ -546,9 +564,7 @@ function renderCalendar() {
     );
 
 
-    // ------------------------------------
     // APPOINTMENT COUNT
-    // ------------------------------------
 
     if (
       appointmentCount > 0
@@ -563,9 +579,7 @@ function renderCalendar() {
         "appointment-count";
 
       count.textContent =
-        appointmentCount === 1
-          ? "1"
-          : `${appointmentCount}`;
+        appointmentCount;
 
 
       cell.appendChild(
@@ -576,12 +590,11 @@ function renderCalendar() {
       cell.classList.add(
         "has-appointments"
       );
+
     }
 
 
-    // ------------------------------------
     // SELECTED DATE
-    // ------------------------------------
 
     if (
       selectedDate ===
@@ -591,12 +604,11 @@ function renderCalendar() {
       cell.classList.add(
         "selected"
       );
+
     }
 
 
-    // ------------------------------------
     // CLICK DATE
-    // ------------------------------------
 
     cell.addEventListener(
       "click",
@@ -637,9 +649,11 @@ function renderCalendar() {
     calendarGrid.appendChild(
       cell
     );
+
   }
 
 }
+
 
 // ==========================================
 // SHOW APPOINTMENTS FOR DATE
@@ -666,6 +680,7 @@ function showAppointmentsForDate(
   ) {
 
     return;
+
   }
 
 
@@ -718,6 +733,7 @@ function showAppointmentsForDate(
       `;
 
     return;
+
   }
 
 
@@ -748,6 +764,19 @@ function showAppointmentsForDate(
         "appointment-card";
 
 
+      const duration =
+        Number(
+          appointment.duration
+        ) || 0;
+
+
+      const endTime =
+        getEndTime(
+          appointment.time,
+          duration
+        );
+
+
       card.innerHTML = `
 
         <div class="appointment-summary">
@@ -760,11 +789,36 @@ function showAppointmentsForDate(
           </h3>
 
           <p>
-            ${escapeHtml(
-              appointment.time ||
-              ""
-            )}
+            <strong>
+              ${escapeHtml(
+                appointment.time ||
+                ""
+              )}
+            </strong>
+
+            ${
+              endTime
+                ? " - " +
+                  escapeHtml(
+                    endTime
+                  )
+                : ""
+            }
           </p>
+
+          ${
+            duration
+              ? `
+                <p>
+                  ${escapeHtml(
+                    formatDuration(
+                      duration
+                    )
+                  )}
+                </p>
+              `
+              : ""
+          }
 
         </div>
 
@@ -810,7 +864,21 @@ function showAppointmentDetails(
   if (!details) {
 
     return;
+
   }
+
+
+  const duration =
+    Number(
+      appointment.duration
+    ) || 0;
+
+
+  const endTime =
+    getEndTime(
+      appointment.time,
+      duration
+    );
 
 
   details.innerHTML = `
@@ -822,6 +890,7 @@ function showAppointmentDetails(
       )}
     </h3>
 
+
     <p>
       <strong>Phone:</strong>
       ${escapeHtml(
@@ -829,6 +898,7 @@ function showAppointmentDetails(
         ""
       )}
     </p>
+
 
     <p>
       <strong>Date:</strong>
@@ -838,13 +908,38 @@ function showAppointmentDetails(
       )}
     </p>
 
+
     <p>
-      <strong>Time:</strong>
+      <strong>Start Time:</strong>
       ${escapeHtml(
         appointment.time ||
         ""
       )}
     </p>
+
+
+    <p>
+      <strong>End Time:</strong>
+      ${escapeHtml(
+        endTime ||
+        "N/A"
+      )}
+    </p>
+
+
+    <p>
+      <strong>Duration:</strong>
+      ${
+        duration
+          ? escapeHtml(
+              formatDuration(
+                duration
+              )
+            )
+          : "N/A"
+      }
+    </p>
+
 
     <p>
       <strong>Service:</strong>
@@ -854,6 +949,7 @@ function showAppointmentDetails(
       )}
     </p>
 
+
     <p>
       <strong>Polish:</strong>
       ${escapeHtml(
@@ -861,6 +957,7 @@ function showAppointmentDetails(
         "N/A"
       )}
     </p>
+
 
     <p>
       <strong>Design:</strong>
@@ -870,23 +967,33 @@ function showAppointmentDetails(
       )}
     </p>
 
-    <p>
-      <strong>Duration:</strong>
-      ${escapeHtml(
-        appointment.duration ||
-        "N/A"
-      )}
-      hours
-    </p>
 
     <p>
-      <strong>Owner Notes:</strong>
+      <strong>Notes:</strong>
     </p>
+
 
     <p class="owner-notes">
-      ${escapeHtml(
-        appointment.notes ||
-        "No notes yet."
+      ${appointment.notes
+        ? escapeHtml(
+            appointment.notes
+          ).replace(
+            /\n/g,
+            "<br>"
+          )
+        : "No notes."
+      }
+    </p>
+
+
+    <p>
+      <strong>Blocked Times:</strong>
+    </p>
+
+
+    <p class="owner-notes">
+      ${formatBlockedTimes(
+        appointment.blocked_times
       )}
     </p>
 
@@ -947,6 +1054,7 @@ function (id) {
     );
 
     return;
+
   }
 
 
@@ -959,6 +1067,7 @@ function (id) {
   if (!details) {
 
     return;
+
   }
 
 
@@ -1123,6 +1232,7 @@ async function (id) {
     );
 
     return;
+
   }
 
 
@@ -1183,34 +1293,161 @@ async function (id) {
     );
 
     return;
+
   }
+
+
+  const name =
+    nameInput.value.trim();
+
+  const phone =
+    phoneInput.value.trim();
+
+  const date =
+    dateInput.value.trim();
+
+  const time =
+    timeInput.value.trim();
+
+  const service =
+    serviceInput.value.trim();
+
+  const polish =
+    polishInput.value.trim();
+
+  const design =
+    designInput.value.trim();
+
+  const notes =
+    notesInput.value.trim();
+
+
+  // ========================================
+  // CALCULATE MAIN DURATION
+  // ========================================
+
+  const oldMainDuration =
+    getMainBookingDuration(
+      appointment.service,
+      appointment.polish,
+      appointment.design
+    );
+
+
+  const newMainDuration =
+    getMainBookingDuration(
+      service,
+      polish,
+      design
+    );
+
+
+  // ========================================
+  // PRESERVE ADDITIONAL-SERVICE DURATION
+  // ========================================
+  //
+  // The booking page already saved the total
+  // duration, including additional services.
+  //
+  // Therefore:
+  //
+  // existing total
+  // - old main duration
+  // + new main duration
+  //
+  // This preserves the additional-service time.
+  // ========================================
+
+  let newDuration =
+    Number(
+      appointment.duration
+    ) || 0;
+
+
+  if (
+    newMainDuration !==
+    oldMainDuration
+  ) {
+
+    newDuration =
+      Math.max(
+        0,
+        newDuration -
+        oldMainDuration +
+        newMainDuration
+      );
+
+  }
+
+
+  // ========================================
+  // REBUILD BLOCKED TIMES
+  // ========================================
+
+  const blockedTimes =
+    getBlockedTimes(
+      time,
+      newDuration
+    );
+
+
+  console.log(
+    "Old duration:",
+    appointment.duration
+  );
+
+  console.log(
+    "Old main duration:",
+    oldMainDuration
+  );
+
+  console.log(
+    "New main duration:",
+    newMainDuration
+  );
+
+  console.log(
+    "New total duration:",
+    newDuration
+  );
+
+  console.log(
+    "New blocked times:",
+    blockedTimes
+  );
 
 
   const updatedAppointment = {
 
     name:
-      nameInput.value.trim(),
+      name,
 
     phone:
-      phoneInput.value.trim(),
+      phone,
 
     date:
-      dateInput.value.trim(),
+      date,
 
     time:
-      timeInput.value.trim(),
+      time,
 
     service:
-      serviceInput.value.trim(),
+      service,
 
     polish:
-      polishInput.value.trim(),
+      polish,
 
     design:
-      designInput.value.trim(),
+      design,
 
     notes:
-      notesInput.value.trim()
+      notes,
+
+    duration:
+      newDuration,
+
+    blocked_times:
+      blockedTimes
 
   };
 
@@ -1242,6 +1479,7 @@ async function (id) {
     );
 
     return;
+
   }
 
 
@@ -1249,7 +1487,7 @@ async function (id) {
 
 
   selectedDate =
-    updatedAppointment.date;
+    date;
 
 
   if (selectedDate) {
@@ -1283,6 +1521,7 @@ async function (id) {
   if (!appointment) {
 
     return;
+
   }
 
 
@@ -1298,6 +1537,7 @@ async function (id) {
   if (!confirmed) {
 
     return;
+
   }
 
 
@@ -1326,6 +1566,7 @@ async function (id) {
     );
 
     return;
+
   }
 
 
@@ -1381,6 +1622,7 @@ async function (id) {
   if (!appointment) {
 
     return;
+
   }
 
 
@@ -1396,6 +1638,7 @@ async function (id) {
   if (!confirmed) {
 
     return;
+
   }
 
 
@@ -1406,7 +1649,8 @@ async function (id) {
       .from("appointments")
       .update({
 
-        status: "past",
+        status:
+          "past",
 
         completed_date:
           new Date().toLocaleDateString()
@@ -1431,6 +1675,7 @@ async function (id) {
     );
 
     return;
+
   }
 
 
@@ -1458,7 +1703,246 @@ async function (id) {
 
 
 // ==========================================
-// TIME CONVERSION
+// GET MAIN BOOKING DURATION
+// ==========================================
+
+function getMainBookingDuration(
+  service,
+  polish,
+  design
+) {
+
+  return Math.max(
+
+    durations[service] || 0,
+
+    durations[polish] || 0,
+
+    durations[design] || 0
+
+  );
+
+}
+
+
+// ==========================================
+// GET BLOCKED TIMES
+// ==========================================
+
+function getBlockedTimes(
+  selectedTime,
+  duration
+) {
+
+  if (
+    !selectedTime ||
+    !duration
+  ) {
+
+    return [];
+
+  }
+
+
+  const startMinutes =
+    timeToMinutes(
+      selectedTime
+    );
+
+
+  const totalMinutes =
+    duration * 60;
+
+
+  const blockedTimes = [];
+
+
+  for (
+    let minutes = 0;
+    minutes < totalMinutes;
+    minutes += 30
+  ) {
+
+    blockedTimes.push(
+      minutesToTime(
+        startMinutes +
+        minutes
+      )
+    );
+
+  }
+
+
+  return blockedTimes;
+
+}
+
+
+// ==========================================
+// GET END TIME
+// ==========================================
+
+function getEndTime(
+  startTime,
+  duration
+) {
+
+  if (
+    !startTime ||
+    !duration
+  ) {
+
+    return "";
+
+  }
+
+
+  const startMinutes =
+    timeToMinutes(
+      startTime
+    );
+
+
+  return minutesToTime(
+    startMinutes +
+    duration * 60
+  );
+
+}
+
+
+// ==========================================
+// FORMAT DURATION
+// ==========================================
+
+function formatDuration(
+  duration
+) {
+
+  const totalMinutes =
+    Math.round(
+      Number(duration) * 60
+    );
+
+
+  const hours =
+    Math.floor(
+      totalMinutes / 60
+    );
+
+
+  const minutes =
+    totalMinutes % 60;
+
+
+  if (
+    hours > 0 &&
+    minutes > 0
+  ) {
+
+    return (
+      `${hours} hr ${minutes} min`
+    );
+
+  }
+
+
+  if (
+    hours > 0
+  ) {
+
+    return (
+      `${hours} hr`
+    );
+
+  }
+
+
+  return (
+    `${minutes} min`
+  );
+
+}
+
+
+// ==========================================
+// FORMAT BLOCKED TIMES
+// ==========================================
+
+function formatBlockedTimes(
+  blockedTimes
+) {
+
+  if (
+    !blockedTimes
+  ) {
+
+    return "None";
+
+  }
+
+
+  // Supabase may return this as
+  // an actual array or a JSON string.
+
+  let times =
+    blockedTimes;
+
+
+  if (
+    typeof times ===
+    "string"
+  ) {
+
+    try {
+
+      times =
+        JSON.parse(
+          times
+        );
+
+    }
+
+    catch (error) {
+
+      return escapeHtml(
+        times
+      );
+
+    }
+
+  }
+
+
+  if (
+    !Array.isArray(times) ||
+    times.length === 0
+  ) {
+
+    return "None";
+
+  }
+
+
+  return times
+    .map(
+      function (time) {
+
+        return escapeHtml(
+          time
+        );
+
+      }
+    )
+    .join(
+      ", "
+    );
+
+}
+
+
+// ==========================================
+// TIME TO MINUTES
 // ==========================================
 
 function timeToMinutes(
@@ -1468,6 +1952,7 @@ function timeToMinutes(
   if (!time) {
 
     return 0;
+
   }
 
 
@@ -1480,6 +1965,7 @@ function timeToMinutes(
   if (!match) {
 
     return 0;
+
   }
 
 
@@ -1528,6 +2014,64 @@ function timeToMinutes(
 
 
 // ==========================================
+// MINUTES TO TIME
+// ==========================================
+
+function minutesToTime(
+  totalMinutes
+) {
+
+  let hours =
+    Math.floor(
+      totalMinutes / 60
+    );
+
+
+  const minutes =
+    totalMinutes % 60;
+
+
+  const modifier =
+    hours >= 12
+      ? "PM"
+      : "AM";
+
+
+  if (
+    hours > 12
+  ) {
+
+    hours -= 12;
+
+  }
+
+
+  if (
+    hours === 0
+  ) {
+
+    hours = 12;
+
+  }
+
+
+  return (
+    hours +
+    ":" +
+    String(
+      minutes
+    ).padStart(
+      2,
+      "0"
+    ) +
+    " " +
+    modifier
+  );
+
+}
+
+
+// ==========================================
 // HTML ESCAPE
 // ==========================================
 
@@ -1560,3 +2104,4 @@ function escapeHtml(
     );
 
 }
+
