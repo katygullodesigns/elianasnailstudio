@@ -1,15 +1,14 @@
+
 const SUPABASE_URL =
   "https://kyonstvpolakjhrecqcj.supabase.co";
 
 const SUPABASE_ANON_KEY =
-  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imt5b25zdHZwb2xha2pocmVjcWNqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE2OTYxMjUsImV4cCI6MjA5NzI3MjEyNX0.oq6v7gEy8FJPh4NI3ngUYybwJcHF6rW6qkNtepCxr7Y
-";
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imt5b25zdHZwb2xha2pocmVjcWNqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE2OTYxMjUsImV4cCI6MjA5NzI3MjEyNX0.oq6v7gEy8FJPh4NI3ngUYybwJcHF6rW6qkNtepCxr7Y";
 
-const supabaseClient =
-  supabase.createClient(
-    SUPABASE_URL,
-    SUPABASE_ANON_KEY
-  );
+const supabaseClient = supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_ANON_KEY
+);
 
 
 // ==========================================
@@ -17,7 +16,6 @@ const supabaseClient =
 // ==========================================
 
 const durations = {
-
   // Main services
   "Manicure": 1.5,
   "Pedicure": 2.0,
@@ -29,8 +27,7 @@ const durations = {
   // Design
   "Basic": 0.5,
   "Minimal Design": 1,
-  "Max Design": 2.5,
-
+  "Max Design": 2.5
 };
 
 
@@ -42,13 +39,13 @@ let selectedAdditionalServices = [];
 
 
 // ==========================================
-// CALCULATE MAIN BOOKING DURATION
+// MAIN BOOKING DURATION
 // ==========================================
 //
-// Service, polish, and design are part of
-// the MAIN appointment.
+// Service, polish and design are all part of
+// the SAME main appointment.
 //
-// Only the longest of these counts.
+// Only the longest duration is used.
 //
 // Example:
 //
@@ -58,14 +55,12 @@ let selectedAdditionalServices = [];
 //
 // Main duration = 2.5 hours
 //
-// ==========================================
 
 function getMainBookingDuration(
   service,
   polish,
   design
 ) {
-
   const serviceDuration =
     durations[service] || 0;
 
@@ -75,96 +70,51 @@ function getMainBookingDuration(
   const designDuration =
     durations[design] || 0;
 
-
   return Math.max(
     serviceDuration,
     polishDuration,
     designDuration
   );
-
 }
 
 
 // ==========================================
-// CALCULATE ADDITIONAL SERVICE DURATION
+// ADDITIONAL SERVICE DURATION
 // ==========================================
-//
-// IMPORTANT:
 //
 // Additional services are ADDED together.
 //
-// They do NOT use Math.max().
-//
 // Example:
 //
-// Pedicure = 0.5
-// Nail Art = 1
+// Main appointment = 1.5 hours
+// Additional Pedicure = 2 hours
+// Additional Design = 1 hour
 //
-// Additional duration = 1.5 hours
+// Total = 4.5 hours
 //
-// ==========================================
 
 function getAdditionalServicesDuration() {
-
   let totalDuration = 0;
-
 
   selectedAdditionalServices.forEach(
     function (item) {
-
       if (!item) {
         return;
       }
 
-
-      /*
-       * The main service for an additional
-       * appointment is stored in item.service.
-       *
-       * Example:
-       *
-       * {
-       *   service: "Pedicure",
-       *   polish: "",
-       *   design: ""
-       * }
-       *
-       * Pedicure = 0.5 hour.
-       */
-
-
       const serviceDuration =
         durations[item.service] || 0;
 
-
-      /*
-       * ADD the duration.
-       *
-       * Do not replace the previous duration.
-       */
-
-      totalDuration +=
-        serviceDuration;
-
+      totalDuration += serviceDuration;
     }
   );
 
-
   return totalDuration;
-
 }
 
 
 // ==========================================
-// CALCULATE TOTAL APPOINTMENT DURATION
-// ==========================================
-//
-// TOTAL =
-//
-// Main booking duration
-// +
-// ALL additional service durations
-//
+// TOTAL APPOINTMENT DURATION
 // ==========================================
 
 function getTotalAppointmentDuration(
@@ -172,7 +122,6 @@ function getTotalAppointmentDuration(
   polish,
   design
 ) {
-
   const mainDuration =
     getMainBookingDuration(
       service,
@@ -180,15 +129,12 @@ function getTotalAppointmentDuration(
       design
     );
 
-
   const additionalDuration =
     getAdditionalServicesDuration();
-
 
   const totalDuration =
     mainDuration +
     additionalDuration;
-
 
   console.log(
     "=============================="
@@ -216,9 +162,7 @@ function getTotalAppointmentDuration(
     "=============================="
   );
 
-
   return totalDuration;
-
 }
 
 
@@ -226,70 +170,62 @@ function getTotalAppointmentDuration(
 // TIME TO MINUTES
 // ==========================================
 
-function timeToMinutes(
-  timeString
-) {
-
+function timeToMinutes(timeString) {
   if (!timeString) {
-
     return 0;
-
   }
 
-
   const parts =
-    timeString.split(" ");
+    timeString.trim().split(/\s+/);
 
+  if (parts.length < 2) {
+    return 0;
+  }
 
   const time =
     parts[0];
 
-
   const modifier =
-    parts[1];
-
+    parts[1].toUpperCase();
 
   const timeParts =
     time.split(":");
 
+  if (timeParts.length !== 2) {
+    return 0;
+  }
 
   let hours =
-    Number(
-      timeParts[0]
-    );
-
+    Number(timeParts[0]);
 
   const minutes =
-    Number(
-      timeParts[1]
-    );
+    Number(timeParts[1]);
 
+  if (
+    Number.isNaN(hours) ||
+    Number.isNaN(minutes)
+  ) {
+    return 0;
+  }
 
   if (
     modifier === "PM" &&
     hours !== 12
   ) {
-
     hours += 12;
-
   }
-
 
   if (
     modifier === "AM" &&
     hours === 12
   ) {
-
     hours = 0;
-
   }
-
 
   return (
     hours * 60 +
     minutes
   );
-
 }
 
 
@@ -297,65 +233,39 @@ function timeToMinutes(
 // MINUTES TO TIME
 // ==========================================
 
-function minutesToTime(
-  totalMinutes
-) {
-
+function minutesToTime(totalMinutes) {
   let hours =
     Math.floor(
       totalMinutes / 60
     );
 
-
   const minutes =
     totalMinutes % 60;
 
+  let modifier = "AM";
 
-  let modifier =
-    "AM";
-
-
-  if (
-    hours >= 12
-  ) {
-
-    modifier =
-      "PM";
-
+  if (hours >= 12) {
+    modifier = "PM";
   }
 
-
-  if (
-    hours > 12
-  ) {
-
+  if (hours > 12) {
     hours -= 12;
-
   }
 
-
-  if (
-    hours === 0
-  ) {
-
+  if (hours === 0) {
     hours = 12;
-
   }
-
 
   return (
     hours +
     ":" +
-    String(
-      minutes
-    ).padStart(
+    String(minutes).padStart(
       2,
       "0"
     ) +
     " " +
     modifier
   );
-
 }
 
 
@@ -364,14 +274,12 @@ function minutesToTime(
 // ==========================================
 //
 // Every 30-minute period occupied by the
-// appointment gets blocked.
+// appointment is added to blocked_times.
 //
 // Example:
 //
 // Start: 10:00 AM
 // Duration: 2.5 hours
-//
-// Blocked:
 //
 // 10:00 AM
 // 10:30 AM
@@ -381,97 +289,82 @@ function minutesToTime(
 //
 // Appointment ends at 12:30 PM.
 //
-// ==========================================
 
 function getBlockedTimes(
   selectedTime,
   duration
 ) {
-
   if (
     !selectedTime ||
-    !duration
+    !duration ||
+    duration <= 0
   ) {
-
     return [];
-
   }
-
 
   const startMinutes =
     timeToMinutes(
       selectedTime
     );
-
 
   const totalMinutes =
     Math.round(
       duration * 60
     );
 
-
   const blockedTimes = [];
-
 
   for (
     let minutes = 0;
     minutes < totalMinutes;
     minutes += 30
   ) {
-
     blockedTimes.push(
       minutesToTime(
         startMinutes +
         minutes
       )
     );
-
   }
-
 
   console.log(
     "BLOCKED TIMES:",
     blockedTimes
   );
 
-
   return blockedTimes;
-
 }
 
 
 // ==========================================
-// GET END TIME
+// GET APPOINTMENT END TIME
 // ==========================================
 
 function getAppointmentEndTime(
   selectedTime,
   duration
 ) {
-
   if (
     !selectedTime ||
     !duration
   ) {
-
     return "";
-
   }
-
 
   const startMinutes =
     timeToMinutes(
       selectedTime
     );
 
+  const durationMinutes =
+    Math.round(
+      duration * 60
+    );
 
   return minutesToTime(
     startMinutes +
-    Math.round(
-      duration * 60
-    )
+    durationMinutes
   );
-
 }
 
 
@@ -485,54 +378,36 @@ function addAdditionalService(
   design = "",
   designDetails = ""
 ) {
-
   if (!service) {
-
     return;
-
   }
 
-
   const additionalService = {
-
-    service:
-      service,
-
-    polish:
-      polish,
-
-    design:
-      design,
-
-    designDetails:
-      designDetails
-
+    service: service,
+    polish: polish,
+    design: design,
+    designDetails: designDetails
   };
-
 
   selectedAdditionalServices.push(
     additionalService
   );
-
 
   console.log(
     "ADDED ADDITIONAL SERVICE:",
     additionalService
   );
 
-
   console.log(
     "ALL ADDITIONAL SERVICES:",
     selectedAdditionalServices
   );
-
 
   console.log(
     "ADDITIONAL SERVICE DURATION:",
     getAdditionalServicesDuration(),
     "hours"
   );
-
 }
 
 
@@ -540,51 +415,38 @@ function addAdditionalService(
 // REMOVE ADDITIONAL SERVICE
 // ==========================================
 
-function removeAdditionalService(
-  index
-) {
-
+function removeAdditionalService(index) {
   if (
     index < 0 ||
     index >=
       selectedAdditionalServices.length
   ) {
-
     return;
-
   }
 
-
   const removedService =
-    selectedAdditionalServices[
-      index
-    ];
-
+    selectedAdditionalServices[index];
 
   selectedAdditionalServices.splice(
     index,
     1
   );
 
-
   console.log(
     "REMOVED ADDITIONAL SERVICE:",
     removedService
   );
-
 
   console.log(
     "ALL ADDITIONAL SERVICES:",
     selectedAdditionalServices
   );
 
-
   console.log(
     "NEW ADDITIONAL DURATION:",
     getAdditionalServicesDuration(),
     "hours"
   );
-
 }
 
 
@@ -593,14 +455,11 @@ function removeAdditionalService(
 // ==========================================
 
 function clearAdditionalServices() {
-
   selectedAdditionalServices = [];
-
 
   console.log(
     "Additional services cleared."
   );
-
 }
 
 
@@ -609,67 +468,92 @@ function clearAdditionalServices() {
 // ==========================================
 
 function getAdditionalServiceCount() {
-
-  return (
-    selectedAdditionalServices.length
-  );
-
+  return selectedAdditionalServices.length;
 }
 
 
 // ==========================================
-// GET APPOINTMENT DURATION
-// ==========================================
-//
-// This is the function that should be used
-// when actually booking the appointment.
-//
+// GET BOOKING DURATION FROM FORM
 // ==========================================
 
 function calculateBookingDuration() {
-
   const serviceSelect =
     document.getElementById(
       "serviceSelect"
     );
-
 
   const polishSelect =
     document.getElementById(
       "polishSelect"
     );
 
-
   const designSelect =
     document.getElementById(
       "designSelect"
     );
-
 
   const service =
     serviceSelect
       ? serviceSelect.value
       : "";
 
-
   const polish =
     polishSelect
       ? polishSelect.value
       : "";
-
 
   const design =
     designSelect
       ? designSelect.value
       : "";
 
-
   return getTotalAppointmentDuration(
     service,
     polish,
     design
   );
+}
 
+
+// ==========================================
+// GET COMPLETE BOOKING INFORMATION
+// ==========================================
+//
+// This helper gives the booking process
+// everything it needs in one object.
+//
+// ==========================================
+
+function getBookingTiming(
+  service,
+  polish,
+  design,
+  selectedTime
+) {
+  const duration =
+    getTotalAppointmentDuration(
+      service,
+      polish,
+      design
+    );
+
+  const endTime =
+    getAppointmentEndTime(
+      selectedTime,
+      duration
+    );
+
+  const blockedTimes =
+    getBlockedTimes(
+      selectedTime,
+      duration
+    );
+
+  return {
+    duration: duration,
+    endTime: endTime,
+    blockedTimes: blockedTimes
+  };
 }
 
 
@@ -678,47 +562,36 @@ function calculateBookingDuration() {
 // ==========================================
 
 function toggleMenu() {
-
   const nav =
     document.querySelector(
       "nav"
     );
-
 
   const btn =
     document.querySelector(
       ".mobile-menu-btn"
     );
 
-
   if (!nav) {
-
     return;
-
   }
-
 
   nav.classList.toggle(
     "mobile-open"
   );
 
-
   document.body.classList.toggle(
     "menu-open"
   );
 
-
   if (btn) {
-
     btn.innerHTML =
       nav.classList.contains(
         "mobile-open"
       )
         ? "✕"
         : "☰";
-
   }
-
 }
 
 
@@ -726,98 +599,45 @@ function toggleMenu() {
 // CLOSE MOBILE MENU WHEN LINK IS CLICKED
 // ==========================================
 
-document
-  .querySelectorAll(
-    "nav a"
-  )
-  .forEach(
-    function (link) {
+document.addEventListener(
+  "DOMContentLoaded",
+  function () {
+    document
+      .querySelectorAll(
+        "nav a"
+      )
+      .forEach(
+        function (link) {
+          link.addEventListener(
+            "click",
+            function () {
+              const nav =
+                document.querySelector(
+                  "nav"
+                );
 
-      link.addEventListener(
-        "click",
-        function () {
+              const btn =
+                document.querySelector(
+                  ".mobile-menu-btn"
+                );
 
-          const nav =
-            document.querySelector(
-              "nav"
-            );
+              if (nav) {
+                nav.classList.remove(
+                  "mobile-open"
+                );
+              }
 
+              document.body.classList.remove(
+                "menu-open"
+              );
 
-          const btn =
-            document.querySelector(
-              ".mobile-menu-btn"
-            );
-
-
-          if (nav) {
-
-            nav.classList.remove(
-              "mobile-open"
-            );
-
-          }
-
-
-          document.body.classList.remove(
-            "menu-open"
+              if (btn) {
+                btn.innerHTML =
+                  "☰";
+              }
+            }
           );
-
-
-          if (btn) {
-
-            btn.innerHTML =
-              "☰";
-
-          }
-
         }
       );
-
-    }
-  );
-```
-
-### The key change
-
-The calculation is now explicitly:
-
-```javascript
-const totalDuration =
-  mainDuration +
-  additionalDuration;
-```
-
-So if the customer selects:
-
-```text
-Manicure
-```
-
-you get:
-
-```text
-1.5 hours
-```
-
-Then adds:
-
-```text
-Pedicure
-```
-
-you get:
-
-```text
-1.5 + 0.5 = 2.0 hours
-```
-
-Then adds:
-
-```text
-Nail Art
-```
-
-you get:
-
-```text
-1.5 + 0.5 + 1.0 = 3.0 hours
+  }
+);
