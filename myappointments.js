@@ -47,7 +47,7 @@ const durations = {
 
   // Main services
   "Manicure": 1.5,
-  "Pedicure": 0.5,
+  "Pedicure": 2.0,
 
   // Polish
   "Gel": 1.5,
@@ -59,7 +59,6 @@ const durations = {
   "Max Design": 2.5,
 
   // Additional services
-  "Nail Art": 1
 
 };
 
