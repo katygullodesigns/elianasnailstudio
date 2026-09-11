@@ -39,169 +39,84 @@ img-src 'self' data: https:;
       <p>Loading appointments...</p>
 
     </div>
-    <button
-      type="button"
-      onclick="bookAppointment()"
-    >
-      Book Appointment
-    </button>
+    <section id="book" class="booking">
 
-    <p id="message"></p>
+  <div class="booking-layout-myappt">
 
-  </div>
+    <div class="booking-form">
+      <h2>Book</h2>
 
-</div>
+      <input type="text" id="clientName" placeholder="Name">
 
+      <input type="tel" id="clientPhone" placeholder="Phone">
 
-<!-- BOOKING SUCCESS POPUP -->
-<div id="bookingPopup" class="popup">
+      <input type="text" id="appointmentDate" placeholder="Select Date">
 
-  <div class="popup-box">
+      <div id="timeSlots" class="time-slots"></div>
 
-    <h2>Appointment Booked!</h2>
+      <select id="serviceSelect">
+        <option value="">Service</option>
+        <option>Manicure</option>
+        <option>Pedicure</option>
+      </select>
 
-    <p>
-      Your appointment has been successfully scheduled.
-    </p>
+      <select id="polishSelect">
+        <option value="">Polish</option>
+        <option>Gel</option>
+        <option>Acrylic</option>
+      </select>
 
-    <button
-      type="button"
-      onclick="closePopup()"
-    >
-      OK
-    </button>
+      <select id="designSelect">
+        <option value="">Design</option>
+        <option>Basic</option>
+        <option>Minimal Design</option>
+        <option>Max Design</option>
+      </select>
+      
+<select id="additionalServiceSelect">
+  <option value="No">Additional Services</option>
+  <option>Manicure</option>
+  <option>Pedicure</option>
+  <option>No</option>
+</select>
 
-  </div>
+      <button onclick="bookAppointment()">Book Appointment</button>
 
-</div>
-
-
-<!-- ADDITIONAL SERVICE POPUP -->
-<div id="additionalServicePopup" class="popup">
-
-  <div class="popup-box additional-service-box">
-
-    <button
-      type="button"
-      class="popup-close"
-      onclick="closeAdditionalServicePopup()"
-      aria-label="Close"
-    >
-      ×
-    </button>
-
-    <h2>Add Additional Service</h2>
-
-
-    <!-- ADDITIONAL SERVICE -->
-    <label for="additionalServiceType">
-      Service
-    </label>
-
-    <select id="additionalServiceType">
-
-      <option value="">
-        Select Service
-      </option>
-
-      <option value="Manicure">
-        Manicure
-      </option>
-
-      <option value="Pedicure">
-        Pedicure
-      </option>
-
-    </select>
-
-
-    <!-- ADDITIONAL POLISH -->
-    <label for="additionalPolishSelect">
-      Polish Type
-    </label>
-
-    <select id="additionalPolishSelect">
-
-      <option value="">
-        Select Polish
-      </option>
-
-      <option value="Regular">
-        Gel
-      </option>
-
-      <option value="Gel">
-        Builder Gel
-      </option>
-
-      <option value="Acrylic">
-        Acrylic
-      </option>
-
-    </select>
-
-
-    <!-- ADDITIONAL DESIGN -->
-    <label for="additionalDesignSelect">
-      Design
-    </label>
-
-    <select id="additionalDesignSelect">
-
-      <option value="">
-        Select Design
-      </option>
-
-      <option value="Basic">
-        Basic
-      </option>
-
-      <option value="Minimal Design">
-        Minimal Design
-      </option>
-
-      <option value="Max Design">
-        Max Design
-      </option>
-
-    </select>
-
-
-    <!-- DESIGN DETAILS -->
-    <label for="additionalDesignDetails">
-      Design Details
-    </label>
-
-    <textarea
-      id="additionalDesignDetails"
-      placeholder="Describe your design..."
-      rows="3"
-    ></textarea>
-
-
-    <!-- POPUP BUTTONS -->
-    <div class="additional-service-buttons">
-
-      <button
-        type="button"
-        onclick="closeAdditionalServicePopup()"
-      >
-        Cancel
-      </button>
-
-      <button
-        type="button"
-        onclick="saveAdditionalServiceOptions()"
-      >
-        Add Service
-      </button>
-
+      <p id="message"></p>
     </div>
 
   </div>
 
+  <div id="bookingPopup" class="popup">
+  <div class="popup-box">
+    <h2>Appointment Booked!</h2>
+    <p>Your appointment has been successfully scheduled.</p>
+    <button onclick="closePopup()">OK</button>
+  </div>
 </div>
-  </section>
+
+<div id="additionalServicePopup" class="popup">
+  <div class="popup-box">
+    <h2>Additional Service Details</h2>
+
+    <select id="additionalPolishSelect">
+      <option value="">Additional Polish</option>
+      <option>Gel</option>
+      <option>Acrylic</option>
+    </select>
+
+    <select id="additionalDesignSelect">
+      <option value="">Additional Design</option>
+      <option>Basic</option>
+      <option>Minimal Design</option>
+      <option>Max Design</option>
+    </select>
+
+    <button type="button" onclick="saveAdditionalServiceOptions()">Save</button>
+</div>
+  </div>
+  
+</section>
 
     <br>
 
