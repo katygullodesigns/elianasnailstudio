@@ -1,24 +1,85 @@
-
 const SUPABASE_URL =
   "https://kyonstvpolakjhrecqcj.supabase.co";
 
 const SUPABASE_ANON_KEY =
   "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imt5b25zdHZwb2xha2pocmVjcWNqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE2OTYxMjUsImV4cCI6MjA5NzI3MjEyNX0.oq6v7gEy8FJPh4NI3ngUYybwJcHF6rW6qkNtepCxr7Y";
 
-const supabaseClient = supabase.createClient(
-  SUPABASE_URL,
-  SUPABASE_ANON_KEY
-);
+const supabaseClient =
+  supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_ANON_KEY
+  );
 
+// ==========================================
+// DATE PICKER / CALENDAR
+// ==========================================
+
+document.addEventListener("DOMContentLoaded", function () {
+
+  const dateInput =
+    document.getElementById("appointmentDate");
+
+  if (!dateInput) {
+    console.error(
+      "Could not find #appointmentDate"
+    );
+    return;
+  }
+
+  if (typeof flatpickr === "undefined") {
+    console.error(
+      "Flatpickr did not load."
+    );
+    return;
+  }
+
+  flatpickr(dateInput, {
+    dateFormat: "Y-m-d",
+    minDate: "today",
+    disableMobile: true,
+
+    onChange: function (
+      selectedDates,
+      dateStr
+    ) {
+      console.log(
+        "Selected date:",
+        dateStr
+      );
+
+      // Clear previously selected time
+      const timeSlots =
+        document.getElementById(
+          "timeSlots"
+        );
+
+      if (timeSlots) {
+        timeSlots.innerHTML = "";
+      }
+
+      // If your existing script has a function
+      // that loads available times for a date,
+      // call it here.
+      if (
+        typeof loadAvailableTimes ===
+        "function"
+      ) {
+        loadAvailableTimes(dateStr);
+      }
+    }
+  });
+
+});
 
 // ==========================================
 // SERVICE DURATIONS
 // ==========================================
 
 const durations = {
+
   // Main services
   "Manicure": 1.5,
-  "Pedicure": 2.0,
+  "Pedicure": 0.5,
 
   // Polish
   "Gel": 1.5,
@@ -27,7 +88,11 @@ const durations = {
   // Design
   "Basic": 0.5,
   "Minimal Design": 1,
-  "Max Design": 2.5
+  "Max Design": 2.5,
+
+  // Additional services
+  "Nail Art": 1
+
 };
 
 
@@ -39,73 +104,41 @@ let selectedAdditionalServices = [];
 
 
 // ==========================================
-// MAIN BOOKING DURATION
+// CALCULATE MAIN SERVICE DURATION
 // ==========================================
-//
-// Service, polish and design are all part of
-// the SAME main appointment.
-//
-// Only the longest duration is used.
-//
-// Example:
-//
-// Manicure = 1.5
-// Gel = 1.5
-// Max Design = 2.5
-//
-// Main duration = 2.5 hours
-//
 
 function getMainBookingDuration(
   service,
   polish,
   design
 ) {
-  const serviceDuration =
-    durations[service] || 0;
-
-  const polishDuration =
-    durations[polish] || 0;
-
-  const designDuration =
-    durations[design] || 0;
 
   return Math.max(
-    serviceDuration,
-    polishDuration,
-    designDuration
+
+    durations[service] || 0,
+
+    durations[polish] || 0,
+
+    durations[design] || 0
+
   );
 }
 
 
 // ==========================================
-// ADDITIONAL SERVICE DURATION
+// CALCULATE ADDITIONAL SERVICE DURATION
 // ==========================================
-//
-// Additional services are ADDED together.
-//
-// Example:
-//
-// Main appointment = 1.5 hours
-// Additional Pedicure = 2 hours
-// Additional Design = 1 hour
-//
-// Total = 4.5 hours
-//
 
 function getAdditionalServicesDuration() {
+
   let totalDuration = 0;
 
   selectedAdditionalServices.forEach(
     function (item) {
-      if (!item) {
-        return;
-      }
 
-      const serviceDuration =
+      totalDuration +=
         durations[item.service] || 0;
 
-      totalDuration += serviceDuration;
     }
   );
 
@@ -114,7 +147,7 @@ function getAdditionalServicesDuration() {
 
 
 // ==========================================
-// TOTAL APPOINTMENT DURATION
+// CALCULATE TOTAL APPOINTMENT DURATION
 // ==========================================
 
 function getTotalAppointmentDuration(
@@ -122,6 +155,7 @@ function getTotalAppointmentDuration(
   polish,
   design
 ) {
+
   const mainDuration =
     getMainBookingDuration(
       service,
@@ -137,29 +171,18 @@ function getTotalAppointmentDuration(
     additionalDuration;
 
   console.log(
-    "=============================="
-  );
-
-  console.log(
     "MAIN DURATION:",
-    mainDuration,
-    "hours"
+    mainDuration
   );
 
   console.log(
     "ADDITIONAL DURATION:",
-    additionalDuration,
-    "hours"
+    additionalDuration
   );
 
   console.log(
     "TOTAL DURATION:",
-    totalDuration,
-    "hours"
-  );
-
-  console.log(
-    "=============================="
+    totalDuration
   );
 
   return totalDuration;
@@ -167,46 +190,32 @@ function getTotalAppointmentDuration(
 
 
 // ==========================================
-// TIME TO MINUTES
+// TIME FUNCTIONS
 // ==========================================
 
 function timeToMinutes(timeString) {
+
   if (!timeString) {
     return 0;
   }
 
   const parts =
-    timeString.trim().split(/\s+/);
-
-  if (parts.length < 2) {
-    return 0;
-  }
+    timeString.split(" ");
 
   const time =
     parts[0];
 
   const modifier =
-    parts[1].toUpperCase();
+    parts[1];
 
   const timeParts =
     time.split(":");
-
-  if (timeParts.length !== 2) {
-    return 0;
-  }
 
   let hours =
     Number(timeParts[0]);
 
   const minutes =
     Number(timeParts[1]);
-
-  if (
-    Number.isNaN(hours) ||
-    Number.isNaN(minutes)
-  ) {
-    return 0;
-  }
 
   if (
     modifier === "PM" &&
@@ -229,11 +238,8 @@ function timeToMinutes(timeString) {
 }
 
 
-// ==========================================
-// MINUTES TO TIME
-// ==========================================
-
 function minutesToTime(totalMinutes) {
+
   let hours =
     Math.floor(
       totalMinutes / 60
@@ -272,32 +278,15 @@ function minutesToTime(totalMinutes) {
 // ==========================================
 // CALCULATE BLOCKED TIMES
 // ==========================================
-//
-// Every 30-minute period occupied by the
-// appointment is added to blocked_times.
-//
-// Example:
-//
-// Start: 10:00 AM
-// Duration: 2.5 hours
-//
-// 10:00 AM
-// 10:30 AM
-// 11:00 AM
-// 11:30 AM
-// 12:00 PM
-//
-// Appointment ends at 12:30 PM.
-//
 
 function getBlockedTimes(
   selectedTime,
   duration
 ) {
+
   if (
     !selectedTime ||
-    !duration ||
-    duration <= 0
+    !duration
   ) {
     return [];
   }
@@ -308,24 +297,26 @@ function getBlockedTimes(
     );
 
   const totalMinutes =
-    Math.round(
-      duration * 60
-    );
+    duration * 60;
 
   const blockedTimes = [];
+
 
   for (
     let minutes = 0;
     minutes < totalMinutes;
     minutes += 30
   ) {
+
     blockedTimes.push(
       minutesToTime(
         startMinutes +
         minutes
       )
     );
+
   }
+
 
   console.log(
     "BLOCKED TIMES:",
@@ -337,39 +328,7 @@ function getBlockedTimes(
 
 
 // ==========================================
-// GET APPOINTMENT END TIME
-// ==========================================
-
-function getAppointmentEndTime(
-  selectedTime,
-  duration
-) {
-  if (
-    !selectedTime ||
-    !duration
-  ) {
-    return "";
-  }
-
-  const startMinutes =
-    timeToMinutes(
-      selectedTime
-    );
-
-  const durationMinutes =
-    Math.round(
-      duration * 60
-    );
-
-  return minutesToTime(
-    startMinutes +
-    durationMinutes
-  );
-}
-
-
-// ==========================================
-// ADD ADDITIONAL SERVICE
+// ADDITIONAL SERVICE MANAGEMENT
 // ==========================================
 
 function addAdditionalService(
@@ -378,44 +337,31 @@ function addAdditionalService(
   design = "",
   designDetails = ""
 ) {
+
   if (!service) {
     return;
   }
 
-  const additionalService = {
-    service: service,
-    polish: polish,
-    design: design,
-    designDetails: designDetails
-  };
+  selectedAdditionalServices.push({
 
-  selectedAdditionalServices.push(
-    additionalService
-  );
+    service,
+    polish,
+    design,
+    designDetails
+
+  });
 
   console.log(
-    "ADDED ADDITIONAL SERVICE:",
-    additionalService
-  );
-
-  console.log(
-    "ALL ADDITIONAL SERVICES:",
+    "ADDITIONAL SERVICES:",
     selectedAdditionalServices
-  );
-
-  console.log(
-    "ADDITIONAL SERVICE DURATION:",
-    getAdditionalServicesDuration(),
-    "hours"
   );
 }
 
 
-// ==========================================
-// REMOVE ADDITIONAL SERVICE
-// ==========================================
+function removeAdditionalService(
+  index
+) {
 
-function removeAdditionalService(index) {
   if (
     index < 0 ||
     index >=
@@ -424,136 +370,22 @@ function removeAdditionalService(index) {
     return;
   }
 
-  const removedService =
-    selectedAdditionalServices[index];
-
   selectedAdditionalServices.splice(
     index,
     1
   );
 
   console.log(
-    "REMOVED ADDITIONAL SERVICE:",
-    removedService
-  );
-
-  console.log(
-    "ALL ADDITIONAL SERVICES:",
+    "ADDITIONAL SERVICES:",
     selectedAdditionalServices
   );
-
-  console.log(
-    "NEW ADDITIONAL DURATION:",
-    getAdditionalServicesDuration(),
-    "hours"
-  );
 }
 
-
-// ==========================================
-// CLEAR ADDITIONAL SERVICES
-// ==========================================
 
 function clearAdditionalServices() {
+
   selectedAdditionalServices = [];
 
-  console.log(
-    "Additional services cleared."
-  );
-}
-
-
-// ==========================================
-// GET ADDITIONAL SERVICE COUNT
-// ==========================================
-
-function getAdditionalServiceCount() {
-  return selectedAdditionalServices.length;
-}
-
-
-// ==========================================
-// GET BOOKING DURATION FROM FORM
-// ==========================================
-
-function calculateBookingDuration() {
-  const serviceSelect =
-    document.getElementById(
-      "serviceSelect"
-    );
-
-  const polishSelect =
-    document.getElementById(
-      "polishSelect"
-    );
-
-  const designSelect =
-    document.getElementById(
-      "designSelect"
-    );
-
-  const service =
-    serviceSelect
-      ? serviceSelect.value
-      : "";
-
-  const polish =
-    polishSelect
-      ? polishSelect.value
-      : "";
-
-  const design =
-    designSelect
-      ? designSelect.value
-      : "";
-
-  return getTotalAppointmentDuration(
-    service,
-    polish,
-    design
-  );
-}
-
-
-// ==========================================
-// GET COMPLETE BOOKING INFORMATION
-// ==========================================
-//
-// This helper gives the booking process
-// everything it needs in one object.
-//
-// ==========================================
-
-function getBookingTiming(
-  service,
-  polish,
-  design,
-  selectedTime
-) {
-  const duration =
-    getTotalAppointmentDuration(
-      service,
-      polish,
-      design
-    );
-
-  const endTime =
-    getAppointmentEndTime(
-      selectedTime,
-      duration
-    );
-
-  const blockedTimes =
-    getBlockedTimes(
-      selectedTime,
-      duration
-    );
-
-  return {
-    duration: duration,
-    endTime: endTime,
-    blockedTimes: blockedTimes
-  };
 }
 
 
@@ -562,10 +394,9 @@ function getBookingTiming(
 // ==========================================
 
 function toggleMenu() {
+
   const nav =
-    document.querySelector(
-      "nav"
-    );
+    document.querySelector("nav");
 
   const btn =
     document.querySelector(
@@ -585,6 +416,7 @@ function toggleMenu() {
   );
 
   if (btn) {
+
     btn.innerHTML =
       nav.classList.contains(
         "mobile-open"
@@ -595,49 +427,43 @@ function toggleMenu() {
 }
 
 
-// ==========================================
-// CLOSE MOBILE MENU WHEN LINK IS CLICKED
-// ==========================================
+document
+  .querySelectorAll("nav a")
+  .forEach(
+    function (link) {
 
-document.addEventListener(
-  "DOMContentLoaded",
-  function () {
-    document
-      .querySelectorAll(
-        "nav a"
-      )
-      .forEach(
-        function (link) {
-          link.addEventListener(
-            "click",
-            function () {
-              const nav =
-                document.querySelector(
-                  "nav"
-                );
+      link.addEventListener(
+        "click",
+        function () {
 
-              const btn =
-                document.querySelector(
-                  ".mobile-menu-btn"
-                );
+          const nav =
+            document.querySelector(
+              "nav"
+            );
 
-              if (nav) {
-                nav.classList.remove(
-                  "mobile-open"
-                );
-              }
+          const btn =
+            document.querySelector(
+              ".mobile-menu-btn"
+            );
 
-              document.body.classList.remove(
-                "menu-open"
-              );
+          if (nav) {
 
-              if (btn) {
-                btn.innerHTML =
-                  "☰";
-              }
-            }
+            nav.classList.remove(
+              "mobile-open"
+            );
+          }
+
+          document.body.classList.remove(
+            "menu-open"
           );
+
+          if (btn) {
+
+            btn.innerHTML = "☰";
+          }
+
         }
       );
-  }
-);
+
+    }
+  );
