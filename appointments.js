@@ -1727,24 +1727,12 @@ await loadAppointments();
 // GET MAIN BOOKING DURATION
 // ==========================================
 
-function getMainBookingDuration(
-service,
-polish,
-design
-) {
-
-return Math.max(
-
-```
-durations[service] || 0,
-
-durations[polish] || 0,
-
-durations[design] || 0
-```
-
-);
-
+function getMainBookingDuration(service, polish, design) {
+  return Math.max(
+    durations[service] || 0,
+    durations[polish] || 0,
+    durations[design] || 0
+  );
 }
 
 // ==========================================
