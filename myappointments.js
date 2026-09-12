@@ -239,7 +239,17 @@ function isPastDateTime(
   return appointmentDate < new Date();
 }
 
+if (
+  timeToMinutes(selectedTime) >
+  timeToMinutes("6:00 PM")
+) {
 
+  alert(
+    "Appointments cannot start after 6:00 PM."
+  );
+
+  return;
+}
 // ==========================================
 // GET CURRENT USER
 // ==========================================
@@ -1059,23 +1069,13 @@ window.removeAdditionalService =
 //
 // ==========================================
 
-function getAdditionalServiceDuration(
-  item
-) {
+function getAdditionalServiceDuration(item) {
 
   if (!item) {
     return 0;
   }
 
-  return Math.max(
-
-    durations[item.service] || 0,
-
-    durations[item.polish] || 0,
-
-    durations[item.design] || 0
-
-  );
+  return 2;
 }
 
 
