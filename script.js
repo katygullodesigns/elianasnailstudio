@@ -705,6 +705,7 @@ window.removeAdditionalService = function (index) {
             "login.html";
           return;
         }
+        
         // --------------------------------------
         // GET FORM VALUES
         // --------------------------------------
@@ -852,26 +853,35 @@ if (
           duration * 2;
 
 
-        const timesToBook =
-          allTimes.slice(
-            startIndex,
-            startIndex +
-              slotsNeeded
-          );
+       const timesToBook = [];
 
+for (let i = 0; i < slotsNeeded; i++) {
+  const minutes =
+    timeToMinutes(selectedTime) + (i * 30);
 
-        if (
-          timesToBook.length <
-          slotsNeeded
-        ) {
+  const hour = Math.floor(minutes / 60);
+  const minute = minutes % 60;
 
-          alert(
-            "That service requires more time than is available. Please choose an earlier appointment."
-          );
+  let displayHour = hour;
 
-          return;
+  let ampm = "AM";
 
-        }
+  if (hour >= 12) {
+    ampm = "PM";
+    if (hour > 12) {
+      displayHour = hour - 12;
+    }
+  }
+
+  if (displayHour === 0) {
+    displayHour = 12;
+  }
+
+  const formattedTime =
+    `${displayHour}:${String(minute).padStart(2, "0")} ${ampm}`;
+
+  timesToBook.push(formattedTime);
+}
 
 
         // --------------------------------------
