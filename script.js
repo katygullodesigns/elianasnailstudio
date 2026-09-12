@@ -182,7 +182,7 @@ document.addEventListener(
 
       "Manicure": 1.5,
 
-      "Pedicure": 0.5,
+      "Pedicure": 2.0,
 
       "Gel": 1.5,
 
