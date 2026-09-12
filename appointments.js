@@ -642,26 +642,12 @@ function showAppointmentDetails(
                           service.service ||
                           "Additional Service";
 
-                    const serviceDuration =
-                      getAdditionalServiceDuration(
-                        service
-                      );
-
                     return `
                       <li>
                         ${escapeHtml(
                           name
                         )}
-
-                        ${
-                          serviceDuration
-                            ? ` (${escapeHtml(
-                                formatDuration(
-                                  serviceDuration
-                                )
-                              )})`
-                            : ""
-                        }
+                        (2 hours)
                       </li>
                     `;
                   }
@@ -1479,44 +1465,38 @@ function getAdditionalServicesDuration(
 // GET TOTAL APPOINTMENT DURATION
 // ==========================================
 
-function getAppointmentDuration(
-  appointment
-) {
-  if (!appointment) {
-    return 0;
-  }
-
+function getAppointmentDuration(appointment) {
   const mainDuration =
-    getMainBookingDuration(
-      appointment.service,
-      appointment.polish,
-      appointment.design
+    Math.max(
+      serviceDurations[appointment.service] || 1,
+      serviceDurations[appointment.polish] || 1,
+      serviceDurations[appointment.design] || 1
     );
 
   const additionalServices =
-    getAdditionalServices(
-      appointment
-    );
+    getAdditionalServices(appointment);
 
   const additionalDuration =
-    getAdditionalServicesDuration(
-      additionalServices
-    );
+    additionalServices.length * 2;
+
+  return (
+    mainDuration +
+    additionalDuration
+  );
+}
 
   // ========================================
   // ADDITIONAL SERVICES ARE ADDED
   // ========================================
 
-  const calculatedDuration =
-    mainDuration +
-    additionalDuration;
+  const additionalDuration =
+  additionalServices.length * 2;
 
-  if (
-    additionalServices.length > 0
-  ) {
-    return calculatedDuration;
-  }
+const calculatedDuration =
+  mainDuration + additionalDuration;
 
+return calculatedDuration;
+  
   // ========================================
   // OLDER APPOINTMENTS
   // ========================================
