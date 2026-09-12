@@ -1251,7 +1251,50 @@ function getAppointmentEndTime(
 
 function openAdditionalServicePopup() {
 
-  console.log("Opening additional service popup.");
+  const popup =
+    document.getElementById(
+      "additionalServicePopup"
+    );
+
+  if (!popup) {
+    console.error(
+      "Could not find #additionalServicePopup."
+    );
+    return;
+  }
+
+  const service =
+    document.getElementById(
+      "additionalServiceType"
+    );
+
+  const polish =
+    document.getElementById(
+      "additionalPolishSelect"
+    );
+
+  const design =
+    document.getElementById(
+      "additionalDesignSelect"
+    );
+
+  const details =
+    document.getElementById(
+      "additionalDesignDetails"
+    );
+
+  if (service) service.value = "";
+  if (polish) polish.value = "";
+  if (design) design.value = "";
+  if (details) details.value = "";
+
+  popup.classList.add("active");
+
+  document.body.style.overflow = "hidden";
+}
+
+
+function closeAdditionalServicePopup() {
 
   const popup =
     document.getElementById(
@@ -1259,76 +1302,12 @@ function openAdditionalServicePopup() {
     );
 
   if (!popup) {
-
-    console.error(
-      "Could not find #additionalServicePopup."
-    );
-
     return;
-
   }
 
+  popup.classList.remove("active");
 
-  // Reset the additional-service fields
-  const service =
-    document.getElementById(
-      "additionalServiceType"
-    );
-
-
-  const polish =
-    document.getElementById(
-      "additionalPolishSelect"
-    );
-
-
-  const design =
-    document.getElementById(
-      "additionalDesignSelect"
-    );
-
-
-  const details =
-    document.getElementById(
-      "additionalDesignDetails"
-    );
-
-
-  if (service) {
-
-    service.value = "";
-
-  }
-
-
-  if (polish) {
-
-    polish.value = "";
-
-  }
-
-
-  if (design) {
-
-    design.value = "";
-
-  }
-
-
-  if (details) {
-
-    details.value = "";
-
-  }
-
-
-  // Show popup
-  popup.style.display = "flex";
-
-  popup.classList.add(
-    "active"
-  );
-
+  document.body.style.overflow = "";
 }
 
 
