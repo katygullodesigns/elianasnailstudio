@@ -1188,68 +1188,53 @@ function getAppointmentEndTime(
 
 function openAdditionalServicePopup() {
 
-  const popup =
+   const popup =
     document.getElementById(
       "additionalServicePopup"
     );
-
 
   if (!popup) {
     return;
   }
 
-
-  // Reset popup fields
   const service =
     document.getElementById(
       "additionalServiceType"
     );
-
 
   const polish =
     document.getElementById(
       "additionalPolishSelect"
     );
 
-
   const design =
     document.getElementById(
       "additionalDesignSelect"
     );
-
 
   const details =
     document.getElementById(
       "additionalDesignDetails"
     );
 
-
   if (service) {
     service.value = "";
   }
-
 
   if (polish) {
     polish.value = "";
   }
 
-
   if (design) {
     design.value = "";
   }
-
 
   if (details) {
     details.value = "";
   }
 
-
-  popup.classList.add(
-    "active"
-  );
-
+  popup.classList.add("active");
 }
-
 
 // ==========================================================
 // CLOSE ADDITIONAL SERVICE POPUP
