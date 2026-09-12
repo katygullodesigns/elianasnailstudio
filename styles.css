@@ -9,9 +9,9 @@ html {
 }
 
 body {
-  font-family: "Cormorant Garamond", serif;
-  background: #000;
-  color: #af5b5e;
+  font-family: 'Cormorant Garamond', serif;
+  background: black;
+  color: #AF5B5E;
   overflow-x: hidden;
 }
 
@@ -22,39 +22,27 @@ body.menu-open {
 .background {
   position: fixed;
   inset: 0;
-
   background:
     radial-gradient(circle at top, #000000, transparent 55%),
-    linear-gradient(to bottom, #af5b5e, #000000 60%);
-
+    linear-gradient(to bottom, #AF5B5E, #000000 60%);
   z-index: -1;
 }
 
 
-/* ==========================================================
-   HEADER
-   ========================================================== */
-
 header {
   min-height: 50vh;
-
   display: flex;
   flex-direction: column;
   justify-content: center;
-
   text-align: center;
-
   position: relative;
 }
 
 .logo-container {
   position: relative;
-
+  width: fit-content;
   width: 900px;
-  max-width: 100%;
-
   margin: 70px auto 0;
-
   display: flex;
   justify-content: center;
   align-items: center;
@@ -67,41 +55,28 @@ header {
 
 #logohead2 {
   position: absolute;
-
   top: 18%;
   left: 7%;
-
   width: 38px;
   height: auto;
-
   animation: sparkleTwinkle 1.5s ease-in-out infinite;
 }
 
 
-/* ==========================================================
-   NAVIGATION
-   ========================================================== */
-
 nav {
   margin-top: 60px;
-
   font-size: 30px;
-
   display: flex;
   justify-content: center;
   align-items: center;
-
   gap: 40px;
 }
 
 nav a {
   margin: 0;
-
   text-decoration: none;
-
   color: #e7b0b0;
-
-  transition: 0.3s ease;
+  transition: 0.3s;
 }
 
 nav a:hover {
@@ -113,25 +88,16 @@ nav a:hover {
   display: none;
 }
 
-
-/* LOGIN */
-
 .login-btn {
   position: absolute;
-
   top: 20px;
   right: 30px;
-
   padding: 10px 20px;
-
   border: 1px solid #f2a3b4;
   border-radius: 30px;
-
   color: #f2a3b4;
-
   text-decoration: none;
-
-  transition: 0.3s ease;
+  transition: 0.3s;
 }
 
 .login-btn:hover {
@@ -139,36 +105,19 @@ nav a:hover {
   color: white;
 }
 
-
-/* ==========================================================
-   SCROLL ARROW
-   ========================================================== */
-
 .scroll-arrow {
   display: block;
-
   width: fit-content;
-
   margin: 20px auto 0;
-
   font-size: 50px;
-
-  color: #af5b5e;
-
+  color: #AF5B5E;
   text-decoration: none;
-
   animation: glow 1.5s infinite;
 }
 
 .scroll-arrow:hover {
   color: white;
 }
-
-
-/* ==========================================================
-   FLATPICKR BOOKING INDICATORS
-   ========================================================== */
-
 .flatpickr-day.has-bookings {
   position: relative;
   font-weight: bold;
@@ -176,67 +125,43 @@ nav a:hover {
 
 .flatpickr-day .booking-dot {
   position: absolute;
-
   bottom: 2px;
   right: 3px;
-
   background: #d78b9c;
   color: black;
-
   border-radius: 50%;
-
   font-size: 10px;
-
   width: 16px;
   height: 16px;
-
   line-height: 16px;
-
   text-align: center;
 }
-
-
-/* ==========================================================
-   GENERAL SECTIONS
-   ========================================================== */
+/* SECTIONS */
 
 .intro-bio,
 .portfolio {
   width: 90%;
   max-width: 1200px;
-
   margin: 120px auto;
-
   color: #f0b2b2;
 }
 
 h2 {
   font-size: 48px;
-
   margin-bottom: 40px;
-
   color: #f0b2b2;
 }
 
 h3 {
   font-size: 30px;
-
   margin: 50px 0 25px;
-
   color: white;
 }
 
-
-/* ==========================================================
-   BIO
-   ========================================================== */
-
 .bio-layout {
   display: flex;
-
   align-items: center;
   justify-content: flex-start;
-
   gap: 50px;
 }
 
@@ -248,35 +173,22 @@ h3 {
   width: 100%;
   max-width: 350px;
   height: auto;
-
   border-radius: 12px;
 }
 
 .bio-layout p {
   flex: 1;
-
   font-size: 22px;
   line-height: 1.7;
-
   color: #f2a3b4;
 }
 
-
-/* ==========================================================
-   PORTFOLIO ARROW
-   ========================================================== */
-
 .portfolio-arrow {
   text-decoration: none;
-
-  color: #af5b5e;
-
+  color: #AF5B5E;
   margin-left: 12px;
-
   font-size: 0.8em;
-
   transition: 0.3s;
-
   animation: glow 1.5s infinite;
 }
 
@@ -285,20 +197,13 @@ h3 {
   transform: translateX(5px);
 }
 
-
-/* ==========================================================
-   PORTFOLIO GRIDS
-   ========================================================== */
+/* PORTFOLIO GRIDS */
 
 .grid-in {
   display: grid;
-
   grid-template-columns: repeat(2, 1fr);
-
   gap: 20px;
-
   max-width: 700px;
-
   margin: 0 auto;
 }
 
@@ -308,20 +213,15 @@ h3 {
 .grid-port3,
 .grid-port4 {
   display: grid;
-
   grid-template-columns: repeat(4, 1fr);
-
   gap: 20px;
 }
 
 .box {
   display: flex;
-
   justify-content: center;
   align-items: center;
-
   background: transparent;
-
   border: none;
 }
 
@@ -329,7 +229,6 @@ h3 {
   width: 100%;
   max-width: 250px;
   height: auto;
-
   border-radius: 12px;
 }
 
@@ -344,7 +243,6 @@ h3 {
 .grid-port3 img,
 .grid-port4 img {
   cursor: pointer;
-
   transition: transform 0.3s ease;
 }
 
@@ -355,127 +253,85 @@ h3 {
   transform: scale(1.03);
 }
 
-
-/* ==========================================================
-   IMAGE MODAL
-   ========================================================== */
+/* IMAGE MODAL */
 
 .image-modal {
   display: none;
-
   position: fixed;
-
   inset: 0;
-
   width: 100vw;
   height: 100vh;
-
   background: rgba(0, 0, 0, 0.95);
-
   justify-content: center;
   align-items: center;
-
   z-index: 99999;
 }
 
 .image-modal img {
   max-width: 90vw;
   max-height: 90vh;
-
   object-fit: contain;
-
   border-radius: 12px;
 }
 
 .close-modal {
   position: absolute;
-
   top: 20px;
   right: 35px;
-
   color: white;
-
   font-size: 50px;
-
   cursor: pointer;
 }
 
-
-/* ==========================================================
-   BOOKING
-   ========================================================== */
+/* BOOKING */
 
 .booking {
   width: 95%;
   max-width: 1400px;
-
   margin: 100px auto;
-
   display: flex;
   flex-direction: column;
 }
 
 .booking-layout {
   display: flex;
-
   align-items: center;
   justify-content: space-between;
-
   gap: 100px;
-
   width: 100%;
 }
-
-
-/* ==========================================================
-   MY APPOINTMENTS
-   ========================================================== */
-
+/* My Appointments */
 #appointments {
   width: 100%;
   max-width: 900px;
-
   margin: 30px auto 0;
-
   display: flex;
   flex-direction: column;
-
   gap: 18px;
 }
 
 .appointment-card {
   width: 100%;
-
+  box-sizing: border-box;
   padding: 22px 26px;
-
   border: 1px solid rgba(255, 255, 255, 0.15);
-
   border-radius: 14px;
-
   background: rgba(20, 10, 15, 0.85);
-
   box-shadow: 0 8px 25px rgba(0, 0, 0, 0.25);
-
   color: #f2a3b4;
 }
 
 .appointment-card h3 {
   margin: 0 0 12px;
-
   font-family: "Cormorant Garamond", serif;
-
   font-size: 1.6rem;
-
   font-weight: 500;
 }
 
 .appointment-card p {
   margin: 6px 0;
-
   color: #f2a3b4;
-
   font-family: "Cormorant Garamond", serif;
-
   font-size: 1.05rem;
 }
 
@@ -485,159 +341,95 @@ h3 {
 
 .appointment-card .status {
   display: inline-block;
-
   margin-top: 12px;
-
   padding: 5px 12px;
-
   border-radius: 20px;
-
   background: rgba(255, 255, 255, 0.1);
-
   font-size: 0.9rem;
 }
-
-
-/* ==========================================================
-   MY APPOINTMENTS LAYOUT
-   ========================================================== */
-
 .booking-layout-myappt {
   display: flex;
-
-  align-items: flex-start;
-  justify-content: flex-start;
-
+  align-items: left;
+  justify-content: left;
   width: 100%;
-
   margin-left: 8%;
 }
 
-
-/* ==========================================================
-   BOOKING IMAGE
-   ========================================================== */
-
 .work {
   flex: 1.8;
-
   display: flex;
-
   justify-content: center;
 }
 
 .work img {
   width: 100%;
   max-width: 700px;
-
   height: auto;
 }
 
-
-/* ==========================================================
-   BOOKING FORM
-   ========================================================== */
-
 .booking-form {
   flex: 1.2;
-
   display: flex;
   flex-direction: column;
-
   transform: translateX(-100px);
 }
 
 .booking input,
 .booking select {
   background: rgba(255, 255, 255, 0.08);
-
   border: none;
-
   color: white;
-
   padding: 14px;
-
   margin-bottom: 15px;
 }
 
-
-/* ==========================================================
-   GENERAL BOOKING BUTTONS
-   ========================================================== */
-
 .booking button {
   background: #d78b9c;
-
   border: none;
-
   padding: 15px;
-
   color: black;
-
   cursor: pointer;
-
-  transition: 0.3s ease;
+  transition: 0.3s;
 }
 
 .booking button:hover {
   background: #f0b2b2;
 }
 
-
-/* ==========================================================
-   TIME SLOTS
-   ========================================================== */
-
 .time-slots {
   display: grid;
-
   grid-template-columns: repeat(2, 1fr);
-
   gap: 12px;
-
   margin: 15px 0;
 }
 
 .time-slot {
   padding: 12px;
-
   border: 1px solid #d78b9c;
-
   background: transparent;
-
   color: #f0b2b2;
-
   cursor: pointer;
 }
 
 .time-slot.selected,
 .time-slots .time-slot.selected {
-  background: #af5b5e !important;
-
+  background: #AF5B5E !important;
   color: black !important;
-
   border: 2px solid #f0b2b2 !important;
-
-  box-shadow:
-    0 0 12px rgba(215, 139, 156, 0.7);
+  box-shadow: 0 0 12px rgba(215, 139, 156, 0.7);
 }
 
 .time-slot.booked {
   text-decoration: line-through;
-
   opacity: 0.4;
-
   cursor: not-allowed;
 }
-
-
-/* ==========================================================
-   ADDITIONAL SERVICES
-   ========================================================== */
+/* ==========================================
+   SERVICE SELECTION
+   ========================================== */
 
 .additional-services-section {
   width: 100%;
-
   margin-bottom: 15px;
 }
 
@@ -646,280 +438,173 @@ h3 {
 
 .additional-service-btn {
   width: 100%;
-
   padding: 14px;
-
   margin-bottom: 10px;
 
   background: transparent !important;
-
   border: 1px solid #d78b9c !important;
-
   color: #f0b2b2 !important;
 
-  font-family: "Cormorant Garamond", serif;
-
+  font-family: 'Cormorant Garamond', serif;
   font-size: 18px;
 
   cursor: pointer;
-
   transition: 0.3s ease;
 }
 
 .additional-service-btn:hover {
   background: rgba(215, 139, 156, 0.15) !important;
-
   color: white !important;
 }
 
 
-/* ==========================================================
-   SELECTED ADDITIONAL SERVICES
-   ========================================================== */
+/* SELECTED ADDITIONAL SERVICES */
 
 .selected-additional-services {
   display: flex;
-
   flex-direction: column;
-
   gap: 10px;
-
   width: 100%;
 }
 
+
 .selected-additional-service {
   display: flex;
-
   align-items: center;
-
   justify-content: space-between;
 
   width: 100%;
-
   padding: 12px 14px;
 
   background: rgba(255, 255, 255, 0.06);
-
   border: 1px solid rgba(215, 139, 156, 0.45);
-
   border-radius: 10px;
 
   color: #f0b2b2;
 }
 
+
 .additional-service-info {
   display: flex;
-
   flex-direction: column;
-
   gap: 2px;
-
   text-align: left;
 }
 
+
 .additional-service-info strong {
   color: white;
-
   font-size: 18px;
-
   font-weight: 600;
 }
 
+
 .additional-service-info span {
   color: #f2a3b4;
-
   font-size: 15px;
-
   opacity: 0.85;
 }
+
 
 .selected-additional-service > button {
   width: auto !important;
 
   margin: 0 !important;
-
   padding: 2px 8px !important;
 
   background: transparent !important;
-
   border: none !important;
 
   color: #f2a3b4 !important;
-
   font-size: 24px;
 
   cursor: pointer;
 }
 
+
 .selected-additional-service > button:hover {
   background: transparent !important;
-
   color: white !important;
 }
 
 
-/* ==========================================================
+/* ==========================================
    ADDITIONAL SERVICE POPUP
-   ========================================================== */
+   ========================================== */
 
-#additionalServicePopup {
-  display: none;
-
-  position: fixed;
-
-  inset: 0;
-
-  width: 100%;
-  height: 100%;
-
-  padding: 20px;
-
-  background: rgba(0, 0, 0, 0.85);
-
-  justify-content: center;
-
-  align-items: center;
-
-  z-index: 99999;
-
-  overflow-y: auto;
-}
-
-
-/* THIS IS WHAT MAKES IT VISIBLE */
-
-#additionalServicePopup.active {
-  display: flex !important;
-}
-
-
-/* ==========================================================
-   ADDITIONAL SERVICE POPUP BOX
-   ========================================================== */
-
-#additionalServicePopup .additional-service-box {
-  position: relative;
-
-  width: 100%;
-
+.additional-service-box {
+  width: min(90%, 500px);
   max-width: 500px;
 
-  max-height: 90vh;
-
-  overflow-y: auto;
-
   padding: 35px;
-
-  background:
-    radial-gradient(
-      circle at top,
-      rgba(175, 91, 94, 0.25),
-      transparent 55%
-    ),
-    #1a0000;
-
-  border: 1px solid #d78b9c;
-
-  border-radius: 18px;
-
-  box-shadow:
-    0 0 30px rgba(0, 0, 0, 0.75);
-
-  color: #f0b2b2;
 
   text-align: left;
 }
 
 
-/* ==========================================================
-   ADDITIONAL SERVICE POPUP TITLE
-   ========================================================== */
-
-#additionalServicePopup .additional-service-box h2 {
+.additional-service-box h2 {
   text-align: center;
-
-  margin: 0 0 30px;
-
-  color: #f0b2b2;
-
-  font-size: 38px;
+  margin-bottom: 30px;
 }
 
 
-/* ==========================================================
-   POPUP LABELS
-   ========================================================== */
-
-#additionalServicePopup label {
+.additional-service-box label {
   display: block;
 
   margin: 15px 0 7px;
 
   color: #f2a3b4;
-
   font-size: 18px;
 }
 
 
-/* ==========================================================
-   POPUP SELECTS / TEXTAREA
-   ========================================================== */
-
-#additionalServicePopup select,
-#additionalServicePopup textarea {
+.additional-service-box select,
+.additional-service-box textarea {
   width: 100%;
 
   padding: 13px;
 
   background: rgba(255, 255, 255, 0.08);
-
   border: 1px solid rgba(215, 139, 156, 0.6);
-
   border-radius: 8px;
 
   color: white;
 
-  font-family: "Cormorant Garamond", serif;
-
+  font-family: 'Cormorant Garamond', serif;
   font-size: 17px;
 
   outline: none;
 }
 
-#additionalServicePopup select:focus,
-#additionalServicePopup textarea:focus {
+
+.additional-service-box select:focus,
+.additional-service-box textarea:focus {
   border-color: #f2a3b4;
-
-  box-shadow:
-    0 0 8px rgba(242, 163, 180, 0.25);
 }
 
-#additionalServicePopup textarea {
-  min-height: 90px;
 
+.additional-service-box textarea {
   resize: vertical;
+  min-height: 90px;
 }
 
-#additionalServicePopup option {
-  background: #1a0000;
 
+.additional-service-box option {
+  background: #1a0000;
   color: white;
 }
 
 
-/* ==========================================================
-   POPUP BUTTONS
-   ========================================================== */
+/* POPUP BUTTONS */
 
-#additionalServicePopup .additional-service-buttons {
+.additional-service-buttons {
   display: flex;
-
   gap: 12px;
 
   margin-top: 25px;
 }
 
-#additionalServicePopup
+
 .additional-service-buttons button {
   flex: 1;
 
@@ -928,128 +613,80 @@ h3 {
   padding: 13px;
 
   border-radius: 8px;
-
-  font-family: "Cormorant Garamond", serif;
-
-  font-size: 18px;
-
-  cursor: pointer;
-
-  transition: 0.3s ease;
 }
 
 
-/* CANCEL */
+/* CANCEL BUTTON */
 
-#additionalServicePopup
 .additional-service-buttons button:first-child {
   background: transparent !important;
-
   border: 1px solid #d78b9c !important;
-
   color: #f2a3b4 !important;
 }
 
-#additionalServicePopup
+
 .additional-service-buttons button:first-child:hover {
   background: rgba(215, 139, 156, 0.15) !important;
-
-  color: white !important;
 }
 
 
-/* ADD SERVICE */
+/* ADD SERVICE BUTTON */
 
-#additionalServicePopup
 .additional-service-buttons button:last-child {
   background: #d78b9c !important;
-
-  border: 1px solid #d78b9c !important;
-
   color: black !important;
 }
 
-#additionalServicePopup
+
 .additional-service-buttons button:last-child:hover {
   background: #f0b2b2 !important;
-
-  border-color: #f0b2b2 !important;
 }
 
 
-/* ==========================================================
-   POPUP CLOSE X
-   ========================================================== */
+/* POPUP CLOSE X */
 
-#additionalServicePopup .popup-close {
+.popup-close {
   position: absolute;
 
   top: 12px;
   right: 18px;
 
-  width: auto;
-
-  padding: 0 !important;
-
-  margin: 0 !important;
-
   background: transparent !important;
-
   border: none !important;
 
   color: #f2a3b4 !important;
 
   font-size: 30px;
 
-  line-height: 1;
+  padding: 0 !important;
+  margin: 0 !important;
 
   cursor: pointer;
 }
 
-#additionalServicePopup .popup-close:hover {
-  background: transparent !important;
 
+.popup-close:hover {
+  background: transparent !important;
   color: white !important;
 }
 
-
-/* ==========================================================
-   GENERAL SUCCESS POPUP
-   ========================================================== */
-
 .popup {
   display: none;
-
   position: fixed;
-
   inset: 0;
-
   background: rgba(0, 0, 0, 0.75);
-
   justify-content: center;
-
   align-items: center;
-
   z-index: 9999;
-}
-
-.popup.active {
-  display: flex;
 }
 
 .popup-box {
   background: #1a0000;
-
   border: 1px solid #d78b9c;
-
   color: #f0b2b2;
-
   padding: 35px;
-
   border-radius: 18px;
-
   text-align: center;
-
   max-width: 350px;
 }
 
@@ -1057,39 +694,25 @@ h3 {
   margin-top: 20px;
 }
 
-
-/* ==========================================================
-   FOOTER
-   ========================================================== */
+/* FOOTER */
 
 footer {
   display: flex;
-
   flex-direction: column;
-
   justify-content: center;
-
   align-items: center;
-
   font-size: 26px;
-
   margin-top: 80px;
-
   padding: 40px 0;
-
   width: 100%;
 }
 
 footer a,
 footer p {
   color: #f2a3b4;
-
   text-decoration: none;
-
   font-size: 22px;
-
   text-align: center;
-
   margin: 8px 0;
 }
 
@@ -1099,22 +722,17 @@ footer a:hover {
 
 .credit {
   font-size: 14px;
-
-  color: #af5b5e;
-
+  color: #AF5B5E;
   margin-top: 50px;
-
   letter-spacing: 1px;
 }
 
+/* OWNER / ADMIN PAGES */
 
-/* ==========================================================
-   OWNER / ADMIN
-   ========================================================== */
+/* OWNER / ADMIN PAGES */
 
 .owner-page header {
   min-height: auto;
-
   padding: 30px 20px 10px;
 }
 
@@ -1124,39 +742,22 @@ footer a:hover {
 
 .owner-page .booking {
   width: 96%;
-
   max-width: 1500px;
-
   margin: 50px auto 80px;
 }
 
 .appointment-counter {
   color: #f2a3b4;
-
   font-size: 24px;
-
   margin-bottom: 25px;
-
   text-align: center;
 }
 
-
-/* ==========================================================
-   OWNER CALENDAR
-   ========================================================== */
-
 .calendar-layout {
   display: grid;
-
-  grid-template-columns:
-    360px
-    minmax(0, 1fr)
-    360px;
-
+  grid-template-columns: 360px minmax(0, 1fr) 360px;
   gap: 24px;
-
   width: 100%;
-
   align-items: start;
 }
 
@@ -1164,42 +765,22 @@ footer a:hover {
 .appointments-panel,
 .details-panel {
   min-width: 0;
-
   overflow: hidden;
-
   background:
-    radial-gradient(
-      circle at top,
-      rgba(175, 91, 94, 0.18),
-      transparent 45%
-    ),
-    linear-gradient(
-      to bottom,
-      rgba(42, 0, 0, 0.95),
-      rgba(0, 0, 0, 0.95)
-    );
-
+    radial-gradient(circle at top, rgba(175, 91, 94, 0.18), transparent 45%),
+    linear-gradient(to bottom, rgba(42, 0, 0, 0.95), rgba(0, 0, 0, 0.95));
   border: 1px solid rgba(215, 139, 156, 0.65);
-
   border-radius: 18px;
-
   padding: 22px;
-
   color: #f0b2b2;
-
-  box-shadow:
-    0 0 25px rgba(0, 0, 0, 0.45);
+  box-shadow: 0 0 25px rgba(0, 0, 0, 0.45);
 }
 
 .calendar-header {
   display: flex;
-
   align-items: center;
-
   justify-content: space-between;
-
   gap: 12px;
-
   margin-bottom: 20px;
 }
 
@@ -1207,122 +788,78 @@ footer a:hover {
 .appointments-panel h3,
 .details-panel h3 {
   margin: 0;
-
   font-size: 26px;
-
   color: white;
-
   text-align: center;
 }
 
 .calendar-header button {
   width: 42px;
   height: 42px;
-
   border-radius: 50%;
-
   padding: 0;
-
   font-size: 22px;
 }
 
 .calendar-weekdays {
   display: grid;
-
-  grid-template-columns:
-    repeat(7, minmax(0, 1fr));
-
+  grid-template-columns: repeat(7, minmax(0, 1fr));
   gap: 4px;
-
   width: 100%;
-
   margin-bottom: 8px;
 }
 
 .calendar-weekdays div {
   text-align: center;
-
   font-size: 14px;
-
   color: #f2a3b4;
-
   opacity: 0.85;
 }
 
 .calendar-grid {
   display: grid;
-
-  grid-template-columns:
-    repeat(7, minmax(0, 1fr));
-
+  grid-template-columns: repeat(7, minmax(0, 1fr));
   grid-auto-rows: 48px;
-
   gap: 4px;
-
   width: 100%;
-
   overflow: hidden;
 }
 
 .calendar-day {
   width: 100%;
-
   height: 48px;
-
   max-width: 100%;
-
   display: flex;
-
   flex-direction: column;
-
   justify-content: center;
-
   align-items: center;
-
   gap: 2px;
-
   padding: 2px;
-
   border-radius: 10px;
-
   border: 1px solid transparent;
-
   background: rgba(255, 255, 255, 0.06);
-
   color: #f0b2b2;
-
-  font-family: "Cormorant Garamond", serif;
-
+  font-family: 'Cormorant Garamond', serif;
   font-size: 15px;
-
   cursor: pointer;
-
+  box-sizing: border-box;
   overflow: hidden;
 }
 
 .calendar-day:hover {
   border-color: #f2a3b4;
-
-  background:
-    rgba(215, 139, 156, 0.18);
+  background: rgba(215, 139, 156, 0.18);
 }
 
 .calendar-day small {
   display: block;
-
   width: 17px;
   height: 17px;
-
   line-height: 17px;
-
   border-radius: 50%;
-
   background: #d78b9c;
-
   color: black;
-
   font-size: 11px;
-
   text-align: center;
 }
 
@@ -1332,21 +869,13 @@ footer a:hover {
 
 .selected-day {
   background: #d78b9c !important;
-
   color: black !important;
-
-  box-shadow:
-    0 0 14px rgba(215, 139, 156, 0.75);
+  box-shadow: 0 0 14px rgba(215, 139, 156, 0.75);
 }
 
 .today-day {
   border-color: white;
 }
-
-
-/* ==========================================================
-   DAILY APPOINTMENTS
-   ========================================================== */
 
 #dailyAppointments {
   margin-top: 22px;
@@ -1354,149 +883,91 @@ footer a:hover {
 
 .daily-appointment {
   width: 100%;
-
   display: grid;
-
-  grid-template-columns:
-    85px
-    minmax(0, 1fr);
-
+  grid-template-columns: 85px minmax(0, 1fr);
   gap: 15px;
-
   text-align: left;
-
   margin-bottom: 14px;
-
   border-radius: 14px;
-
   border: 1px solid rgba(215, 139, 156, 0.45);
-
   background: rgba(255, 255, 255, 0.07);
-
   color: #f0b2b2;
-
   padding: 16px;
-
-  font-family: "Cormorant Garamond", serif;
+  font-family: 'Cormorant Garamond', serif;
 }
 
 .daily-appointment:hover,
 .selected-appointment {
-  background:
-    rgba(215, 139, 156, 0.22);
-
+  background: rgba(215, 139, 156, 0.22);
   border-color: #f2a3b4;
 }
 
 .daily-time {
   font-size: 20px;
-
   color: white;
 }
 
 .daily-appointment h4 {
   font-size: 24px;
-
   margin: 0 0 5px;
-
   color: white;
 }
 
 .daily-appointment p {
   margin: 0;
-
   font-size: 18px;
 }
 
 .no-selection {
   color: #f2a3b4;
-
   font-size: 20px;
-
   text-align: center;
-
   margin-top: 30px;
 }
 
-
-/* ==========================================================
-   OWNER DETAILS
-   ========================================================== */
-
 .details-view label {
   display: block;
-
   color: #f2a3b4;
-
   font-size: 18px;
-
   margin: 14px 0 6px;
 }
 
 .details-view input,
 .details-view textarea {
   width: 100%;
-
   padding: 12px;
-
   border-radius: 10px;
-
   border: 1px solid rgba(215, 139, 156, 0.65);
-
   background: rgba(255, 255, 255, 0.08);
-
   color: white;
-
-  font-family: "Cormorant Garamond", serif;
-
+  font-family: 'Cormorant Garamond', serif;
   font-size: 18px;
 }
 
 .details-view textarea {
   min-height: 120px;
-
   resize: vertical;
 }
 
-
-/* ==========================================================
-   OWNER BUTTON GROUP
-   ========================================================== */
-
 .button-group {
   display: flex;
-
   gap: 12px;
-
   margin-top: 25px;
-
   flex-wrap: wrap;
 }
 
 .button-group button {
   flex: 1;
-
   min-width: 110px;
-
   border-radius: 12px;
 }
 
-
-/* ==========================================================
-   OWNER LINKS
-   ========================================================== */
-
 .back-link {
   display: inline-block;
-
   margin-top: 45px;
-
   color: #f2a3b4;
-
   text-decoration: none;
-
   font-size: 20px;
-
   transition: 0.3s;
 }
 
@@ -1504,122 +975,187 @@ footer a:hover {
   color: white;
 }
 
-
-/* ==========================================================
-   LOGOUT
-   ========================================================== */
-
 .logout-btn {
   position: fixed;
-
   top: 25px;
   right: 25px;
-
   background: transparent;
-
   border: 1px solid #d78b9c;
-
   color: #f0b2b2;
-
   padding: 12px 22px;
-
   border-radius: 30px;
-
   font-size: 16px;
-
   cursor: pointer;
-
   z-index: 999;
 }
 
 .logout-btn:hover {
   background: #d78b9c;
-
   color: black;
 }
 
-
-/* ==========================================================
-   ANIMATIONS
-   ========================================================== */
-
-@keyframes sparkleTwinkle {
-
-  0%,
-  100% {
-    opacity: 0.2;
-
-    transform:
-      scale(0.6)
-      rotate(45deg);
-
-    filter:
-      drop-shadow(0 0 5px #ffd6df);
-  }
-
-  50% {
-    opacity: 1;
-
-    transform:
-      scale(1.3)
-      rotate(25deg);
-
-    filter:
-      drop-shadow(0 0 10px #ffd6df);
-  }
-}
-
-@keyframes glow {
-
-  30%,
-  60% {
-    filter:
-      drop-shadow(0 0 5px #af5b5e)
-      drop-shadow(0 0 10px #af5b5e);
-  }
-
-  50% {
-    filter:
-      drop-shadow(0 0 10px #af5b5e)
-      drop-shadow(0 0 20px #af5b5e)
-      drop-shadow(0 0 30px #af5b5e);
-  }
-}
-
-
-/* ==========================================================
-   TABLET
-   ========================================================== */
+/* OWNER DASHBOARD TABLET */
 
 @media (max-width: 1150px) {
+  .calendar-layout {
+    grid-template-columns: 1fr;
+  }
+}
 
+/* OWNER DASHBOARD MOBILE */
+
+@media (max-width: 500px) {
+  .owner-page .booking {
+    width: 92%;
+    margin: 45px auto;
+  }
+
+  .owner-page h2 {
+    font-size: 36px;
+    text-align: center;
+  }
+
+  .appointment-counter {
+    font-size: 20px;
+  }
+
+  .calendar-panel,
+  .appointments-panel,
+  .details-panel {
+    padding: 16px;
+  }
+
+  .calendar-header h3,
+  .appointments-panel h3,
+  .details-panel h3 {
+    font-size: 24px;
+  }
+
+  .calendar-grid {
+    grid-auto-rows: 42px;
+    gap: 3px;
+  }
+
+  .calendar-day {
+    height: 42px;
+    font-size: 14px;
+  }
+
+  .calendar-day small {
+    width: 15px;
+    height: 15px;
+    line-height: 15px;
+    font-size: 10px;
+  }
+
+  .daily-appointment {
+    grid-template-columns: 1fr;
+  }
+
+  .button-group {
+    flex-direction: column;
+  }
+
+  .button-group button {
+    width: 100%;
+  }
+}
+
+.button-group button {
+  flex: 1;
+  min-width: 110px;
+  border-radius: 12px;
+}
+
+.back-link {
+  display: inline-block;
+  margin-top: 45px;
+  color: #f2a3b4;
+  text-decoration: none;
+  font-size: 20px;
+  transition: 0.3s;
+}
+
+.back-link:hover {
+  color: white;
+}
+
+.logout-btn {
+  position: fixed;
+  top: 25px;
+  right: 25px;
+  background: transparent;
+  border: 1px solid #d78b9c;
+  color: #f0b2b2;
+  padding: 12px 22px;
+  border-radius: 30px;
+  font-size: 16px;
+  cursor: pointer;
+  z-index: 999;
+}
+
+.logout-btn:hover {
+  background: #d78b9c;
+  color: black;
+}
+
+@media (max-width: 1100px) {
   .calendar-layout {
     grid-template-columns: 1fr;
   }
 
+  .calendar-panel,
+  .appointments-panel,
+  .details-panel {
+    width: 100%;
+  }
 }
 
+/* ANIMATIONS */
 
-/* ==========================================================
-   TABLET - 1024PX
-   ========================================================== */
+@keyframes sparkleTwinkle {
+  0%, 100% {
+    opacity: 0.2;
+    transform: scale(0.6) rotate(45deg);
+    filter: drop-shadow(0 0 5px #ffd6df);
+  }
+
+  50% {
+    opacity: 1;
+    transform: scale(1.3) rotate(25deg);
+    filter: drop-shadow(0 0 10px #ffd6df);
+  }
+}
+
+@keyframes glow {
+  30%, 60% {
+    filter:
+      drop-shadow(0 0 5px #AF5B5E)
+      drop-shadow(0 0 10px #AF5B5E);
+  }
+
+  50% {
+    filter:
+      drop-shadow(0 0 10px #AF5B5E)
+      drop-shadow(0 0 20px #AF5B5E)
+      drop-shadow(0 0 30px #AF5B5E);
+  }
+}
+
+/* TABLET */
 
 @media (max-width: 1024px) {
-
   .grid-port,
   .grid-port1,
   .grid-port2,
   .grid-port3,
   .grid-port4 {
-    grid-template-columns:
-      repeat(2, 1fr);
+    grid-template-columns: repeat(2, 1fr);
   }
 
   .portfolio {
     width: 95%;
-
     max-width: 900px;
-
     margin: 80px auto;
   }
 
@@ -1629,7 +1165,6 @@ footer a:hover {
 
   nav {
     font-size: 26px;
-
     gap: 25px;
   }
 
@@ -1652,223 +1187,143 @@ footer a:hover {
   .scroll-arrow {
     opacity: 0;
   }
-
 }
 
-
-/* ==========================================================
-   MOBILE
-   ========================================================== */
+/* MOBILE */
 
 @media (max-width: 500px) {
-
   header {
     min-height: auto;
-
-    padding:
-      40px 20px 20px;
+    padding: 40px 20px 20px;
   }
-
-
-  /* LOGIN */
 
   .login-btn {
     display: none;
   }
 
-
-  /* LOGO */
-
   .logo-container {
     width: 90%;
-
     max-width: 380px;
-
-    margin:
-      35px auto 0;
+    margin: 35px auto 0;
   }
 
   #logohead {
     width: 100%;
-
     height: auto;
   }
 
   #logohead2 {
     width: 24px;
-
     top: 18%;
-
     left: 7%;
   }
 
-
-  /* MOBILE MENU BUTTON */
-
   .mobile-menu-btn {
     display: flex;
-
     justify-content: center;
-
     align-items: center;
 
     position: fixed;
-
     top: 20px;
     right: 20px;
-
     z-index: 10001;
 
     width: 52px;
     height: 52px;
-
     border-radius: 50%;
 
-    background:
-      rgba(0, 0, 0, 0.45);
-
-    border:
-      1px solid #f2a3b4;
-
+    background: rgba(0, 0, 0, 0.45);
+    border: 1px solid #f2a3b4;
     color: #f2a3b4;
 
     font-size: 28px;
-
     cursor: pointer;
-
     backdrop-filter: blur(10px);
   }
 
-
-  /* MOBILE NAV */
-
   nav {
     position: fixed;
-
     inset: 0;
-
     z-index: 10000;
 
     display: flex;
-
     flex-direction: column !important;
-
     justify-content: center;
-
     align-items: center;
-
     flex-wrap: nowrap !important;
 
     gap: 14px;
 
     margin: 0;
-
     padding: 0;
 
-    background:
-      rgba(0, 0, 0, 0.97);
+    background: rgba(0, 0, 0, 0.97);
 
     opacity: 0;
-
     visibility: hidden;
-
     pointer-events: none;
 
-    transition:
-      opacity 0.35s ease,
-      visibility 0.35s ease;
+    transition: opacity 0.35s ease, visibility 0.35s ease;
   }
 
   nav.mobile-open {
     opacity: 1;
-
     visibility: visible;
-
     pointer-events: auto;
   }
 
   nav a {
     display: block;
-
     width: auto;
-
     margin: 0;
-
     padding: 4px 0;
 
     font-size: 34px;
-
     color: #e7b0b0;
-
     text-decoration: none;
-
     text-align: center;
-
     letter-spacing: 1px;
   }
 
   .mobile-login {
     display: block;
-
     margin-top: 10px;
-
     padding: 10px 28px;
 
-    border:
-      1px solid #f2a3b4;
-
+    border: 1px solid #f2a3b4;
     border-radius: 30px;
 
     color: #f2a3b4;
-
     font-size: 22px;
   }
 
-
-  /* SCROLL ARROW */
-
   .scroll-arrow {
-    opacity: 1;
-
+    opacity: 100%;
     font-size: 42px;
-
     margin-top: 25px;
   }
-
-
-  /* SECTIONS */
 
   .intro-bio,
   .portfolio,
   .booking {
     width: 90%;
-
     margin: 70px auto;
   }
 
   h2 {
     font-size: 38px;
-
     text-align: center;
   }
 
   h3 {
     font-size: 26px;
-
-    margin:
-      40px 0 20px;
-
+    margin: 40px 0 20px;
     text-align: center;
   }
 
-
-  /* BIO */
-
   .bio-layout {
     flex-direction: column;
-
     text-align: center;
-
     gap: 25px;
   }
 
@@ -1878,20 +1333,14 @@ footer a:hover {
 
   .bio-layout img {
     max-width: 280px;
-
     margin: 0 auto;
   }
 
   .bio-layout p {
     width: 100%;
-
     font-size: 18px;
-
     line-height: 1.6;
   }
-
-
-  /* PORTFOLIO */
 
   .grid-in,
   .grid-port,
@@ -1902,30 +1351,24 @@ footer a:hover {
     grid-template-columns: 1fr;
   }
 
-
-  /* BOOKING */
-
   .booking {
     width: 92%;
-
     margin: 80px auto;
   }
 
   .booking-layout {
     flex-direction: column;
-
     gap: 40px;
   }
 
   .booking-layout-myappt {
-    width: 90%;
-
-    margin-left: 8%;
-  }
+ 
+  width: 90%;
+  margin-left: 8%;
+}
 
   .booking-form {
     width: 100%;
-
     transform: none;
   }
 
@@ -1937,73 +1380,18 @@ footer a:hover {
     grid-template-columns: 1fr;
   }
 
-
-  /* ADDITIONAL SERVICE POPUP */
-
-  #additionalServicePopup {
-    padding: 15px;
-
-    align-items: center;
-  }
-
-  #additionalServicePopup
-  .additional-service-box {
-    width: 100%;
-
-    max-width: 100%;
-
-    max-height: 90vh;
-
-    padding:
-      25px 20px;
-
-    border-radius: 15px;
-  }
-
-  #additionalServicePopup
-  .additional-service-box h2 {
-    font-size: 32px;
-
-    margin-bottom: 25px;
-  }
-
-  #additionalServicePopup label {
-    font-size: 17px;
-  }
-
-  #additionalServicePopup select,
-  #additionalServicePopup textarea {
-    font-size: 16px;
-  }
-
-  #additionalServicePopup
-  .additional-service-buttons {
-    flex-direction: column;
-  }
-
-  #additionalServicePopup
-  .additional-service-buttons button {
-    width: 100%;
-  }
-
-
-  /* OWNER */
-
   .owner-page header {
     min-height: auto;
-
     padding-top: 30px;
   }
 
   .owner-page .booking {
     width: 92%;
-
     margin: 50px auto;
   }
 
   .owner-page h2 {
     font-size: 38px;
-
     text-align: center;
   }
 
@@ -2021,44 +1409,30 @@ footer a:hover {
 
   .owner-page .logout-btn {
     position: static;
-
     display: block;
-
     margin: 30px auto;
   }
 
-
-  /* FOOTER */
-
   footer {
-    padding:
-      30px 15px;
+    padding: 30px 15px;
   }
 
   footer a,
   footer p {
     font-size: 18px;
   }
-
 }
 
-
-/* ==========================================================
-   OWNER CALENDAR MOBILE
-   ========================================================== */
+/* OWNER CALENDAR MOBILE OVERRIDES */
 
 @media (max-width: 500px) {
-
   .owner-page .booking {
     width: 92%;
-
-    margin:
-      45px auto;
+    margin: 45px auto;
   }
 
   .owner-page h2 {
     font-size: 36px;
-
     text-align: center;
   }
 
@@ -2068,7 +1442,6 @@ footer a:hover {
 
   .calendar-layout {
     grid-template-columns: 1fr;
-
     gap: 18px;
   }
 
@@ -2089,25 +1462,9 @@ footer a:hover {
     gap: 5px;
   }
 
-  .calendar-grid {
-    grid-auto-rows: 42px;
-  }
-
   .calendar-day {
-    height: 42px;
-
     min-height: 40px;
-
-    font-size: 14px;
-  }
-
-  .calendar-day small {
-    width: 15px;
-    height: 15px;
-
-    line-height: 15px;
-
-    font-size: 10px;
+    font-size: 15px;
   }
 
   .daily-appointment {
@@ -2121,5 +1478,4 @@ footer a:hover {
   .button-group button {
     width: 100%;
   }
-
 }
