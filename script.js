@@ -35,54 +35,38 @@ if (scrollArrow) {
       document.body.classList.remove(
         "lock-scroll"
       );
-
     }
   );
-
 }
 
 
 function toggleMenu() {
-
   const nav =
     document.querySelector("nav");
-
   const btn =
     document.querySelector(
       ".mobile-menu-btn"
     );
-
-
   if (!nav) return;
-
-
   nav.classList.toggle(
     "mobile-open"
   );
-
   document.body.classList.toggle(
     "menu-open"
   );
-
-
   if (btn) {
-
     btn.innerHTML =
       nav.classList.contains(
         "mobile-open"
       )
         ? "✕"
         : "☰";
-
   }
-
 }
-
 
 document.addEventListener(
   "DOMContentLoaded",
   function () {
-
 
     // ==========================================
     // MOBILE MENU
@@ -91,164 +75,107 @@ document.addEventListener(
     document
       .querySelectorAll("nav a")
       .forEach(function (link) {
-
         link.addEventListener(
           "click",
           function () {
-
             const nav =
               document.querySelector(
                 "nav"
               );
-
             const btn =
               document.querySelector(
                 ".mobile-menu-btn"
               );
-
-
             if (nav) {
-
               nav.classList.remove(
                 "mobile-open"
               );
-
             }
-
-
             document.body.classList.remove(
               "menu-open"
             );
-
-
             if (btn) {
-
               btn.innerHTML = "☰";
-
             }
-
           }
         );
-
       });
-
 
     // ==========================================
     // BOOKING VARIABLES
     // ==========================================
 
     let selectedDate = "";
-
     let selectedTime = "";
-
-
     const timeSlots =
       document.getElementById(
         "timeSlots"
       );
-
-
     const allTimes = [
-
       "10:00 AM",
       "10:30 AM",
-
       "11:00 AM",
       "11:30 AM",
-
       "12:00 PM",
       "12:30 PM",
-
       "1:00 PM",
       "1:30 PM",
-
       "2:00 PM",
       "2:30 PM",
-
       "3:00 PM",
       "3:30 PM",
-
       "4:00 PM",
       "4:30 PM",
-
       "5:00 PM",
       "5:30 PM",
-
       "6:00 PM",
     ];
-
-
+   
     const serviceDurations = {
-
       "Manicure": 1.5,
-
       "Pedicure": 2.0,
-
       "Gel": 1.5,
-
       "Acrylic": 1.5,
-
       "Basic": 0.5,
-
       "Minimal Design": 1,
-
       "Max Design": 2.5
-
     };
-
 
     // ==========================================
     // TIME → MINUTES
     // ==========================================
 
     function timeToMinutes(time) {
-
       const match =
         time.match(
           /(\d+):(\d+)\s(AM|PM)/
         );
 
-
       if (!match) return 0;
-
-
       let hour =
         Number(match[1]);
-
-
       const minute =
         Number(match[2]);
-
-
       const ampm =
         match[3];
-
-
       if (
         ampm === "PM" &&
         hour !== 12
       ) {
-
         hour += 12;
-
       }
-
 
       if (
         ampm === "AM" &&
         hour === 12
       ) {
-
         hour = 0;
-
       }
-
 
       return (
         hour * 60 +
         minute
       );
-
     }
 
 
@@ -257,10 +184,8 @@ document.addEventListener(
     // ==========================================
 
     function getTodayString() {
-
       const today =
         new Date();
-
 
       return (
 
@@ -273,9 +198,7 @@ document.addEventListener(
         String(
           today.getDate()
         ).padStart(2, "0")
-
       );
-
     }
 
 
@@ -292,41 +215,32 @@ document.addEventListener(
         return false;
       }
 
-
       const todayString =
         getTodayString();
-
 
       if (date < todayString) {
         return true;
       }
 
-
       if (date > todayString) {
         return false;
       }
 
-
       const now =
         new Date();
-
 
       const currentMinutes =
         now.getHours() * 60 +
         now.getMinutes();
 
-
       const slotMinutes =
         timeToMinutes(time);
-
 
       return (
         slotMinutes <=
         currentMinutes
       );
-
     }
-
 
     // ==========================================
     // GET BOOKED APPOINTMENTS
@@ -344,7 +258,6 @@ document.addEventListener(
           "status.is.null,status.neq.past"
         );
 
-
       if (error) {
 
         console.error(
@@ -353,13 +266,10 @@ document.addEventListener(
         );
 
         return {};
-
       }
-
 
       const bookedAppointments =
         {};
-
 
       data.forEach(
         function (appointment) {
@@ -374,11 +284,8 @@ document.addEventListener(
             !appointment.date ||
             !blockedTimes
           ) {
-
             return;
-
           }
-
 
           if (
             !bookedAppointments[
@@ -392,25 +299,19 @@ document.addEventListener(
 
           }
 
-
           blockedTimes.forEach(
             function (time) {
 
               bookedAppointments[
                 appointment.date
               ].push(time);
-
             }
           );
-
         }
       );
 
-
       return bookedAppointments;
-
     }
-
 
     // ==========================================
     // RENDER TIME BUTTONS
@@ -422,9 +323,7 @@ document.addEventListener(
 
       if (!timeSlots) return;
 
-
       timeSlots.innerHTML = "";
-
 
       allTimes.forEach(
         function (time) {
@@ -434,26 +333,21 @@ document.addEventListener(
               "button"
             );
 
-
           button.type =
             "button";
-
 
           button.textContent =
             time;
 
-
           button.classList.add(
             "time-slot"
           );
-
 
           const timeAlreadyPassed =
             isPastTime(
               selectedDate,
               time
             );
-
 
           const alreadyBooked =
             bookedTimes.some(
@@ -462,7 +356,6 @@ document.addEventListener(
                 return (
                   bookedTime === time
                 );
-
               }
             );
 
@@ -481,7 +374,6 @@ document.addEventListener(
 
           }
 
-
           button.addEventListener(
             "click",
             function () {
@@ -492,11 +384,8 @@ document.addEventListener(
                   "booked"
                 )
               ) {
-
                 return;
-
               }
-
 
               document
                 .querySelectorAll(
@@ -508,32 +397,24 @@ document.addEventListener(
                     btn.classList.remove(
                       "selected"
                     );
-
                   }
                 );
-
 
               button.classList.add(
                 "selected"
               );
 
-
               selectedTime =
                 time;
-
             }
           );
-
 
           timeSlots.appendChild(
             button
           );
-
         }
       );
-
     }
-
 
     // ==========================================
     // LOAD AVAILABLE TIMES
@@ -545,22 +426,17 @@ document.addEventListener(
 
       selectedTime = "";
 
-
       const bookedAppointments =
         await getBookedAppointments();
-
 
       const bookedTimes =
         bookedAppointments[date] ||
         [];
 
-
       renderTimeButtons(
         bookedTimes
       );
-
     }
-
 
     // ==========================================
     // DATE PICKER
@@ -577,11 +453,8 @@ document.addEventListener(
      flatpickr(
   "#appointmentDate",
   {
-
     dateFormat: "Y-m-d",
-
     minDate: "today",
-
     disable: [
       function(date) {
         return date.getDay() === 0;
@@ -601,12 +474,9 @@ document.addEventListener(
               await loadTimes(
                 dateStr
               );
-
             }
-
         }
       );
-
     }
 
 // ==========================================
@@ -614,7 +484,6 @@ document.addEventListener(
 // ==========================================
 
 let selectedAdditionalServices = [];
-
 
 // ==========================================
 // OPEN ADDITIONAL SERVICE POPUP
@@ -629,9 +498,7 @@ window.openAdditionalServicePopup = function () {
   if (popup) {
     popup.style.display = "flex";
   }
-
 };
-
 
 // ==========================================
 // CLOSE ADDITIONAL SERVICE POPUP
@@ -646,9 +513,7 @@ window.closeAdditionalServicePopup = function () {
   if (popup) {
     popup.style.display = "none";
   }
-
 };
-
 
 // ==========================================
 // SAVE ADDITIONAL SERVICE
@@ -676,7 +541,6 @@ window.saveAdditionalServiceOptions = function () {
     return;
   }
 
-
   const service =
     serviceElement.value;
 
@@ -691,33 +555,24 @@ window.saveAdditionalServiceOptions = function () {
       ? detailsElement.value.trim()
       : "";
 
-
   if (!service) {
 
     alert(
       "Please select an additional service."
     );
-
     return;
-
   }
-
 
   selectedAdditionalServices.push({
 
     service: service,
-
     polish: polish,
-
     design: design,
-
     designDetails: designDetails
-
   });
 
 
   renderAdditionalServices();
-
 
   // CLEAR POPUP
 
@@ -726,18 +581,13 @@ window.saveAdditionalServiceOptions = function () {
   if (polishElement) {
     polishElement.value = "";
   }
-
   if (designElement) {
     designElement.value = "";
   }
-
   if (detailsElement) {
     detailsElement.value = "";
   }
-
-
   window.closeAdditionalServicePopup();
-
 };
 
 
@@ -751,76 +601,47 @@ function renderAdditionalServices() {
     document.getElementById(
       "selectedAdditionalServices"
     );
-
-
   if (!container) return;
-
-
   container.innerHTML = "";
-
-
   selectedAdditionalServices.forEach(
     function (item, index) {
 
       const service =
         document.createElement("div");
-
-
       service.className =
         "selected-additional-service";
-
-
       let details = "";
-
-
       if (item.polish) {
         details +=
           " • " + item.polish;
       }
-
-
       if (item.design) {
         details +=
           " • " + item.design;
       }
-
-
       if (item.designDetails) {
         details +=
           " • " + item.designDetails;
       }
-
-
       service.innerHTML = `
-
         <div class="additional-service-info">
-
           <strong>
             ${item.service}
           </strong>
-
           <span>
             ${details}
           </span>
-
         </div>
-
         <button
           type="button"
           onclick="removeAdditionalService(${index})">
           ×
         </button>
-
       `;
-
-
       container.appendChild(service);
-
     }
   );
-
 };
-
 
 // ==========================================
 // REMOVE ADDITIONAL SERVICE
@@ -832,9 +653,7 @@ window.removeAdditionalService = function (index) {
     index,
     1
   );
-
   renderAdditionalServices();
-
 };
   
     // ==========================================
@@ -849,16 +668,12 @@ window.removeAdditionalService = function (index) {
             "bookingPopup"
           );
 
-
         if (popup) {
 
           popup.style.display =
             "none";
-
         }
-
       };
-
 
     // ==========================================
     // BOOK APPOINTMENT
@@ -866,8 +681,6 @@ window.removeAdditionalService = function (index) {
 
     window.bookAppointment =
       async function () {
-
-
         // --------------------------------------
         // CHECK LOGIN
         // --------------------------------------
@@ -880,8 +693,6 @@ window.removeAdditionalService = function (index) {
         } =
           await supabaseClient.auth
             .getUser();
-
-
         if (
           userError ||
           !user
@@ -890,17 +701,10 @@ window.removeAdditionalService = function (index) {
           alert(
             "Please log in or create an account before booking an appointment."
           );
-
-
           window.location.href =
             "login.html";
-
-
           return;
-
         }
-
-
         // --------------------------------------
         // GET FORM VALUES
         // --------------------------------------
@@ -952,24 +756,18 @@ window.removeAdditionalService = function (index) {
         // --------------------------------------
 
         if (!name) {
-
           alert(
             "Please enter your name."
           );
-
           return;
-
         }
 
 
         if (!phone) {
-
           alert(
             "Please enter your phone number."
           );
-
           return;
-
         }
 
 
@@ -977,13 +775,10 @@ window.removeAdditionalService = function (index) {
           !selectedDate ||
           !selectedTime
         ) {
-
           alert(
             "Please select a date and time."
           );
-
           return;
-
         }
 
 
@@ -991,13 +786,10 @@ window.removeAdditionalService = function (index) {
           !service ||
           !design
         ) {
-
           alert(
             "Please select a service and design."
           );
-
           return;
-
         }
 
 
@@ -1011,15 +803,10 @@ window.removeAdditionalService = function (index) {
           alert(
             "That time has already passed. Please choose another time."
           );
-
-
           await loadTimes(
             selectedDate
           );
-
-
           return;
-
         }
 
 
@@ -1094,7 +881,6 @@ window.removeAdditionalService = function (index) {
           bookedAppointments[
             selectedDate
           ] = [];
-
         }
 
 
@@ -1105,7 +891,6 @@ window.removeAdditionalService = function (index) {
               return bookedAppointments[
                 selectedDate
               ].includes(time);
-
             }
           );
 
@@ -1115,15 +900,10 @@ window.removeAdditionalService = function (index) {
           alert(
             "One or more of those time slots are already booked. Please choose another time."
           );
-
-
           await loadTimes(
             selectedDate
           );
-
-
           return;
-
         }
 
 
@@ -1140,54 +920,41 @@ window.removeAdditionalService = function (index) {
           user_id:
             user.id,
 
-
           name:
             name,
-
 
           phone:
             phone,
 
-
           date:
             selectedDate,
-
 
           time:
             selectedTime,
 
-
           duration:
             duration,
-
 
           blocked_times:
             timesToBook,
 
-
           service:
             service,
-
 
           polish:
             polish,
 
-
           design:
             design,
-
 
           notes:
             "",
 
-
           status:
             "active",
 
-
           created_at:
             new Date().toISOString()
-
         };
 
 
@@ -1204,7 +971,6 @@ window.removeAdditionalService = function (index) {
               appointment
             ]);
 
-
         if (error) {
 
           console.error(
@@ -1212,16 +978,12 @@ window.removeAdditionalService = function (index) {
             error
           );
 
-
           alert(
             error.message
           );
 
-
           return;
-
         }
-
 
         // --------------------------------------
         // SHOW SUCCESS POPUP
@@ -1232,14 +994,11 @@ window.removeAdditionalService = function (index) {
             "bookingPopup"
           );
 
-
         if (popup) {
 
           popup.style.display =
             "flex";
-
         }
-
 
         // --------------------------------------
         // CLEAR FORM
@@ -1251,13 +1010,11 @@ window.removeAdditionalService = function (index) {
           )
           .value = "";
 
-
         document
           .getElementById(
             "clientPhone"
           )
           .value = "";
-
 
         document
           .getElementById(
@@ -1265,13 +1022,11 @@ window.removeAdditionalService = function (index) {
           )
           .value = "";
 
-
         document
           .getElementById(
             "serviceSelect"
           )
           .value = "";
-
 
         document
           .getElementById(
@@ -1279,27 +1034,20 @@ window.removeAdditionalService = function (index) {
           )
           .value = "";
 
-
         document
           .getElementById(
             "designSelect"
           )
           .value = "";
 
-
         selectedDate = "";
-
         selectedTime = "";
-
 
         if (timeSlots) {
 
           timeSlots.innerHTML =
             "";
-
         }
-
       };
-
   }
 );
