@@ -8,24 +8,14 @@ const SUPABASE_URL =
 const SUPABASE_ANON_KEY =
   "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imt5b25zdHZwb2xha2pocmVjcWNqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE2OTYxMjUsImV4cCI6MjA5NzI3MjEyNX0.oq6v7gEy8FJPh4NI3ngUYybwJcHF6rW6qkNtepCxr7Y";
 
-const supabaseClient = supabase.createClient(
-  SUPABASE_URL,
-  SUPABASE_ANON_KEY,
-  {
-    auth: {
-      persistSession: false,
-      autoRefreshToken: false,
-      detectSessionInUrl: false
-    }
-  }
-);
-
+let supabaseClient = null;
 
 // ==========================================================
 // SERVICE DURATIONS
 // ==========================================================
 
 const durations = {
+
   Manicure: 1.5,
   Pedicure: 2.0,
 
@@ -37,6 +27,7 @@ const durations = {
   "Max Design": 2.5,
 
   "Nail Art": 1.0
+
 };
 
 
@@ -46,6 +37,7 @@ const durations = {
 
 const BOOKING_START_MINUTES = 10 * 60; // 10:00 AM
 const BOOKING_END_MINUTES = 17 * 60;   // 5:00 PM
+
 const SLOT_INTERVAL = 30;
 
 
@@ -56,24 +48,164 @@ const SLOT_INTERVAL = 30;
 let selectedAdditionalServices = [];
 let selectedTime = "";
 let selectedDate = "";
+
 let bookingInProgress = false;
+
 let datePicker = null;
+
+
+// ==========================================================
+// INITIALIZE SUPABASE
+// ==========================================================
+
+function initializeSupabase() {
+
+  try {
+
+    if (
+      typeof window.supabase === "undefined" ||
+      typeof window.supabase.createClient !== "function"
+    ) {
+
+      console.error(
+        "Supabase library did not load."
+      );
+
+      return false;
+    }
+
+    supabaseClient =
+      window.supabase.createClient(
+        SUPABASE_URL,
+        SUPABASE_ANON_KEY,
+        {
+          auth: {
+            persistSession: false,
+            autoRefreshToken: false,
+            detectSessionInUrl: false
+          }
+        }
+      );
+
+    console.log(
+      "Supabase initialized successfully."
+    );
+
+    return true;
+
+  }
+  catch (error) {
+
+    console.error(
+      "Supabase initialization failed:",
+      error
+    );
+
+    supabaseClient = null;
+
+    return false;
+
+  }
+
+}
 
 
 // ==========================================================
 // PAGE INITIALIZATION
 // ==========================================================
 
-document.addEventListener("DOMContentLoaded", function () {
+document.addEventListener(
+  "DOMContentLoaded",
+  function () {
 
-  console.log("Eliana's Nail Studio booking page loaded.");
+    console.log(
+      "Eliana's Nail Studio booking page loaded."
+    );
 
-  initializeDatePicker();
-  setupMobileMenu();
-  setupBookingFieldListeners();
-  renderSelectedAdditionalServices();
 
-});
+    // ------------------------------------------------------
+    // SUPABASE
+    // ------------------------------------------------------
+
+    initializeSupabase();
+
+    // ------------------------------------------------------
+    // DATE PICKER
+    // ------------------------------------------------------
+
+    try {
+
+      initializeDatePicker();
+
+    }
+    catch (error) {
+
+      console.error(
+        "Date picker initialization failed:",
+        error
+      );
+
+    }
+
+
+    // ------------------------------------------------------
+    // MOBILE MENU
+    // ------------------------------------------------------
+
+    try {
+
+      setupMobileMenu();
+
+    }
+    catch (error) {
+
+      console.error(
+        "Mobile menu initialization failed:",
+        error
+      );
+
+    }
+
+
+    // ------------------------------------------------------
+    // BOOKING LISTENERS
+    // ------------------------------------------------------
+
+    try {
+
+      setupBookingFieldListeners();
+
+    }
+    catch (error) {
+
+      console.error(
+        "Booking listener initialization failed:",
+        error
+      );
+
+    }
+
+
+    // ------------------------------------------------------
+    // ADDITIONAL SERVICES
+    // ------------------------------------------------------
+
+    try {
+
+      renderSelectedAdditionalServices();
+
+    }
+    catch (error) {
+
+      console.error(
+        "Additional service initialization failed:",
+        error
+      );
+
+    }
+
+  }
+);
 
 
 // ==========================================================
@@ -83,46 +215,80 @@ document.addEventListener("DOMContentLoaded", function () {
 function initializeDatePicker() {
 
   const dateInput =
-    document.getElementById("appointmentDate");
+    document.getElementById(
+      "appointmentDate"
+    );
 
   if (!dateInput) {
-    console.error("Could not find #appointmentDate.");
+
+    console.error(
+      "Could not find #appointmentDate."
+    );
+
     return;
+
   }
+
 
   if (typeof flatpickr === "undefined") {
-    console.error("Flatpickr did not load.");
+
+    console.error(
+      "Flatpickr did not load."
+    );
+
     return;
+
   }
 
-  datePicker = flatpickr(dateInput, {
 
-    dateFormat: "Y-m-d",
+  datePicker =
+    flatpickr(
+      dateInput,
+      {
 
-    minDate: "today",
+        dateFormat: "Y-m-d",
 
-    disableMobile: true,
+        minDate: "today",
 
-    onChange: function (selectedDates, dateStr) {
+        disableMobile: true,
 
-      selectedDate = dateStr;
-      selectedTime = "";
+        onChange:
+          function (
+            selectedDates,
+            dateStr
+          ) {
 
-      const timeSlots =
-        document.getElementById("timeSlots");
+            selectedDate = dateStr;
 
-      if (timeSlots) {
-        timeSlots.innerHTML =
-          "<p>Loading available times...</p>";
+            selectedTime = "";
+
+
+            const timeSlots =
+              document.getElementById(
+                "timeSlots"
+              );
+
+
+            if (timeSlots) {
+
+              timeSlots.innerHTML =
+                "<p>Loading available times...</p>";
+
+            }
+
+
+            if (dateStr) {
+
+              loadAvailableTimes(
+                dateStr
+              );
+
+            }
+
+          }
+
       }
-
-      if (dateStr) {
-        loadAvailableTimes(dateStr);
-      }
-
-    }
-
-  });
+    );
 
 }
 
@@ -134,31 +300,46 @@ function initializeDatePicker() {
 function setupBookingFieldListeners() {
 
   const fields = [
+
     "serviceSelect",
     "polishSelect",
     "designSelect"
+
   ];
 
-  fields.forEach(function (id) {
 
-    const element =
-      document.getElementById(id);
+  fields.forEach(
+    function (id) {
 
-    if (!element) {
-      return;
-    }
+      const element =
+        document.getElementById(id);
 
-    element.addEventListener("change", function () {
 
-      selectedTime = "";
-
-      if (selectedDate) {
-        loadAvailableTimes(selectedDate);
+      if (!element) {
+        return;
       }
 
-    });
 
-  });
+      element.addEventListener(
+        "change",
+        function () {
+
+          selectedTime = "";
+
+
+          if (selectedDate) {
+
+            loadAvailableTimes(
+              selectedDate
+            );
+
+          }
+
+        }
+      );
+
+    }
+  );
 
 }
 
@@ -170,31 +351,64 @@ function setupBookingFieldListeners() {
 async function loadAvailableTimes(date) {
 
   const timeSlots =
-    document.getElementById("timeSlots");
+    document.getElementById(
+      "timeSlots"
+    );
+
 
   if (!timeSlots) {
     return;
   }
 
+
   if (!date) {
+
     timeSlots.innerHTML = "";
+
     return;
+
   }
+
+
+  if (!supabaseClient) {
+
+    console.error(
+      "Supabase is not initialized."
+    );
+
+    timeSlots.innerHTML =
+      "<p>Booking system unavailable. Please refresh the page.</p>";
+
+    return;
+
+  }
+
 
   timeSlots.innerHTML =
     "<p>Loading available times...</p>";
 
+
   try {
 
     const {
+
       data,
       error
-    } = await supabaseClient
-      .from("appointments")
-      .select(
-        "id,date,time,duration,blocked_times,status"
-      )
-      .eq("date", date);
+
+    } =
+      await supabaseClient
+
+        .from("appointments")
+
+        .select(
+          "id,date,time,duration,blocked_times,status"
+        )
+
+        .eq(
+          "date",
+          date
+        );
+
 
     if (error) {
 
@@ -203,15 +417,20 @@ async function loadAvailableTimes(date) {
         error
       );
 
+
       timeSlots.innerHTML =
         "<p>Unable to load available times.</p>";
 
       return;
+
     }
+
 
     renderAvailableTimeSlots(
       date,
-      Array.isArray(data) ? data : []
+      Array.isArray(data)
+        ? data
+        : []
     );
 
   }
@@ -221,6 +440,7 @@ async function loadAvailableTimes(date) {
       "Unexpected error loading times:",
       error
     );
+
 
     timeSlots.innerHTML =
       "<p>Unable to load available times.</p>";
@@ -240,44 +460,74 @@ function renderAvailableTimeSlots(
 ) {
 
   const timeSlots =
-    document.getElementById("timeSlots");
+    document.getElementById(
+      "timeSlots"
+    );
+
 
   if (!timeSlots) {
     return;
   }
 
+
   timeSlots.innerHTML = "";
+
 
   const duration =
     calculateBookingDuration();
 
+
+  // If no service has been selected yet,
+  // use the smallest possible appointment.
+  const bookingDuration =
+    duration > 0
+      ? duration
+      : 0.5;
+
+
   for (
     let start = BOOKING_START_MINUTES;
+
     start < BOOKING_END_MINUTES;
+
     start += SLOT_INTERVAL
   ) {
+
 
     const time =
       minutesToTime(start);
 
+
     const available =
       isTimeAvailable(
         start,
-        duration,
+        bookingDuration,
         appointments
       );
 
+
     const button =
-      document.createElement("button");
+      document.createElement(
+        "button"
+      );
+
 
     button.type = "button";
-    button.className = "time-slot";
-    button.textContent = time;
+
+    button.className =
+      "time-slot";
+
+    button.textContent =
+      time;
+
 
     if (!available) {
 
       button.disabled = true;
-      button.classList.add("unavailable");
+
+      button.classList.add(
+        "unavailable"
+      );
 
     }
     else {
@@ -285,22 +535,34 @@ function renderAvailableTimeSlots(
       button.addEventListener(
         "click",
         function () {
-          selectTimeSlot(time, button);
+
+          selectTimeSlot(
+            time,
+            button
+          );
+
         }
       );
 
     }
 
-    timeSlots.appendChild(button);
+
+    timeSlots.appendChild(
+      button
+    );
 
   }
+
 
   const availableButtons =
     timeSlots.querySelectorAll(
       "button:not(:disabled)"
     );
 
-  if (availableButtons.length === 0) {
+
+  if (
+    availableButtons.length === 0
+  ) {
 
     timeSlots.innerHTML =
       "<p>No available times for this date.</p>";
@@ -321,55 +583,95 @@ function isTimeAvailable(
 ) {
 
   const requiredDuration =
-    duration > 0
-      ? duration
+    Number(duration) > 0
+      ? Number(duration)
       : 0.5;
 
+
   const appointmentMinutes =
-    Math.round(requiredDuration * 60);
+    Math.round(
+      requiredDuration * 60
+    );
+
 
   const newStart =
     startMinutes;
 
-  const newEnd =
-    startMinutes + appointmentMinutes;
 
-  // Appointment cannot extend past 5 PM.
-  if (newEnd > BOOKING_END_MINUTES) {
+  const newEnd =
+    startMinutes +
+    appointmentMinutes;
+
+
+  // Cannot go past 5 PM.
+  if (
+    newEnd >
+    BOOKING_END_MINUTES
+  ) {
+
     return false;
+
   }
 
-  for (const appointment of appointments) {
+
+  if (
+    !Array.isArray(appointments)
+  ) {
+
+    return true;
+
+  }
+
+
+  for (
+    const appointment
+    of appointments
+  ) {
 
     if (!appointment) {
       continue;
     }
 
-    // Ignore completed appointments.
+
+    // Completed appointments
+    // do not block availability.
     if (
       appointment.status === "past" ||
       appointment.status === "completed"
     ) {
+
       continue;
+
     }
+
 
     const blockedRanges =
       getExistingBlockedMinutes(
         appointment
       );
 
-    for (const blockedRange of blockedRanges) {
+
+    for (
+      const blockedRange
+      of blockedRanges
+    ) {
 
       if (
-        newStart < blockedRange.end &&
-        newEnd > blockedRange.start
+        newStart <
+        blockedRange.end
+        &&
+        newEnd >
+        blockedRange.start
       ) {
+
         return false;
+
       }
 
     }
 
   }
+
 
   return true;
 
@@ -386,56 +688,100 @@ function getExistingBlockedMinutes(
 
   const ranges = [];
 
+
   if (!appointment) {
     return ranges;
   }
 
-  const appointmentStart =
-    timeToMinutes(appointment.time);
 
-  // Use saved blocked_times if available.
+  const appointmentStart =
+    timeToMinutes(
+      appointment.time
+    );
+
+
+  // --------------------------------------------------------
+  // USE SAVED BLOCKED TIMES
+  // --------------------------------------------------------
+
   if (
-    Array.isArray(appointment.blocked_times) &&
+    Array.isArray(
+      appointment.blocked_times
+    )
+    &&
     appointment.blocked_times.length > 0
   ) {
 
-    appointment.blocked_times.forEach(function (time) {
+    appointment.blocked_times.forEach(
+      function (time) {
 
-      const start =
-        timeToMinutes(time);
+        const start =
+          timeToMinutes(time);
 
-      if (Number.isFinite(start)) {
 
-        ranges.push({
-          start: start,
-          end: start + 30
-        });
+        if (
+          Number.isFinite(start)
+        ) {
+
+          ranges.push({
+
+            start: start,
+
+            end:
+              start + 30
+
+          });
+
+        }
 
       }
+    );
 
-    });
 
     if (ranges.length > 0) {
+
       return ranges;
+
     }
 
   }
 
-  // Fall back to appointment duration.
+
+  // --------------------------------------------------------
+  // FALL BACK TO DURATION
+  // --------------------------------------------------------
+
   const duration =
-    Number(appointment.duration) || 0.5;
+    Number(
+      appointment.duration
+    ) || 0.5;
+
 
   const durationMinutes =
-    Math.round(duration * 60);
+    Math.round(
+      duration * 60
+    );
 
-  if (Number.isFinite(appointmentStart)) {
+
+  if (
+    Number.isFinite(
+      appointmentStart
+    )
+  ) {
 
     ranges.push({
-      start: appointmentStart,
-      end: appointmentStart + durationMinutes
+
+      start:
+        appointmentStart,
+
+      end:
+        appointmentStart +
+        durationMinutes
+
     });
 
   }
+
 
   return ranges;
 
@@ -451,17 +797,38 @@ function selectTimeSlot(
   button
 ) {
 
-  selectedTime = time;
+  selectedTime =
+    time;
+
 
   document
-    .querySelectorAll(".time-slot")
-    .forEach(function (slot) {
-      slot.classList.remove("selected");
-    });
+    .querySelectorAll(
+      ".time-slot"
+    )
+    .forEach(
+      function (slot) {
+
+        slot.classList.remove(
+          "selected"
+        );
+
+      }
+    );
+
 
   if (button) {
-    button.classList.add("selected");
+
+    button.classList.add(
+      "selected"
+    );
+
   }
+
+
+  console.log(
+    "Selected appointment time:",
+    selectedTime
+  );
 
 }
 
@@ -477,32 +844,53 @@ function getMainBookingDuration(
 ) {
 
   return Math.max(
+
     durations[service] || 0,
+
     durations[polish] || 0,
+
     durations[design] || 0
+
   );
 
 }
 
 
 // ==========================================================
-// ADDITIONAL SERVICES DURATION
+// ADDITIONAL SERVICE DURATION
 // ==========================================================
 
 function getAdditionalServicesDuration() {
 
-  let totalDuration = 0;
+  let totalDuration =
+    0;
 
-  selectedAdditionalServices.forEach(function (item) {
 
-    if (!item) {
-      return;
+  if (
+    !Array.isArray(
+      selectedAdditionalServices
+    )
+  ) {
+
+    return 0;
+
+  }
+
+
+  selectedAdditionalServices.forEach(
+    function (item) {
+
+      if (!item) {
+        return;
+      }
+
+
+      totalDuration +=
+        durations[item.service] || 0;
+
     }
+  );
 
-    totalDuration +=
-      durations[item.service] || 0;
-
-  });
 
   return totalDuration;
 
@@ -526,16 +914,21 @@ function getTotalAppointmentDuration(
       design
     );
 
+
   const additionalDuration =
     getAdditionalServicesDuration();
 
-  return mainDuration + additionalDuration;
+
+  return (
+    mainDuration +
+    additionalDuration
+  );
 
 }
 
 
 // ==========================================================
-// CALCULATE BOOKING DURATION FROM FORM
+// CALCULATE BOOKING DURATION
 // ==========================================================
 
 function calculateBookingDuration() {
@@ -545,15 +938,18 @@ function calculateBookingDuration() {
       "serviceSelect"
     )?.value || "";
 
+
   const polish =
     document.getElementById(
       "polishSelect"
     )?.value || "";
 
+
   const design =
     document.getElementById(
       "designSelect"
     )?.value || "";
+
 
   return getTotalAppointmentDuration(
     service,
@@ -568,60 +964,102 @@ function calculateBookingDuration() {
 // TIME → MINUTES
 // ==========================================================
 
-function timeToMinutes(timeString) {
+function timeToMinutes(
+  timeString
+) {
 
   if (
     !timeString ||
     typeof timeString !== "string"
   ) {
+
     return NaN;
+
   }
+
 
   const parts =
-    timeString.trim().split(/\s+/);
+    timeString
+      .trim()
+      .split(/\s+/);
 
-  if (parts.length < 2) {
+
+  if (
+    parts.length < 2
+  ) {
+
     return NaN;
+
   }
 
-  const time = parts[0];
-  const modifier = parts[1].toUpperCase();
+
+  const time =
+    parts[0];
+
+
+  const modifier =
+    parts[1].toUpperCase();
+
 
   const timeParts =
     time.split(":");
 
-  if (timeParts.length !== 2) {
+
+  if (
+    timeParts.length !== 2
+  ) {
+
     return NaN;
+
   }
 
+
   let hours =
-    Number(timeParts[0]);
+    Number(
+      timeParts[0]
+    );
+
 
   const minutes =
-    Number(timeParts[1]);
+    Number(
+      timeParts[1]
+    );
+
 
   if (
     !Number.isFinite(hours) ||
     !Number.isFinite(minutes)
   ) {
+
     return NaN;
+
   }
+
 
   if (
     modifier === "PM" &&
     hours !== 12
   ) {
+
     hours += 12;
+
   }
+
 
   if (
     modifier === "AM" &&
     hours === 12
   ) {
+
     hours = 0;
+
   }
 
-  return hours * 60 + minutes;
+
+  return (
+    hours * 60 +
+    minutes
+  );
 
 }
 
@@ -630,34 +1068,61 @@ function timeToMinutes(timeString) {
 // MINUTES → TIME
 // ==========================================================
 
-function minutesToTime(totalMinutes) {
+function minutesToTime(
+  totalMinutes
+) {
 
   let hours =
-    Math.floor(totalMinutes / 60);
+    Math.floor(
+      totalMinutes / 60
+    );
+
 
   const minutes =
     totalMinutes % 60;
 
-  let modifier = "AM";
 
-  if (hours >= 12) {
-    modifier = "PM";
+  let modifier =
+    "AM";
+
+
+  if (
+    hours >= 12
+  ) {
+
+    modifier =
+      "PM";
+
   }
 
-  if (hours > 12) {
+
+  if (
+    hours > 12
+  ) {
+
     hours -= 12;
+
   }
 
-  if (hours === 0) {
+
+  if (
+    hours === 0
+  ) {
+
     hours = 12;
+
   }
+
 
   return (
+
     hours +
     ":" +
-    String(minutes).padStart(2, "0") +
+    String(minutes)
+      .padStart(2, "0") +
     " " +
     modifier
+
   );
 
 }
@@ -672,35 +1137,60 @@ function getBlockedTimes(
   duration
 ) {
 
-  if (!selectedTime || !duration) {
+  if (
+    !selectedTime ||
+    !duration
+  ) {
+
     return [];
+
   }
+
 
   const startMinutes =
-    timeToMinutes(selectedTime);
+    timeToMinutes(
+      selectedTime
+    );
 
-  if (!Number.isFinite(startMinutes)) {
+
+  if (
+    !Number.isFinite(
+      startMinutes
+    )
+  ) {
+
     return [];
+
   }
 
-  const totalMinutes =
-    Math.round(duration * 60);
 
-  const blockedTimes = [];
+  const totalMinutes =
+    Math.round(
+      Number(duration) * 60
+    );
+
+
+  const blockedTimes =
+    [];
+
 
   for (
     let minutes = 0;
+
     minutes < totalMinutes;
+
     minutes += 30
   ) {
 
     blockedTimes.push(
       minutesToTime(
-        startMinutes + minutes
+        startMinutes +
+        minutes
       )
     );
 
   }
+
 
   return blockedTimes;
 
@@ -716,20 +1206,40 @@ function getAppointmentEndTime(
   duration
 ) {
 
-  if (!selectedTime || !duration) {
+  if (
+    !selectedTime ||
+    !duration
+  ) {
+
     return "";
+
   }
+
 
   const startMinutes =
-    timeToMinutes(selectedTime);
+    timeToMinutes(
+      selectedTime
+    );
 
-  if (!Number.isFinite(startMinutes)) {
+
+  if (
+    !Number.isFinite(
+      startMinutes
+    )
+  ) {
+
     return "";
+
   }
 
+
   return minutesToTime(
+
     startMinutes +
-    Math.round(duration * 60)
+    Math.round(
+      Number(duration) * 60
+    )
+
   );
 
 }
@@ -746,50 +1256,65 @@ function openAdditionalServicePopup() {
       "additionalServicePopup"
     );
 
+
   if (!popup) {
+
     console.error(
       "Could not find #additionalServicePopup."
     );
+
     return;
+
   }
+
 
   const service =
     document.getElementById(
       "additionalServiceType"
     );
 
+
   const polish =
     document.getElementById(
       "additionalPolishSelect"
     );
+
 
   const design =
     document.getElementById(
       "additionalDesignSelect"
     );
 
+
   const details =
     document.getElementById(
       "additionalDesignDetails"
     );
 
+
   if (service) {
     service.value = "";
   }
+
 
   if (polish) {
     polish.value = "";
   }
 
+
   if (design) {
     design.value = "";
   }
+
 
   if (details) {
     details.value = "";
   }
 
-  popup.classList.add("active");
+
+  popup.classList.add(
+    "active"
+  );
 
 }
 
@@ -805,8 +1330,13 @@ function closeAdditionalServicePopup() {
       "additionalServicePopup"
     );
 
+
   if (popup) {
-    popup.classList.remove("active");
+
+    popup.classList.remove(
+      "active"
+    );
+
   }
 
 }
@@ -823,20 +1353,24 @@ function saveAdditionalServiceOptions() {
       "additionalServiceType"
     )?.value || "";
 
+
   const polish =
     document.getElementById(
       "additionalPolishSelect"
     )?.value || "";
+
 
   const design =
     document.getElementById(
       "additionalDesignSelect"
     )?.value || "";
 
+
   const designDetails =
     document.getElementById(
       "additionalDesignDetails"
     )?.value.trim() || "";
+
 
   if (!service) {
 
@@ -845,26 +1379,44 @@ function saveAdditionalServiceOptions() {
     );
 
     return false;
+
   }
+
 
   selectedAdditionalServices.push({
 
-    service: service,
-    polish: polish,
-    design: design,
-    designDetails: designDetails
+    service:
+      service,
+
+    polish:
+      polish,
+
+    design:
+      design,
+
+    designDetails:
+      designDetails
 
   });
 
+
   renderSelectedAdditionalServices();
+
 
   closeAdditionalServicePopup();
 
+
   selectedTime = "";
 
+
   if (selectedDate) {
-    loadAvailableTimes(selectedDate);
+
+    loadAvailableTimes(
+      selectedDate
+    );
+
   }
+
 
   return true;
 
@@ -872,7 +1424,7 @@ function saveAdditionalServiceOptions() {
 
 
 // ==========================================================
-// RENDER SELECTED ADDITIONAL SERVICES
+// RENDER ADDITIONAL SERVICES
 // ==========================================================
 
 function renderSelectedAdditionalServices() {
@@ -882,30 +1434,45 @@ function renderSelectedAdditionalServices() {
       "selectedAdditionalServices"
     );
 
+
   if (!container) {
     return;
   }
 
+
   container.innerHTML = "";
 
+
   selectedAdditionalServices.forEach(
-    function (item, index) {
+    function (
+      item,
+      index
+    ) {
 
       if (!item) {
         return;
       }
 
+
       const wrapper =
-        document.createElement("div");
+        document.createElement(
+          "div"
+        );
+
 
       wrapper.className =
         "selected-additional-service";
 
+
       const text =
-        document.createElement("span");
+        document.createElement(
+          "span"
+        );
+
 
       let description =
         item.service;
+
 
       if (item.polish) {
 
@@ -914,6 +1481,7 @@ function renderSelectedAdditionalServices() {
           item.polish;
 
       }
+
 
       if (
         item.design &&
@@ -926,6 +1494,7 @@ function renderSelectedAdditionalServices() {
 
       }
 
+
       if (item.designDetails) {
 
         description +=
@@ -934,33 +1503,56 @@ function renderSelectedAdditionalServices() {
 
       }
 
+
       text.textContent =
         description;
 
-      const removeButton =
-        document.createElement("button");
 
-      removeButton.type = "button";
-      removeButton.textContent = "×";
+      const removeButton =
+        document.createElement(
+          "button"
+        );
+
+
+      removeButton.type =
+        "button";
+
+
+      removeButton.textContent =
+        "×";
+
 
       removeButton.setAttribute(
         "aria-label",
         "Remove additional service"
       );
 
+
       removeButton.addEventListener(
         "click",
         function () {
 
-          removeAdditionalService(index);
+          removeAdditionalService(
+            index
+          );
 
         }
       );
 
-      wrapper.appendChild(text);
-      wrapper.appendChild(removeButton);
 
-      container.appendChild(wrapper);
+      wrapper.appendChild(
+        text
+      );
+
+
+      wrapper.appendChild(
+        removeButton
+      );
+
+
+      container.appendChild(
+        wrapper
+      );
 
     }
   );
@@ -972,23 +1564,39 @@ function renderSelectedAdditionalServices() {
 // REMOVE ADDITIONAL SERVICE
 // ==========================================================
 
-function removeAdditionalService(index) {
+function removeAdditionalService(
+  index
+) {
 
   if (
     index < 0 ||
-    index >= selectedAdditionalServices.length
+    index >=
+      selectedAdditionalServices.length
   ) {
+
     return;
+
   }
 
-  selectedAdditionalServices.splice(index, 1);
+
+  selectedAdditionalServices.splice(
+    index,
+    1
+  );
+
 
   renderSelectedAdditionalServices();
 
+
   selectedTime = "";
 
+
   if (selectedDate) {
-    loadAvailableTimes(selectedDate);
+
+    loadAvailableTimes(
+      selectedDate
+    );
+
   }
 
 }
@@ -1000,14 +1608,22 @@ function removeAdditionalService(index) {
 
 function clearAdditionalServices() {
 
-  selectedAdditionalServices = [];
+  selectedAdditionalServices =
+    [];
+
 
   renderSelectedAdditionalServices();
 
+
   selectedTime = "";
 
+
   if (selectedDate) {
-    loadAvailableTimes(selectedDate);
+
+    loadAvailableTimes(
+      selectedDate
+    );
+
   }
 
 }
@@ -1019,73 +1635,127 @@ function clearAdditionalServices() {
 
 async function bookAppointment() {
 
+  console.log(
+    "Book Appointment button clicked."
+  );
+
+
   if (bookingInProgress) {
     return;
   }
+
+
+  if (!supabaseClient) {
+
+    alert(
+      "The booking system is unavailable. Please refresh the page and try again."
+    );
+
+    return;
+
+  }
+
 
   const name =
     document.getElementById(
       "clientName"
     )?.value.trim();
 
+
   const phone =
     document.getElementById(
       "clientPhone"
     )?.value.trim();
+
 
   const date =
     document.getElementById(
       "appointmentDate"
     )?.value;
 
+
   const service =
     document.getElementById(
       "serviceSelect"
     )?.value;
+
 
   const polish =
     document.getElementById(
       "polishSelect"
     )?.value;
 
+
   const design =
     document.getElementById(
       "designSelect"
     )?.value;
+
 
   const message =
     document.getElementById(
       "message"
     );
 
+
   // --------------------------------------------------------
   // VALIDATION
   // --------------------------------------------------------
 
   if (!name) {
-    alert("Please enter your name.");
+
+    alert(
+      "Please enter your name."
+    );
+
     return;
+
   }
+
 
   if (!phone) {
-    alert("Please enter your phone number.");
+
+    alert(
+      "Please enter your phone number."
+    );
+
     return;
+
   }
+
 
   if (!date) {
-    alert("Please select a date.");
+
+    alert(
+      "Please select a date."
+    );
+
     return;
+
   }
+
 
   if (!service) {
-    alert("Please select a service.");
+
+    alert(
+      "Please select a service."
+    );
+
     return;
+
   }
 
+
   if (!selectedTime) {
-    alert("Please select a time.");
+
+    alert(
+      "Please select a time."
+    );
+
     return;
+
   }
+
 
   // --------------------------------------------------------
   // CALCULATE DURATION
@@ -1098,14 +1768,20 @@ async function bookAppointment() {
       design
     );
 
-  if (!duration || duration <= 0) {
+
+  if (
+    !duration ||
+    duration <= 0
+  ) {
 
     alert(
       "Unable to calculate appointment duration."
     );
 
     return;
+
   }
+
 
   const endTime =
     getAppointmentEndTime(
@@ -1113,26 +1789,34 @@ async function bookAppointment() {
       duration
     );
 
+
   const blockedTimes =
     getBlockedTimes(
       selectedTime,
       duration
     );
 
-  console.log("Booking:", {
-    name,
-    phone,
-    date,
-    selectedTime,
-    service,
-    polish,
-    design,
-    duration,
-    endTime,
-    blockedTimes,
-    additionalServices:
-      selectedAdditionalServices
-  });
+
+  console.log(
+    "Booking information:",
+    {
+
+      name,
+      phone,
+      date,
+      selectedTime,
+      service,
+      polish,
+      design,
+      duration,
+      endTime,
+      blockedTimes,
+      additionalServices:
+        selectedAdditionalServices
+
+    }
+  );
+
 
   try {
 
@@ -1141,14 +1825,27 @@ async function bookAppointment() {
     // ------------------------------------------------------
 
     const {
-      data: existingAppointments,
-      error: availabilityError
-    } = await supabaseClient
-      .from("appointments")
-      .select(
-        "id,date,time,duration,blocked_times,status"
-      )
-      .eq("date", date);
+
+      data:
+        existingAppointments,
+
+      error:
+        availabilityError
+
+    } =
+      await supabaseClient
+
+        .from("appointments")
+
+        .select(
+          "id,date,time,duration,blocked_times,status"
+        )
+
+        .eq(
+          "date",
+          date
+        );
+
 
     if (availabilityError) {
 
@@ -1157,23 +1854,37 @@ async function bookAppointment() {
         availabilityError
       );
 
+
       if (message) {
+
         message.textContent =
           "Unable to check availability. Please try again.";
+
       }
 
+
       return;
+
     }
 
+
     const requestedStart =
-      timeToMinutes(selectedTime);
+      timeToMinutes(
+        selectedTime
+      );
+
 
     const available =
       isTimeAvailable(
+
         requestedStart,
+
         duration,
+
         existingAppointments || []
+
       );
+
 
     if (!available) {
 
@@ -1181,57 +1892,104 @@ async function bookAppointment() {
         "That time is no longer available. Please choose another time."
       );
 
+
       selectedTime = "";
 
-      loadAvailableTimes(date);
+
+      await loadAvailableTimes(
+        date
+      );
+
 
       return;
+
     }
+
 
     // ------------------------------------------------------
     // DISABLE BOOKING BUTTON
     // ------------------------------------------------------
 
-    bookingInProgress = true;
+    bookingInProgress =
+      true;
+
 
     const buttons =
       document.querySelectorAll(
         'button[onclick="bookAppointment()"]'
       );
 
-    buttons.forEach(function (button) {
 
-      button.disabled = true;
-      button.textContent = "Booking...";
+    buttons.forEach(
+      function (button) {
 
-    });
+        button.disabled =
+          true;
+
+        button.textContent =
+          "Booking...";
+
+      }
+    );
+
 
     // ------------------------------------------------------
     // INSERT APPOINTMENT
     // ------------------------------------------------------
 
     const {
+
       data,
       error
-    } = await supabaseClient
-      .from("appointments")
-      .insert([
-        {
-          name: name,
-          phone: phone,
-          date: date,
-          time: selectedTime,
-          service: service,
-          polish: polish || "",
-          design: design || "",
-          duration: duration,
-          blocked_times: blockedTimes,
-          additional_services:
-            selectedAdditionalServices,
-          status: "upcoming"
-        }
-      ])
-      .select();
+
+    } =
+      await supabaseClient
+
+        .from("appointments")
+
+        .insert([
+
+          {
+
+            name:
+              name,
+
+            phone:
+              phone,
+
+            date:
+              date,
+
+            time:
+              selectedTime,
+
+            service:
+              service,
+
+            polish:
+              polish || "",
+
+            design:
+              design || "",
+
+            duration:
+              duration,
+
+            blocked_times:
+              blockedTimes,
+
+            additional_services:
+              selectedAdditionalServices,
+
+            status:
+              "upcoming"
+
+          }
+
+        ])
+
+        .select();
+
 
     if (error) {
 
@@ -1240,33 +1998,45 @@ async function bookAppointment() {
         error
       );
 
+
       if (message) {
+
         message.textContent =
           error.message ||
           "Unable to book appointment.";
+
       }
 
+
       alert(
+
         "Unable to book appointment.\n\n" +
+
         (
           error.message ||
           "Please try again."
         )
+
       );
 
+
       return;
+
     }
+
 
     console.log(
       "Appointment successfully booked:",
       data
     );
 
+
     // ------------------------------------------------------
     // SHOW SUCCESS POPUP
     // ------------------------------------------------------
 
     openBookingPopup();
+
 
     // ------------------------------------------------------
     // RESET FORM
@@ -1282,6 +2052,7 @@ async function bookAppointment() {
       error
     );
 
+
     alert(
       "Something went wrong while booking. Please try again."
     );
@@ -1289,19 +2060,27 @@ async function bookAppointment() {
   }
   finally {
 
-    bookingInProgress = false;
+    bookingInProgress =
+      false;
+
 
     const buttons =
       document.querySelectorAll(
         'button[onclick="bookAppointment()"]'
       );
 
-    buttons.forEach(function (button) {
 
-      button.disabled = false;
-      button.textContent = "Book Appointment";
+    buttons.forEach(
+      function (button) {
 
-    });
+        button.disabled =
+          false;
+
+        button.textContent =
+          "Book Appointment";
+
+      }
+    );
 
   }
 
@@ -1315,62 +2094,105 @@ async function bookAppointment() {
 function resetBookingForm() {
 
   const name =
-    document.getElementById("clientName");
+    document.getElementById(
+      "clientName"
+    );
+
 
   const phone =
-    document.getElementById("clientPhone");
+    document.getElementById(
+      "clientPhone"
+    );
+
 
   const service =
-    document.getElementById("serviceSelect");
+    document.getElementById(
+      "serviceSelect"
+    );
+
 
   const polish =
-    document.getElementById("polishSelect");
+    document.getElementById(
+      "polishSelect"
+    );
+
 
   const design =
-    document.getElementById("designSelect");
+    document.getElementById(
+      "designSelect"
+    );
+
 
   const message =
-    document.getElementById("message");
+    document.getElementById(
+      "message"
+    );
+
 
   if (name) {
     name.value = "";
   }
 
+
   if (phone) {
     phone.value = "";
   }
+
 
   if (service) {
     service.value = "";
   }
 
+
   if (polish) {
     polish.value = "";
   }
+
 
   if (design) {
     design.value = "";
   }
 
+
   if (datePicker) {
+
     datePicker.clear();
+
   }
 
-  selectedDate = "";
-  selectedTime = "";
-  selectedAdditionalServices = [];
+
+  selectedDate =
+    "";
+
+  selectedTime =
+    "";
+
+  selectedAdditionalServices =
+    [];
+
 
   renderSelectedAdditionalServices();
 
+
   const timeSlots =
-    document.getElementById("timeSlots");
+    document.getElementById(
+      "timeSlots"
+    );
+
 
   if (timeSlots) {
-    timeSlots.innerHTML = "";
+
+    timeSlots.innerHTML =
+      "";
+
   }
 
+
   if (message) {
-    message.textContent = "";
+
+    message.textContent =
+      "";
+
   }
 
 }
@@ -1387,8 +2209,13 @@ function openBookingPopup() {
       "bookingPopup"
     );
 
+
   if (popup) {
-    popup.classList.add("active");
+
+    popup.classList.add(
+      "active"
+    );
+
   }
 
 }
@@ -1405,8 +2232,13 @@ function closeBookingPopup() {
       "bookingPopup"
     );
 
+
   if (popup) {
-    popup.classList.remove("active");
+
+    popup.classList.remove(
+      "active"
+    );
+
   }
 
 }
@@ -1419,18 +2251,25 @@ function closeBookingPopup() {
 function setupMobileMenu() {
 
   const links =
-    document.querySelectorAll("nav a");
-
-  links.forEach(function (link) {
-
-    link.addEventListener(
-      "click",
-      function () {
-        closeMobileMenu();
-      }
+    document.querySelectorAll(
+      "nav a"
     );
 
-  });
+
+  links.forEach(
+    function (link) {
+
+      link.addEventListener(
+        "click",
+        function () {
+
+          closeMobileMenu();
+
+        }
+      );
+
+    }
+  );
 
 }
 
@@ -1441,30 +2280,46 @@ function setupMobileMenu() {
 
 function toggleMenu() {
 
+  console.log(
+    "Mobile menu button clicked."
+  );
+
+
   const nav =
-    document.querySelector("nav");
+    document.querySelector(
+      "nav"
+    );
+
 
   const button =
     document.querySelector(
       ".mobile-menu-btn"
     );
 
+
   if (!nav) {
     return;
   }
 
+
   const isOpen =
-    nav.classList.toggle("mobile-open");
+    nav.classList.toggle(
+      "mobile-open"
+    );
+
 
   document.body.classList.toggle(
     "menu-open",
     isOpen
   );
 
+
   if (button) {
 
     button.innerHTML =
-      isOpen ? "✕" : "☰";
+      isOpen
+        ? "✕"
+        : "☰";
 
   }
 
@@ -1478,23 +2333,36 @@ function toggleMenu() {
 function closeMobileMenu() {
 
   const nav =
-    document.querySelector("nav");
+    document.querySelector(
+      "nav"
+    );
+
 
   const button =
     document.querySelector(
       ".mobile-menu-btn"
     );
 
+
   if (nav) {
-    nav.classList.remove("mobile-open");
+
+    nav.classList.remove(
+      "mobile-open"
+    );
+
   }
+
 
   document.body.classList.remove(
     "menu-open"
   );
 
+
   if (button) {
-    button.innerHTML = "☰";
+
+    button.innerHTML =
+      "☰";
+
   }
 
 }
@@ -1513,24 +2381,63 @@ document.addEventListener(
         "additionalServicePopup"
       );
 
+
     if (
       additionalPopup &&
-      event.target === additionalPopup
+      event.target ===
+        additionalPopup
     ) {
+
       closeAdditionalServicePopup();
+
     }
+
 
     const bookingPopup =
       document.getElementById(
         "bookingPopup"
       );
 
+
     if (
       bookingPopup &&
-      event.target === bookingPopup
+      event.target ===
+        bookingPopup
     ) {
+
       closeBookingPopup();
+
     }
+
+  }
+);
+
+
+// ==========================================================
+// GLOBAL ERROR LOGGING
+// ==========================================================
+
+window.addEventListener(
+  "error",
+  function (event) {
+
+    console.error(
+      "JavaScript error:",
+      event.error || event.message
+    );
+
+  }
+);
+
+
+window.addEventListener(
+  "unhandledrejection",
+  function (event) {
+
+    console.error(
+      "Unhandled promise rejection:",
+      event.reason
+    );
 
   }
 );
