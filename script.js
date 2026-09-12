@@ -810,26 +810,34 @@ window.removeAdditionalService = function (index) {
         }
 
 
-        // --------------------------------------
-        // CALCULATE DURATION
-        // --------------------------------------
+// --------------------------------------
+// CALCULATE DURATION
+// --------------------------------------
+        
+let duration =
+  Math.max(
+    serviceDurations[
+      service
+    ] || 1,
+    serviceDurations[
+      polish
+    ] || 1,
+    serviceDurations[
+      design
+    ] || 1
+  );
 
-        const duration =
-          Math.max(
+// --------------------------------------
+// ADDITIONAL SERVICES
+// --------------------------------------
 
-            serviceDurations[
-              service
-            ] || 1,
-
-            serviceDurations[
-              polish
-            ] || 1,
-
-            serviceDurations[
-              design
-            ] || 1
-
-          );
+if (
+  selectedAdditionalServices &&
+  selectedAdditionalServices.length > 0
+) {
+  duration +=
+    selectedAdditionalServices.length * 2;
+}
 
 
         const startIndex =
@@ -913,49 +921,46 @@ window.removeAdditionalService = function (index) {
 
         const appointment = {
 
-          // THIS CONNECTS THE
-          // APPOINTMENT TO THE
-          // CUSTOMER ACCOUNT
+  user_id:
+    user.id,
 
-          user_id:
-            user.id,
+  name:
+    name,
 
-          name:
-            name,
+  phone:
+    phone,
 
-          phone:
-            phone,
+  date:
+    selectedDate,
 
-          date:
-            selectedDate,
+  time:
+    selectedTime,
 
-          time:
-            selectedTime,
+  duration:
+    duration,
 
-          duration:
-            duration,
+  blocked_times:
+    timesToBook,
 
-          blocked_times:
-            timesToBook,
+  service:
+    service,
 
-          service:
-            service,
+  polish:
+    polish,
 
-          polish:
-            polish,
+  design:
+    design,
 
-          design:
-            design,
+  additional_services:
+    selectedAdditionalServices,
 
-          notes:
-            "",
-
-          status:
-            "active",
-
-          created_at:
-            new Date().toISOString()
-        };
+  notes:
+    "",
+  status:
+    "active",
+  created_at:
+    new Date().toISOString()
+};
 
 
         // --------------------------------------
