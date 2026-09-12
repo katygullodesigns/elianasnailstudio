@@ -1250,20 +1250,26 @@ function getAppointmentEndTime(
 // ==========================================================
 
 function openAdditionalServicePopup() {
-    console.log("Opening additional service popup");
 
-    const popup = document.getElementById("additionalServicePopup");
+  console.log("Opening additional service popup.");
 
-    if (!popup) {
-        console.error("additionalServicePopup element was not found");
-        return;
-    }
+  const popup =
+    document.getElementById(
+      "additionalServicePopup"
+    );
 
-    popup.style.display = "flex";
-    popup.classList.add("active");
-}
+  if (!popup) {
+
+    console.error(
+      "Could not find #additionalServicePopup."
+    );
+
+    return;
+
+  }
 
 
+  // Reset the additional-service fields
   const service =
     document.getElementById(
       "additionalServiceType"
@@ -1289,24 +1295,35 @@ function openAdditionalServicePopup() {
 
 
   if (service) {
+
     service.value = "";
+
   }
 
 
   if (polish) {
+
     polish.value = "";
+
   }
 
 
   if (design) {
+
     design.value = "";
+
   }
 
 
   if (details) {
+
     details.value = "";
+
   }
 
+
+  // Show popup
+  popup.style.display = "flex";
 
   popup.classList.add(
     "active"
@@ -1320,13 +1337,28 @@ function openAdditionalServicePopup() {
 // ==========================================================
 
 function closeAdditionalServicePopup() {
-    const popup = document.getElementById("additionalServicePopup");
 
-    if (!popup) return;
+  const popup =
+    document.getElementById(
+      "additionalServicePopup"
+    );
 
-    popup.style.display = "none";
-    popup.classList.remove("active");
+
+  if (!popup) {
+
+    return;
+
+  }
+
+
+  popup.style.display = "none";
+
+  popup.classList.remove(
+    "active"
+  );
+
 }
+
 
 
 // ==========================================================
