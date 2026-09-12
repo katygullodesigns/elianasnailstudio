@@ -674,7 +674,54 @@ function getMainBookingDuration(
   );
 
 }
+function bookAnotherAppointment() {
 
+  // Close success popup
+  closePopup();
+
+  // Clear appointment-specific selections
+  selectedTime = "";
+  selectedDate = "";
+
+  selectedAdditionalServices = [];
+
+  // Clear date
+  const dateInput = document.getElementById("appointmentDate");
+  if (dateInput) {
+    dateInput.value = "";
+  }
+
+  // Clear service selections
+  const serviceSelect = document.getElementById("serviceSelect");
+  if (serviceSelect) {
+    serviceSelect.value = "";
+  }
+
+  const polishSelect = document.getElementById("polishSelect");
+  if (polishSelect) {
+    polishSelect.value = "";
+  }
+
+  const designSelect = document.getElementById("designSelect");
+  if (designSelect) {
+    designSelect.value = "";
+  }
+
+  // Clear additional services
+  renderSelectedAdditionalServices();
+
+  // Clear available times
+  const timeSlots = document.getElementById("timeSlots");
+
+  if (timeSlots) {
+    timeSlots.innerHTML = "";
+  }
+
+  // Scroll back to booking form
+  document.getElementById("book")?.scrollIntoView({
+    behavior: "smooth"
+  });
+}
 
 // ==========================================
 // CALCULATE ADDITIONAL SERVICE DURATION
