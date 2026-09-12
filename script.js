@@ -1250,22 +1250,18 @@ function getAppointmentEndTime(
 // ==========================================================
 
 function openAdditionalServicePopup() {
+    console.log("Opening additional service popup");
 
-  const popup =
-    document.getElementById(
-      "additionalServicePopup"
-    );
+    const popup = document.getElementById("additionalServicePopup");
 
+    if (!popup) {
+        console.error("additionalServicePopup element was not found");
+        return;
+    }
 
-  if (!popup) {
-
-    console.error(
-      "Could not find #additionalServicePopup."
-    );
-
-    return;
-
-  }
+    popup.style.display = "flex";
+    popup.classList.add("active");
+}
 
 
   const service =
