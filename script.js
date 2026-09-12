@@ -816,16 +816,18 @@ window.removeAdditionalService = function (index) {
         
 let duration =
   Math.max(
-    serviceDurations[
-      service
-    ] || 1,
-    serviceDurations[
-      polish
-    ] || 1,
-    serviceDurations[
-      design
-    ] || 1
+    serviceDurations[service] || 1,
+    serviceDurations[polish] || 1,
+    serviceDurations[design] || 1
   );
+
+if (
+  selectedAdditionalServices &&
+  selectedAdditionalServices.length > 0
+) {
+  duration +=
+    selectedAdditionalServices.length * 2;
+}
 
 // --------------------------------------
 // ADDITIONAL SERVICES
@@ -920,48 +922,22 @@ if (
         // --------------------------------------
 
         const appointment = {
-
-  user_id:
-    user.id,
-
-  name:
-    name,
-
-  phone:
-    phone,
-
-  date:
-    selectedDate,
-
-  time:
-    selectedTime,
-
-  duration:
-    duration,
-
-  blocked_times:
-    timesToBook,
-
-  service:
-    service,
-
-  polish:
-    polish,
-
-  design:
-    design,
-
-  additional_services:
-    selectedAdditionalServices,
-
-  notes:
-    "",
-  status:
-    "active",
-  created_at:
-    new Date().toISOString()
+  user_id: user.id,
+  name: name,
+  phone: phone,
+  date: selectedDate,
+  time: selectedTime,
+  duration: duration,
+  blocked_times: timesToBook,
+  service: service,
+  polish: polish,
+  design: design,
+  additional_services: selectedAdditionalServices,
+  notes: "",
+  status: "active",
+  created_at: new Date().toISOString()
 };
-
+const slotsNeeded = duration * 2;
 
         // --------------------------------------
         // SAVE TO SUPABASE
