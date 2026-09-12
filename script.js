@@ -1,4 +1,3 @@
-
 // ==========================================================
 // SUPABASE
 // ==========================================================
@@ -775,4 +774,763 @@ function openAdditionalServicePopup() {
     );
 
   if (service) {
-    s
+    service.value = "";
+  }
+
+  if (polish) {
+    polish.value = "";
+  }
+
+  if (design) {
+    design.value = "";
+  }
+
+  if (details) {
+    details.value = "";
+  }
+
+  popup.classList.add("active");
+
+}
+
+
+// ==========================================================
+// CLOSE ADDITIONAL SERVICE POPUP
+// ==========================================================
+
+function closeAdditionalServicePopup() {
+
+  const popup =
+    document.getElementById(
+      "additionalServicePopup"
+    );
+
+  if (popup) {
+    popup.classList.remove("active");
+  }
+
+}
+
+
+// ==========================================================
+// SAVE ADDITIONAL SERVICE
+// ==========================================================
+
+function saveAdditionalServiceOptions() {
+
+  const service =
+    document.getElementById(
+      "additionalServiceType"
+    )?.value || "";
+
+  const polish =
+    document.getElementById(
+      "additionalPolishSelect"
+    )?.value || "";
+
+  const design =
+    document.getElementById(
+      "additionalDesignSelect"
+    )?.value || "";
+
+  const designDetails =
+    document.getElementById(
+      "additionalDesignDetails"
+    )?.value.trim() || "";
+
+  if (!service) {
+
+    alert(
+      "Please select an additional service."
+    );
+
+    return false;
+  }
+
+  selectedAdditionalServices.push({
+
+    service: service,
+    polish: polish,
+    design: design,
+    designDetails: designDetails
+
+  });
+
+  renderSelectedAdditionalServices();
+
+  closeAdditionalServicePopup();
+
+  selectedTime = "";
+
+  if (selectedDate) {
+    loadAvailableTimes(selectedDate);
+  }
+
+  return true;
+
+}
+
+
+// ==========================================================
+// RENDER SELECTED ADDITIONAL SERVICES
+// ==========================================================
+
+function renderSelectedAdditionalServices() {
+
+  const container =
+    document.getElementById(
+      "selectedAdditionalServices"
+    );
+
+  if (!container) {
+    return;
+  }
+
+  container.innerHTML = "";
+
+  selectedAdditionalServices.forEach(
+    function (item, index) {
+
+      if (!item) {
+        return;
+      }
+
+      const wrapper =
+        document.createElement("div");
+
+      wrapper.className =
+        "selected-additional-service";
+
+      const text =
+        document.createElement("span");
+
+      let description =
+        item.service;
+
+      if (item.polish) {
+
+        description +=
+          " • " +
+          item.polish;
+
+      }
+
+      if (
+        item.design &&
+        item.design !== "None"
+      ) {
+
+        description +=
+          " • " +
+          item.design;
+
+      }
+
+      if (item.designDetails) {
+
+        description +=
+          " • " +
+          item.designDetails;
+
+      }
+
+      text.textContent =
+        description;
+
+      const removeButton =
+        document.createElement("button");
+
+      removeButton.type = "button";
+      removeButton.textContent = "×";
+
+      removeButton.setAttribute(
+        "aria-label",
+        "Remove additional service"
+      );
+
+      removeButton.addEventListener(
+        "click",
+        function () {
+
+          removeAdditionalService(index);
+
+        }
+      );
+
+      wrapper.appendChild(text);
+      wrapper.appendChild(removeButton);
+
+      container.appendChild(wrapper);
+
+    }
+  );
+
+}
+
+
+// ==========================================================
+// REMOVE ADDITIONAL SERVICE
+// ==========================================================
+
+function removeAdditionalService(index) {
+
+  if (
+    index < 0 ||
+    index >= selectedAdditionalServices.length
+  ) {
+    return;
+  }
+
+  selectedAdditionalServices.splice(index, 1);
+
+  renderSelectedAdditionalServices();
+
+  selectedTime = "";
+
+  if (selectedDate) {
+    loadAvailableTimes(selectedDate);
+  }
+
+}
+
+
+// ==========================================================
+// CLEAR ADDITIONAL SERVICES
+// ==========================================================
+
+function clearAdditionalServices() {
+
+  selectedAdditionalServices = [];
+
+  renderSelectedAdditionalServices();
+
+  selectedTime = "";
+
+  if (selectedDate) {
+    loadAvailableTimes(selectedDate);
+  }
+
+}
+
+
+// ==========================================================
+// BOOK APPOINTMENT
+// ==========================================================
+
+async function bookAppointment() {
+
+  if (bookingInProgress) {
+    return;
+  }
+
+  const name =
+    document.getElementById(
+      "clientName"
+    )?.value.trim();
+
+  const phone =
+    document.getElementById(
+      "clientPhone"
+    )?.value.trim();
+
+  const date =
+    document.getElementById(
+      "appointmentDate"
+    )?.value;
+
+  const service =
+    document.getElementById(
+      "serviceSelect"
+    )?.value;
+
+  const polish =
+    document.getElementById(
+      "polishSelect"
+    )?.value;
+
+  const design =
+    document.getElementById(
+      "designSelect"
+    )?.value;
+
+  const message =
+    document.getElementById(
+      "message"
+    );
+
+  // --------------------------------------------------------
+  // VALIDATION
+  // --------------------------------------------------------
+
+  if (!name) {
+    alert("Please enter your name.");
+    return;
+  }
+
+  if (!phone) {
+    alert("Please enter your phone number.");
+    return;
+  }
+
+  if (!date) {
+    alert("Please select a date.");
+    return;
+  }
+
+  if (!service) {
+    alert("Please select a service.");
+    return;
+  }
+
+  if (!selectedTime) {
+    alert("Please select a time.");
+    return;
+  }
+
+  // --------------------------------------------------------
+  // CALCULATE DURATION
+  // --------------------------------------------------------
+
+  const duration =
+    getTotalAppointmentDuration(
+      service,
+      polish,
+      design
+    );
+
+  if (!duration || duration <= 0) {
+
+    alert(
+      "Unable to calculate appointment duration."
+    );
+
+    return;
+  }
+
+  const endTime =
+    getAppointmentEndTime(
+      selectedTime,
+      duration
+    );
+
+  const blockedTimes =
+    getBlockedTimes(
+      selectedTime,
+      duration
+    );
+
+  console.log("Booking:", {
+    name,
+    phone,
+    date,
+    selectedTime,
+    service,
+    polish,
+    design,
+    duration,
+    endTime,
+    blockedTimes,
+    additionalServices:
+      selectedAdditionalServices
+  });
+
+  try {
+
+    // ------------------------------------------------------
+    // CHECK AVAILABILITY AGAIN
+    // ------------------------------------------------------
+
+    const {
+      data: existingAppointments,
+      error: availabilityError
+    } = await supabaseClient
+      .from("appointments")
+      .select(
+        "id,date,time,duration,blocked_times,status"
+      )
+      .eq("date", date);
+
+    if (availabilityError) {
+
+      console.error(
+        "Availability error:",
+        availabilityError
+      );
+
+      if (message) {
+        message.textContent =
+          "Unable to check availability. Please try again.";
+      }
+
+      return;
+    }
+
+    const requestedStart =
+      timeToMinutes(selectedTime);
+
+    const available =
+      isTimeAvailable(
+        requestedStart,
+        duration,
+        existingAppointments || []
+      );
+
+    if (!available) {
+
+      alert(
+        "That time is no longer available. Please choose another time."
+      );
+
+      selectedTime = "";
+
+      loadAvailableTimes(date);
+
+      return;
+    }
+
+    // ------------------------------------------------------
+    // DISABLE BOOKING BUTTON
+    // ------------------------------------------------------
+
+    bookingInProgress = true;
+
+    const buttons =
+      document.querySelectorAll(
+        'button[onclick="bookAppointment()"]'
+      );
+
+    buttons.forEach(function (button) {
+
+      button.disabled = true;
+      button.textContent = "Booking...";
+
+    });
+
+    // ------------------------------------------------------
+    // INSERT APPOINTMENT
+    // ------------------------------------------------------
+
+    const {
+      data,
+      error
+    } = await supabaseClient
+      .from("appointments")
+      .insert([
+        {
+          name: name,
+          phone: phone,
+          date: date,
+          time: selectedTime,
+          service: service,
+          polish: polish || "",
+          design: design || "",
+          duration: duration,
+          blocked_times: blockedTimes,
+          additional_services:
+            selectedAdditionalServices,
+          status: "upcoming"
+        }
+      ])
+      .select();
+
+    if (error) {
+
+      console.error(
+        "Booking error:",
+        error
+      );
+
+      if (message) {
+        message.textContent =
+          error.message ||
+          "Unable to book appointment.";
+      }
+
+      alert(
+        "Unable to book appointment.\n\n" +
+        (
+          error.message ||
+          "Please try again."
+        )
+      );
+
+      return;
+    }
+
+    console.log(
+      "Appointment successfully booked:",
+      data
+    );
+
+    // ------------------------------------------------------
+    // SHOW SUCCESS POPUP
+    // ------------------------------------------------------
+
+    openBookingPopup();
+
+    // ------------------------------------------------------
+    // RESET FORM
+    // ------------------------------------------------------
+
+    resetBookingForm();
+
+  }
+  catch (error) {
+
+    console.error(
+      "Unexpected booking error:",
+      error
+    );
+
+    alert(
+      "Something went wrong while booking. Please try again."
+    );
+
+  }
+  finally {
+
+    bookingInProgress = false;
+
+    const buttons =
+      document.querySelectorAll(
+        'button[onclick="bookAppointment()"]'
+      );
+
+    buttons.forEach(function (button) {
+
+      button.disabled = false;
+      button.textContent = "Book Appointment";
+
+    });
+
+  }
+
+}
+
+
+// ==========================================================
+// RESET BOOKING FORM
+// ==========================================================
+
+function resetBookingForm() {
+
+  const name =
+    document.getElementById("clientName");
+
+  const phone =
+    document.getElementById("clientPhone");
+
+  const service =
+    document.getElementById("serviceSelect");
+
+  const polish =
+    document.getElementById("polishSelect");
+
+  const design =
+    document.getElementById("designSelect");
+
+  const message =
+    document.getElementById("message");
+
+  if (name) {
+    name.value = "";
+  }
+
+  if (phone) {
+    phone.value = "";
+  }
+
+  if (service) {
+    service.value = "";
+  }
+
+  if (polish) {
+    polish.value = "";
+  }
+
+  if (design) {
+    design.value = "";
+  }
+
+  if (datePicker) {
+    datePicker.clear();
+  }
+
+  selectedDate = "";
+  selectedTime = "";
+  selectedAdditionalServices = [];
+
+  renderSelectedAdditionalServices();
+
+  const timeSlots =
+    document.getElementById("timeSlots");
+
+  if (timeSlots) {
+    timeSlots.innerHTML = "";
+  }
+
+  if (message) {
+    message.textContent = "";
+  }
+
+}
+
+
+// ==========================================================
+// BOOKING SUCCESS POPUP
+// ==========================================================
+
+function openBookingPopup() {
+
+  const popup =
+    document.getElementById(
+      "bookingPopup"
+    );
+
+  if (popup) {
+    popup.classList.add("active");
+  }
+
+}
+
+
+// ==========================================================
+// CLOSE BOOKING SUCCESS POPUP
+// ==========================================================
+
+function closeBookingPopup() {
+
+  const popup =
+    document.getElementById(
+      "bookingPopup"
+    );
+
+  if (popup) {
+    popup.classList.remove("active");
+  }
+
+}
+
+
+// ==========================================================
+// MOBILE MENU
+// ==========================================================
+
+function setupMobileMenu() {
+
+  const links =
+    document.querySelectorAll("nav a");
+
+  links.forEach(function (link) {
+
+    link.addEventListener(
+      "click",
+      function () {
+        closeMobileMenu();
+      }
+    );
+
+  });
+
+}
+
+
+// ==========================================================
+// TOGGLE MOBILE MENU
+// ==========================================================
+
+function toggleMenu() {
+
+  const nav =
+    document.querySelector("nav");
+
+  const button =
+    document.querySelector(
+      ".mobile-menu-btn"
+    );
+
+  if (!nav) {
+    return;
+  }
+
+  const isOpen =
+    nav.classList.toggle("mobile-open");
+
+  document.body.classList.toggle(
+    "menu-open",
+    isOpen
+  );
+
+  if (button) {
+
+    button.innerHTML =
+      isOpen ? "✕" : "☰";
+
+  }
+
+}
+
+
+// ==========================================================
+// CLOSE MOBILE MENU
+// ==========================================================
+
+function closeMobileMenu() {
+
+  const nav =
+    document.querySelector("nav");
+
+  const button =
+    document.querySelector(
+      ".mobile-menu-btn"
+    );
+
+  if (nav) {
+    nav.classList.remove("mobile-open");
+  }
+
+  document.body.classList.remove(
+    "menu-open"
+  );
+
+  if (button) {
+    button.innerHTML = "☰";
+  }
+
+}
+
+
+// ==========================================================
+// CLOSE POPUPS WHEN CLICKING OUTSIDE
+// ==========================================================
+
+document.addEventListener(
+  "click",
+  function (event) {
+
+    const additionalPopup =
+      document.getElementById(
+        "additionalServicePopup"
+      );
+
+    if (
+      additionalPopup &&
+      event.target === additionalPopup
+    ) {
+      closeAdditionalServicePopup();
+    }
+
+    const bookingPopup =
+      document.getElementById(
+        "bookingPopup"
+      );
+
+    if (
+      bookingPopup &&
+      event.target === bookingPopup
+    ) {
+      closeBookingPopup();
+    }
+
+  }
+);
