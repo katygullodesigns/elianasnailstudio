@@ -1319,112 +1319,15 @@ function getAdditionalServices(
 // GET ONE ADDITIONAL SERVICE DURATION
 // ==========================================
 
-function getAdditionalServiceDuration(service) {
+function getAdditionalServiceDuration(
+  service
+) {
   if (!service) {
     return 0;
   }
+
+  // Every additional service adds exactly 2 hours
   return 2;
-
-  // ========================================
-  // STRING FORMAT
-  // ========================================
-
-  if (
-    typeof service ===
-    "string"
-  ) {
-    return (
-      durations[service] ||
-      0
-    );
-  }
-
-  // ========================================
-  // EXPLICIT SAVED DURATION
-  // ========================================
-
-  if (
-    service.duration !==
-      undefined &&
-    service.duration !==
-      null &&
-    service.duration !== ""
-  ) {
-    const savedDuration =
-      Number(
-        service.duration
-      );
-
-    if (
-      !Number.isNaN(
-        savedDuration
-      )
-    ) {
-      return savedDuration;
-    }
-  }
-
-  // ========================================
-  // SERVICE
-  // ========================================
-
-  const serviceDuration =
-    service.service &&
-    durations[service.service]
-      ? durations[service.service]
-      : 0;
-
-  // ========================================
-  // POLISH
-  // ========================================
-
-  const polishDuration =
-    service.polish &&
-    durations[service.polish]
-      ? durations[service.polish]
-      : 0;
-
-  // ========================================
-  // DESIGN
-  // ========================================
-
-  const designDuration =
-    service.design &&
-    durations[service.design]
-      ? durations[service.design]
-      : 0;
-
-  // ========================================
-  // USE LONGEST COMPONENT
-  // ========================================
-
-  const calculatedDuration =
-    Math.max(
-      serviceDuration,
-      polishDuration,
-      designDuration
-    );
-
-  if (
-    calculatedDuration > 0
-  ) {
-    return calculatedDuration;
-  }
-
-  // ========================================
-  // OLDER FORMAT
-  // ========================================
-
-  if (
-    service.name &&
-    durations[service.name]
-  ) {
-    return durations[
-      service.name
-    ];
-  }
-
-  return 0;
 }
 
 // ==========================================
@@ -1442,22 +1345,8 @@ function getAdditionalServicesDuration(
     return 0;
   }
 
-  return additionalServices.length * 2;
-}
-
-  return additionalServices.reduce(
-    function (
-      total,
-      service
-    ) {
-      return (
-        total +
-        getAdditionalServiceDuration(
-          service
-        )
-      );
-    },
-    0
+  return (
+    additionalServices.length * 2
   );
 }
 
@@ -1492,7 +1381,7 @@ function getAppointmentDuration(
     additionalDuration;
 
   // ========================================
-  // OLDER APPOINTMENTS
+  // USE CALCULATED DURATION
   // ========================================
 
   if (
@@ -1501,13 +1390,6 @@ function getAppointmentDuration(
     return calculatedDuration;
   }
 
-  return (
-    Number(
-      appointment.duration
-    ) || 0
-  );
-}
-  
   // ========================================
   // OLDER APPOINTMENTS
   // ========================================
@@ -1515,8 +1397,7 @@ function getAppointmentDuration(
   return (
     Number(
       appointment.duration
-    ) ||
-    mainDuration
+    ) || 0
   );
 }
 
