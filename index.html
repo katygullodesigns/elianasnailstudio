@@ -1,182 +1,439 @@
 <!DOCTYPE html>
+
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta http-equiv="Content-Security-Policy" content="
-default-src 'self' https:;
-script-src 'self' 'unsafe-inline' https://www.gstatic.com https://cdn.jsdelivr.net;
-connect-src 'self' https://*.supabase.co https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://firestore.googleapis.com https://www.googleapis.com https://www.gstatic.com;
-style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://fonts.googleapis.com;
-font-src 'self' https://fonts.gstatic.com;
-img-src 'self' data: https:;
+
+<meta http-equiv="Content-Security-Policy" content="
+ default-src 'self' https:;
+ script-src 'self' 'unsafe-inline' https://www.gstatic.com https://cdn.jsdelivr.net;
+ connect-src 'self' https://*.supabase.co https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://firestore.googleapis.com https://www.googleapis.com https://www.gstatic.com;
+ style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://fonts.googleapis.com;
+ font-src 'self' https://fonts.gstatic.com;
+ img-src 'self' data: https:;
 ">
+
   <title>Eliana's Nail Studio</title>
+
   <link rel="stylesheet" href="styles.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;600&family=Pinyon+Script&display=swap" rel="stylesheet">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;600&family=Pinyon+Script&display=swap"
+    rel="stylesheet"
+  >
 </head>
 
 <body class="home-page">
+
   <div class="background"></div>
 
-<header>
+  <!-- HEADER -->
 
-  <div class="logo-container">
-    <img src="images/Elianalogo.svg" alt="Eliana Logo" id="logohead">
-    <img src="images/sparkle.svg" alt="Sparkle" id="logohead2">
+  <header>
+
+```
+<div class="logo-container">
+  <img src="images/Elianalogo.svg" alt="Eliana Logo" id="logohead">
+  <img src="images/sparkle.svg" alt="Sparkle" id="logohead2">
+</div>
+
+<button class="mobile-menu-btn" onclick="toggleMenu()">☰</button>
+
+<nav>
+  <a href="index.html">Home</a>
+  <a href="services.html">Services</a>
+  <a href="portfolio.html">Portfolio</a>
+  <a href="login.html" class="mobile-login">Login</a>
+</nav>
+
+<a href="login.html" class="login-btn">Login</a>
+
+<a href="#intro-bio" class="scroll-arrow" id="scrollArrow">↓</a>
+```
+
+  </header>
+
+  <!-- ABOUT -->
+
+  <section id="intro-bio" class="intro-bio">
+
+```
+<h2>About Me</h2>
+
+<div class="bio-layout">
+
+  <div class="box">
+    <img src="images/eliana.JPG" alt="Picture of Eliana">
   </div>
 
-  <button class="mobile-menu-btn" onclick="toggleMenu()">☰</button>
+  <p>
+    Hi! My name is Eliana Navejas, I'm located in the downtown Kenosha and
+    I graduated from Gateway of Racine Nail School. I have been doing nails
+    for the past 2 years. I have a diverse portfolio, ranging from new trendy
+    and advanced designs to simplistic and classic designs. I offer manicures
+    and pedicures along with nail extentions, using builder gel and acrylic
+    extentions. I am so extremely grateful to be able to provide confidence
+    through the beauty of your nails. Always appreciating the support and love
+    from clients like you!
+  </p>
 
-  <nav>
-    <a href="index.html">Home</a>
-    <a href="services.html">Services</a>
-    <a href="portfolio.html">Portfolio</a>
-    <a href="login.html" class="mobile-login">Login</a>
-  </nav>
+</div>
+```
 
-  <a href="login.html" class="login-btn">Login</a>
+  </section>
 
-  <a href="#intro-bio" class="scroll-arrow" id="scrollArrow">↓</a>
-
-</header>
-
-<section id="intro-bio" class="intro-bio">
-
-  <h2>About Me</h2>
-
-  <div class="bio-layout">
-
-    <div class="box">
-      <img src="images/eliana.JPG" alt="pic of eliana">
-    </div>
-
-    <p>
-Hi! My name is Eliana Navejas, I'm located in the downtown Kenosha and I graduated from Gateway of Racine Nail School. I have been doing nails for the past 2 years. I have a diverse portfolio, ranging from new trendy and advanced designs to simplistic and classic designs. I offer manicures and pedicures along with nail extentions, using builder gel and acrylic extentions. I am so extremely grateful to be able to provide confidence through the beauty of your nails. Always appreciating the support and love from clients like you!
-    </p> 
-
-
-  </div>
-
-</section>
-
+  <!-- PORTFOLIO -->
 
   <section id="portfolio" class="portfolio">
+
+```
 <h2>
   Portfolio
   <a href="portfolio.html" class="portfolio-arrow">→</a>
 </h2>
-    <div class="grid-in">
-      <div class="box"> <img src="images/nail1.png" alt="nail1"> </div>
-      <div class="box"> <img src="images/nail2.png" alt="nail2"> </div>
-      <div class="box"> <img src="images/nail3.png" alt="nail3"> </div>
-      <div class="box"> <img src="images/nail4.png" alt="nail4"> </div>
-    </div>
+
+<div class="grid-in">
+
+  <div class="box">
+    <img src="images/nail1.png" alt="Nail design 1">
+  </div>
+
+  <div class="box">
+    <img src="images/nail2.png" alt="Nail design 2">
+  </div>
+
+  <div class="box">
+    <img src="images/nail3.png" alt="Nail design 3">
+  </div>
+
+  <div class="box">
+    <img src="images/nail4.png" alt="Nail design 4">
+  </div>
+
+</div>
+```
+
   </section>
 
-<section id="book" class="booking">
+  <!-- BOOKING -->
 
-  <div class="booking-layout">
+  <section id="book" class="booking">
 
-    <div class="work">
-      <img src="images/elianawork.svg" alt="Eliana">
-    </div>
+```
+<div class="booking-layout">
 
-    <div class="booking-form">
-      <h2>Book</h2>
+  <!-- WORK IMAGE -->
+  <div class="work">
+    <img src="images/elianawork.svg" alt="Eliana">
+  </div>
 
-      <input type="text" id="clientName" placeholder="Name">
 
-      <input type="tel" id="clientPhone" placeholder="Phone">
+  <!-- BOOKING FORM -->
+  <div class="booking-form">
 
-      <input type="text" id="appointmentDate" placeholder="Select Date">
+    <h2>Book</h2>
 
-      <div id="timeSlots" class="time-slots"></div>
+    <input
+      type="text"
+      id="clientName"
+      placeholder="Name"
+    >
 
-      <select id="serviceSelect">
-        <option value="">Service</option>
-        <option>Manicure</option>
-        <option>Pedicure</option>
-      </select>
+    <input
+      type="tel"
+      id="clientPhone"
+      placeholder="Phone"
+    >
 
-      <select id="polishSelect">
-        <option value="">Polish</option>
-        <option>Gel</option>
-        <option>Acrylic</option>
-      </select>
+    <input
+      type="text"
+      id="appointmentDate"
+      placeholder="Select Date"
+    >
 
-      <select id="designSelect">
-        <option value="">Design</option>
-        <option>Basic</option>
-        <option>Minimal Design</option>
-        <option>Max Design</option>
-      </select>
-      
-<div class="additional-service-buttons">
+    <div id="timeSlots" class="time-slots"></div>
+
+
+    <!-- MAIN SERVICE -->
+    <select id="serviceSelect">
+      <option value="">Service</option>
+      <option value="Manicure">Manicure</option>
+      <option value="Pedicure">Pedicure</option>
+    </select>
+
+
+    <!-- MAIN POLISH -->
+    <select id="polishSelect">
+      <option value="">Polish</option>
+      <option value="Gel">Gel</option>
+      <option value="Acrylic">Acrylic</option>
+    </select>
+
+
+    <!-- MAIN DESIGN -->
+    <select id="designSelect">
+      <option value="">Design</option>
+      <option value="Basic">Basic</option>
+      <option value="Minimal Design">Minimal Design</option>
+      <option value="Max Design">Max Design</option>
+    </select>
+
+
+    <!-- ADDITIONAL SERVICES -->
+    <div class="additional-services-section">
+
       <button
         type="button"
-        onclick="closeAdditionalServicePopup()">
+        class="additional-service-btn"
+        onclick="openAdditionalServicePopup()"
+      >
+        + Add Additional Service
+      </button>
+
+      <!-- Selected additional services appear here -->
+      <div
+        id="selectedAdditionalServices"
+        class="selected-additional-services"
+      ></div>
+
+    </div>
+
+
+    <!-- BOOK APPOINTMENT -->
+    <button
+      type="button"
+      onclick="bookAppointment()"
+    >
+      Book Appointment
+    </button>
+
+    <p id="message"></p>
+
+  </div>
+
+</div>
+
+
+<!-- BOOKING SUCCESS POPUP -->
+<div id="bookingPopup" class="popup">
+
+  <div class="popup-box">
+
+    <h2>Appointment Booked!</h2>
+
+    <p>
+      Your appointment has been successfully scheduled.
+    </p>
+
+    <button
+      type="button"
+      onclick="closePopup()"
+    >
+      OK
+    </button>
+
+  </div>
+
+</div>
+
+
+<!-- ADDITIONAL SERVICE POPUP -->
+<div id="additionalServicePopup" class="popup">
+
+  <div class="popup-box additional-service-box">
+
+    <button
+      type="button"
+      class="popup-close"
+      onclick="closeAdditionalServicePopup()"
+      aria-label="Close"
+    >
+      ×
+    </button>
+
+    <h2>Add Additional Service</h2>
+
+
+    <!-- ADDITIONAL SERVICE -->
+    <label for="additionalServiceType">
+      Service
+    </label>
+
+    <select id="additionalServiceType">
+
+      <option value="">
+        Select Service
+      </option>
+
+      <option value="Manicure">
+        Manicure
+      </option>
+
+      <option value="Pedicure">
+        Pedicure
+      </option>
+
+      <option value="Gel">
+        Gel
+      </option>
+
+      <option value="Acrylic">
+        Acrylic
+      </option>
+
+      <option value="Nail Art">
+        Nail Art
+      </option>
+
+    </select>
+
+
+    <!-- ADDITIONAL POLISH -->
+    <label for="additionalPolishSelect">
+      Polish Type
+    </label>
+
+    <select id="additionalPolishSelect">
+
+      <option value="">
+        Select Polish
+      </option>
+
+      <option value="Regular">
+        Regular
+      </option>
+
+      <option value="Gel">
+        Gel
+      </option>
+
+      <option value="Acrylic">
+        Acrylic
+      </option>
+
+      <option value="Chrome">
+        Chrome
+      </option>
+
+      <option value="Cat Eye">
+        Cat Eye
+      </option>
+
+    </select>
+
+
+    <!-- ADDITIONAL DESIGN -->
+    <label for="additionalDesignSelect">
+      Design
+    </label>
+
+    <select id="additionalDesignSelect">
+
+      <option value="">
+        Select Design
+      </option>
+
+      <option value="None">
+        None
+      </option>
+
+      <option value="Basic">
+        Basic
+      </option>
+
+      <option value="Minimal Design">
+        Minimal Design
+      </option>
+
+      <option value="Max Design">
+        Max Design
+      </option>
+
+      <option value="Custom">
+        Custom
+      </option>
+
+    </select>
+
+
+    <!-- DESIGN DETAILS -->
+    <label for="additionalDesignDetails">
+      Design Details
+    </label>
+
+    <textarea
+      id="additionalDesignDetails"
+      placeholder="Describe your design..."
+      rows="3"
+    ></textarea>
+
+
+    <!-- POPUP BUTTONS -->
+    <div class="additional-service-buttons">
+
+      <button
+        type="button"
+        onclick="closeAdditionalServicePopup()"
+      >
         Cancel
       </button>
 
       <button
         type="button"
-        onclick="saveAdditionalServiceOptions()">
+        onclick="saveAdditionalServiceOptions()"
+      >
         Add Service
       </button>
-       <select id="additionalPolishSelect">
-      <option value="">Additional Polish</option>
-      <option>Gel</option>
-      <option>Acrylic</option>
-    </select>
 
-    <select id="additionalDesignSelect">
-      <option value="">Additional Design</option>
-      <option>Basic</option>
-      <option>Minimal Design</option>
-      <option>Max Design</option>
-    </select>
-
-    <button type="button" onclick="saveAdditionalServiceOptions()">Save</button>
-</div>
-  </div>
-  
-    </div>
-  </div>
-</div>
-
-      <button onclick="bookAppointment()">Book Appointment</button>
-
-      <p id="message"></p>
     </div>
 
   </div>
 
-  <div id="bookingPopup" class="popup">
-  <div class="popup-box">
-    <h2>Appointment Booked!</h2>
-    <p>Your appointment has been successfully scheduled.</p>
-    <button onclick="closePopup()">OK</button>
-  </div>
 </div>
+```
 
- 
-</section>
-<footer>
-   <p>Contact me at (224) 304-4696<br>
-    or visit my Instagram
-    <a href="https://www.instagram.com/elianas_nailstudio/"> @elianasnailstudio</a> <br>
-    <a href= "https://www.google.com/maps/place/728+58th+St,+Kenosha,+WI+53140/@42.5831109,-87.8231217,628m/data=!3m2!1e3!4b1!4m6!3m5!1s0x88055e595f9a4325:0x7aab89cf8e12d13b!8m2!3d42.583107!4d-87.8205468!16s%2Fg%2F11nntqcl_c?entry=ttu&g_ep=EgoyMDI2MDUyNy4wIKXMDSoASAFQAw%3D%3D">728 58th St Kenosha, WI 53140 </a> <br>
-        <p class="credit">
-  Website created and published by Katy Gullo Designs
+  </section>
+
+  <!-- FOOTER -->
+
+  <footer>
+
+```
+<p>
+  Contact me at (224) 304-4696<br>
+
+  or visit my Instagram
+  <a href="https://www.instagram.com/elianas_nailstudio/">
+    @elianasnailstudio
+  </a>
+
+  <br>
+
+  <a href="https://www.google.com/maps/place/728+58th+St,+Kenosha,+WI+53140/@42.5831109,-87.8231217,628m/data=!3m2!1e3!4b1!4m6!3m5!1s0x88055e595f9a4325:0x7aab89cf8e12d13b!8m2!3d42.583107!4d-87.8205468!16s%2Fg%2F11nntqcl_c?entry=ttu&g_ep=EgoyMDI2MDUyNy4wIKXMDSoASAFQAw%3D%3D">
+    728 58th St Kenosha, WI 53140
+  </a>
+
+  <br>
+
+  <p class="credit">
+    Website created and published by Katy Gullo Designs
+  </p>
+
 </p>
-    </p>
-</footer>
+```
 
-<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="script.js?v=33"></script>
+  </footer>
+
+  <!-- SCRIPTS -->
+
+  <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <script src="script.js?v=33"></script>
+
 </body>
 </html>
