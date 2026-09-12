@@ -1320,21 +1320,12 @@ function openAdditionalServicePopup() {
 // ==========================================================
 
 function closeAdditionalServicePopup() {
+    const popup = document.getElementById("additionalServicePopup");
 
-  const popup =
-    document.getElementById(
-      "additionalServicePopup"
-    );
+    if (!popup) return;
 
-
-  if (popup) {
-
-    popup.classList.remove(
-      "active"
-    );
-
-  }
-
+    popup.style.display = "none";
+    popup.classList.remove("active");
 }
 
 
