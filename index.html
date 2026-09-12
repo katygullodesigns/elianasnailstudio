@@ -34,7 +34,6 @@
 
   <header>
 
-```
 <div class="logo-container">
   <img src="images/Elianalogo.svg" alt="Eliana Logo" id="logohead">
   <img src="images/sparkle.svg" alt="Sparkle" id="logohead2">
@@ -52,7 +51,6 @@
 <a href="login.html" class="login-btn">Login</a>
 
 <a href="#intro-bio" class="scroll-arrow" id="scrollArrow">↓</a>
-```
 
   </header>
 
@@ -60,7 +58,6 @@
 
   <section id="intro-bio" class="intro-bio">
 
-```
 <h2>About Me</h2>
 
 <div class="bio-layout">
@@ -88,8 +85,6 @@
   <!-- PORTFOLIO -->
 
   <section id="portfolio" class="portfolio">
-
-```
 <h2>
   Portfolio
   <a href="portfolio.html" class="portfolio-arrow">→</a>
@@ -114,15 +109,11 @@
   </div>
 
 </div>
-```
-
   </section>
 
   <!-- BOOKING -->
 
   <section id="book" class="booking">
-
-```
 <div class="booking-layout">
 
   <!-- WORK IMAGE -->
@@ -133,26 +124,19 @@
 
   <!-- BOOKING FORM -->
   <div class="booking-form">
-
     <h2>Book</h2>
-
     <input
       type="text"
       id="clientName"
-      placeholder="Name"
-    >
-
+      placeholder="Name">
     <input
       type="tel"
       id="clientPhone"
-      placeholder="Phone"
-    >
-
+      placeholder="Phone">
     <input
       type="text"
       id="appointmentDate"
-      placeholder="Select Date"
-    >
+      placeholder="Select Date">
 
     <div id="timeSlots" class="time-slots"></div>
 
@@ -188,32 +172,24 @@
       <button
         type="button"
         class="additional-service-btn"
-        onclick="openAdditionalServicePopup()"
-      >
+        onclick="openAdditionalServicePopup()">
         + Add Additional Service
       </button>
-
-      <!-- Selected additional services appear here -->
       <div
         id="selectedAdditionalServices"
         class="selected-additional-services"
       ></div>
-
     </div>
 
 
     <!-- BOOK APPOINTMENT -->
     <button
       type="button"
-      onclick="bookAppointment()"
-    >
+      onclick="bookAppointment()">
       Book Appointment
     </button>
-
     <p id="message"></p>
-
   </div>
-
 </div>
 
 
@@ -221,39 +197,25 @@
 <div id="bookingPopup" class="popup">
 
   <div class="popup-box">
-
     <h2>Appointment Booked!</h2>
-
-    <p>
-      Your appointment has been successfully scheduled.
-    </p>
-
+    <p>Your appointment has been successfully scheduled.</p>
     <button
       type="button"
-      onclick="closePopup()"
-    >
+      onclick="closePopup()">
       OK
     </button>
-
   </div>
-
 </div>
 
 
 <!-- ADDITIONAL SERVICE POPUP -->
 <div id="additionalServicePopup" class="popup">
-
   <div class="popup-box additional-service-box">
-
     <button
       type="button"
       class="popup-close"
       onclick="closeAdditionalServicePopup()"
-      aria-label="Close"
-    >
-      ×
-    </button>
-
+      aria-label="Close">×</button>
     <h2>Add Additional Service</h2>
 
 
@@ -263,31 +225,15 @@
     </label>
 
     <select id="additionalServiceType">
-
       <option value="">
         Select Service
       </option>
-
       <option value="Manicure">
         Manicure
       </option>
-
       <option value="Pedicure">
         Pedicure
       </option>
-
-      <option value="Gel">
-        Gel
-      </option>
-
-      <option value="Acrylic">
-        Acrylic
-      </option>
-
-      <option value="Nail Art">
-        Nail Art
-      </option>
-
     </select>
 
 
@@ -297,31 +243,24 @@
     </label>
 
     <select id="additionalPolishSelect">
-
       <option value="">
         Select Polish
       </option>
-
       <option value="Regular">
-        Regular
-      </option>
-
-      <option value="Gel">
         Gel
       </option>
-
+      <option value="Gel">
+        Builder Gel
+      </option>
       <option value="Acrylic">
         Acrylic
       </option>
-
       <option value="Chrome">
         Chrome
       </option>
-
       <option value="Cat Eye">
         Cat Eye
       </option>
-
     </select>
 
 
@@ -331,45 +270,22 @@
     </label>
 
     <select id="additionalDesignSelect">
-
       <option value="">
         Select Design
       </option>
-
-      <option value="None">
-        None
-      </option>
-
       <option value="Basic">
         Basic
       </option>
-
       <option value="Minimal Design">
         Minimal Design
       </option>
-
       <option value="Max Design">
         Max Design
       </option>
-
       <option value="Custom">
         Custom
       </option>
-
     </select>
-
-
-    <!-- DESIGN DETAILS -->
-    <label for="additionalDesignDetails">
-      Design Details
-    </label>
-
-    <textarea
-      id="additionalDesignDetails"
-      placeholder="Describe your design..."
-      rows="3"
-    ></textarea>
-
 
     <!-- POPUP BUTTONS -->
     <div class="additional-service-buttons">
@@ -383,32 +299,21 @@
 
       <button
         type="button"
-        onclick="saveAdditionalServiceOptions()"
-      >
+        onclick="saveAdditionalServiceOptions()">
         Add Service
       </button>
-
     </div>
-
   </div>
-
 </div>
-```
 
   </section>
 
-  <!-- FOOTER -->
-
   <footer>
-
-```
 <p>
   Contact me at (224) 304-4696<br>
-
   or visit my Instagram
   <a href="https://www.instagram.com/elianas_nailstudio/">
-    @elianasnailstudio
-  </a>
+    @elianasnailstudio</a>
 
   <br>
 
@@ -421,18 +326,11 @@
   <p class="credit">
     Website created and published by Katy Gullo Designs
   </p>
-
 </p>
-```
-
   </footer>
 
-  <!-- SCRIPTS -->
-
   <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
-
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
   <script src="script.js?v=33"></script>
 
 </body>
