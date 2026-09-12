@@ -813,7 +813,7 @@ window.removeAdditionalService = function (index) {
 // --------------------------------------
 // CALCULATE DURATION
 // --------------------------------------
-        
+
 let duration =
   Math.max(
     serviceDurations[service] || 1,
@@ -921,7 +921,7 @@ if (
         // CREATE APPOINTMENT
         // --------------------------------------
 
-        const appointment = {
+const appointment = {
   user_id: user.id,
   name: name,
   phone: phone,
@@ -937,7 +937,6 @@ if (
   status: "active",
   created_at: new Date().toISOString()
 };
-const slotsNeeded = duration * 2;
 
         // --------------------------------------
         // SAVE TO SUPABASE
