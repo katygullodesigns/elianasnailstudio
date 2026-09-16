@@ -239,17 +239,7 @@ function isPastDateTime(
   return appointmentDate < new Date();
 }
 
-if (
-  timeToMinutes(selectedTime) >
-  timeToMinutes("6:00 PM")
-) {
 
-  alert(
-    "Appointments cannot start after 6:00 PM."
-  );
-
-  return;
-}
 // ==========================================
 // GET CURRENT USER
 // ==========================================
