@@ -51,7 +51,7 @@ const durations = {
 
   // Polish
   "Gel": 1.5,
-  "Acrylic": 1.5,
+  "Acrylic": 2.5,
 
   // Design
   "Basic": 0.5,
