@@ -727,15 +727,15 @@ function initializeCalendar() {
 
       minDate: "today",
 
-      disable: [
+     disable: [
 
-        function (date) {
-
-          return date.getDay() === 0;
-
-        }
-
-      ],
+  function(date) {
+    return date.getDay() === 0;
+  },
+  "2026-10-14",
+  "2026-10-15",
+  "2026-10-28"
+],
 
       onChange:
         async function (
