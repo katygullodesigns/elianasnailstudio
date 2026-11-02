@@ -160,13 +160,18 @@ document.addEventListener("DOMContentLoaded", function () {
             "1:30 PM",
             "2:00 PM",
             "2:30 PM",
-            "3:30 PM",
             "3:00 PM",
-            "4:30 PM",
+            "3:30 PM",
             "4:00 PM",
+            "4:30 PM",
+            "5:00 PM",
             "5:30 PM",
+            "6:00 PM",
             "6:30 PM",
-            "6:00 PM"
+            "7:00 PM",
+            "7:30 PM",
+            "8:00 PM",
+            "8:30 PM"
         ],
 
         "2026-11-04": [
@@ -174,13 +179,18 @@ document.addEventListener("DOMContentLoaded", function () {
             "1:30 PM",
             "2:00 PM",
             "2:30 PM",
-            "3:30 PM",
             "3:00 PM",
-            "4:30 PM",
+            "3:30 PM",
             "4:00 PM",
+            "4:30 PM",
+            "5:00 PM",
             "5:30 PM",
+            "6:00 PM",
             "6:30 PM",
-            "6:00 PM"
+            "7:00 PM",
+            "7:30 PM",
+            "8:00 PM",
+            "8:30 PM"
         ],
 
        "2026-11-07": [
@@ -188,13 +198,18 @@ document.addEventListener("DOMContentLoaded", function () {
             "1:30 PM",
             "2:00 PM",
             "2:30 PM",
-            "3:30 PM",
             "3:00 PM",
-            "4:30 PM",
+            "3:30 PM",
             "4:00 PM",
+            "4:30 PM",
+            "5:00 PM",
             "5:30 PM",
+            "6:00 PM",
             "6:30 PM",
-            "6:00 PM"
+            "7:00 PM",
+            "7:30 PM",
+            "8:00 PM",
+            "8:30 PM"
         ],
        
        "2026-11-09": [
@@ -202,13 +217,18 @@ document.addEventListener("DOMContentLoaded", function () {
             "1:30 PM",
             "2:00 PM",
             "2:30 PM",
-            "3:30 PM",
             "3:00 PM",
-            "4:30 PM",
+            "3:30 PM",
             "4:00 PM",
+            "4:30 PM",
+            "5:00 PM",
             "5:30 PM",
+            "6:00 PM",
             "6:30 PM",
-            "6:00 PM"
+            "7:00 PM",
+            "7:30 PM",
+            "8:00 PM",
+            "8:30 PM"
         ],
        
        "2026-11-11": [
@@ -216,13 +236,18 @@ document.addEventListener("DOMContentLoaded", function () {
             "1:30 PM",
             "2:00 PM",
             "2:30 PM",
-            "3:30 PM",
             "3:00 PM",
-            "4:30 PM",
+            "3:30 PM",
             "4:00 PM",
+            "4:30 PM",
+            "5:00 PM",
             "5:30 PM",
+            "6:00 PM",
             "6:30 PM",
-            "6:00 PM"
+            "7:00 PM",
+            "7:30 PM",
+            "8:00 PM",
+            "8:30 PM"
         ],
 
        "2026-11-13": [
@@ -230,13 +255,18 @@ document.addEventListener("DOMContentLoaded", function () {
             "1:30 PM",
             "2:00 PM",
             "2:30 PM",
-            "3:30 PM",
             "3:00 PM",
-            "4:30 PM",
+            "3:30 PM",
             "4:00 PM",
+            "4:30 PM",
+            "5:00 PM",
             "5:30 PM",
+            "6:00 PM",
             "6:30 PM",
-            "6:00 PM"
+            "7:00 PM",
+            "7:30 PM",
+            "8:00 PM",
+            "8:30 PM"
         ],
 
        "2026-11-14": [
@@ -244,13 +274,18 @@ document.addEventListener("DOMContentLoaded", function () {
             "1:30 PM",
             "2:00 PM",
             "2:30 PM",
-            "3:30 PM",
             "3:00 PM",
-            "4:30 PM",
+            "3:30 PM",
             "4:00 PM",
+            "4:30 PM",
+            "5:00 PM",
             "5:30 PM",
+            "6:00 PM",
             "6:30 PM",
-            "6:00 PM"
+            "7:00 PM",
+            "7:30 PM",
+            "8:00 PM",
+            "8:30 PM"
         ]
 
     };
