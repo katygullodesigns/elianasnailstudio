@@ -147,7 +147,14 @@ document.addEventListener("DOMContentLoaded", function () {
     const blockedDates = [
         "2026-12-25",
         "2026-12-26",
-        "2027-01-01"
+        "2027-01-01",
+        "2026-11-06",
+        "2026-11-04",
+        "2026-11-07",
+        "2026-11-09",
+       "2026-11-11",
+       "2026-11-13",
+       "2026-11-14"
     ];
 
     // INDIVIDUAL BLOCKED TIMES
