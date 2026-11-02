@@ -3,15 +3,23 @@
 ========================================== */
 
 const SUPABASE_URL =
+  "https://kyonstvpolakjhrecqcj.supabase.co";
     "https://kyonstvpolakjhrecqcj.supabase.co";
 
 const SUPABASE_ANON_KEY =
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imt5b25zdHZwb2xha2pocmVjcWNqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE2OTYxMjUsImV4cCI6MjA5NzI3MjEyNX0.oq6v7gEy8FJPh4NI3ngUYybwJcHF6rW6qkNtepCxr7Y";
     "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXMiLCJyZWYiOiJreW9uc3R2cG9sYWtqaHJlY3FjaiIsInJvbGUiOiJhbm9uIiwiaWF0IjoxNzgxNjk2MTI1LCJleHAiOjIwOTcyNzIxMjV9.oq6v7gEy8FJPh4NI3ngUYybwJcHF6rW6qkNtepCxr7Y";
 
 const supabaseClient = supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_ANON_KEY
     SUPABASE_URL,
     SUPABASE_ANON_KEY
 );
+supabaseClient.auth.getSession().then(({ data, error }) => {
+  console.log("INDEX SESSION:", data.session);
+  console.log("INDEX SESSION ERROR:", error);
+});
 
 console.log("Eliana's Nail Studio Loaded");
 
@@ -21,6 +29,7 @@ console.log("Eliana's Nail Studio Loaded");
 ========================================== */
 
 if (document.body.classList.contains("home-page")) {
+  document.body.style.overflow = "auto";
     document.body.style.overflow = "auto";
 }
 
@@ -33,32 +42,102 @@ if (scrollArrow) {
     });
 }
 
+const scrollArrow =
+  document.getElementById("scrollArrow");
 
 /* ==========================================
    MOBILE NAVIGATION
 ========================================== */
 
+if (scrollArrow) {
 function toggleMenu() {
     const nav = document.querySelector("nav");
     const btn = document.querySelector(".mobile-menu-btn");
 
+  scrollArrow.addEventListener(
+    "click",
+    function () {
     if (!nav) return;
 
+      document.body.style.overflow = "auto";
     nav.classList.toggle("mobile-open");
     document.body.classList.toggle("menu-open");
 
+      document.body.classList.remove(
+        "lock-scroll"
+      );
     if (btn) {
         btn.innerHTML = nav.classList.contains("mobile-open")
             ? "✕"
             : "☰";
-    }
+}
+  );
 }
 
 
+function toggleMenu() {
+  const nav =
+    document.querySelector("nav");
+  const btn =
+    document.querySelector(
+      ".mobile-menu-btn"
+    );
+  if (!nav) return;
+  nav.classList.toggle(
+    "mobile-open"
+  );
+  document.body.classList.toggle(
+    "menu-open"
+  );
+  if (btn) {
+    btn.innerHTML =
+      nav.classList.contains(
+        "mobile-open"
+      )
+        ? "✕"
+        : "☰";
+  }
+}
 /* ==========================================
    BOOKING SYSTEM
 ========================================== */
 
+document.addEventListener(
+  "DOMContentLoaded",
+  function () {
+
+    // ==========================================
+    // MOBILE MENU
+    // ==========================================
+
+    document
+      .querySelectorAll("nav a")
+      .forEach(function (link) {
+        link.addEventListener(
+          "click",
+          function () {
+            const nav =
+              document.querySelector(
+                "nav"
+              );
+            const btn =
+              document.querySelector(
+                ".mobile-menu-btn"
+              );
+            if (nav) {
+              nav.classList.remove(
+                "mobile-open"
+              );
+            }
+            document.body.classList.remove(
+              "menu-open"
+            );
+            if (btn) {
+              btn.innerHTML = "☰";
+            }
+          }
+        );
+      });
 document.addEventListener("DOMContentLoaded", function () {
 
     /* ==========================================
@@ -78,13 +157,20 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     });
 
+    // ==========================================
+    // BOOKING VARIABLES
+    // ==========================================
 
     /* ==========================================
        BOOKING VARIABLES
     ========================================== */
 
-    let selectedDate = "";
-    let selectedTime = "";
+let selectedDate = "";
+let selectedTime = "";
+    const timeSlots =
+      document.getElementById(
+        "timeSlots"
+      );
     let selectedAdditionalServices = [];
 
     const timeSlots = document.getElementById("timeSlots");
@@ -94,7 +180,24 @@ document.addEventListener("DOMContentLoaded", function () {
        AVAILABLE APPOINTMENT TIMES
     ========================================== */
 
-    const allTimes = [
+const allTimes = [
+      "10:00 AM",
+      "10:30 AM",
+      "11:00 AM",
+      "11:30 AM",
+      "12:00 PM",
+      "12:30 PM",
+      "1:00 PM",
+      "1:30 PM",
+      "2:00 PM",
+      "2:30 PM",
+      "3:00 PM",
+      "3:30 PM",
+      "4:00 PM",
+      "4:30 PM",
+      "5:00 PM",
+      "5:30 PM",
+      "6:00 PM",
         "9:00 AM",
         "9:30 AM",
         "10:00 AM",
@@ -118,7 +221,8 @@ document.addEventListener("DOMContentLoaded", function () {
         "7:00 PM",
         "7:30 PM",
         "8:00 PM"
-    ];
+];
+   
 
 
     /* ==========================================
@@ -173,7 +277,14 @@ document.addEventListener("DOMContentLoaded", function () {
        SERVICE DURATIONS
     ========================================== */
 
-    const serviceDurations = {
+const serviceDurations = {
+      "Manicure": 1.5,
+      "Pedicure": 2.0,
+      "Gel": 1.5,
+      "Acrylic": 2.5,
+      "Basic": 0.5,
+      "Minimal Design": 1,
+      "Max Design": 2.5
         "Manicure": 1.5,
         "Pedicure": 2.0,
         "Gel": 1.5,
@@ -181,8 +292,11 @@ document.addEventListener("DOMContentLoaded", function () {
         "Basic": 0.5,
         "Minimal Design": 1,
         "Max Design": 2.5
-    };
+};
 
+    // ==========================================
+    // TIME → MINUTES
+    // ==========================================
 
     /* ==========================================
        CHECK BLOCKED DATES
@@ -208,61 +322,138 @@ document.addEventListener("DOMContentLoaded", function () {
        TIME TO MINUTES
     ========================================== */
 
-    function timeToMinutes(time) {
+function timeToMinutes(time) {
+      const match =
+        time.match(
+          /(\d+):(\d+)\s(AM|PM)/
 
         const match = time.match(
             /(\d+):(\d+)\s(AM|PM)/
-        );
+);
 
+      if (!match) return 0;
+      let hour =
+        Number(match[1]);
+      const minute =
+        Number(match[2]);
+      const ampm =
+        match[3];
+      if (
+        ampm === "PM" &&
+        hour !== 12
+      ) {
+        hour += 12;
+      }
+
+      if (
+        ampm === "AM" &&
+        hour === 12
+      ) {
+        hour = 0;
+      }
+
+      return (
+        hour * 60 +
+        minute
+      );
+    }
         if (!match) return 0;
 
         let hour = Number(match[1]);
         const minute = Number(match[2]);
         const ampm = match[3];
 
+    // ==========================================
+    // TODAY
+    // ==========================================
         if (ampm === "PM" && hour !== 12) {
             hour += 12;
         }
 
+    function getTodayString() {
+      const today =
+        new Date();
+
+      return (
+
+        today.getFullYear() +
+        "-" +
+        String(
+          today.getMonth() + 1
+        ).padStart(2, "0") +
+        "-" +
+        String(
+          today.getDate()
+        ).padStart(2, "0")
+      );
         if (ampm === "AM" && hour === 12) {
             hour = 0;
         }
 
         return hour * 60 + minute;
-    }
+}
 
 
+    // ==========================================
+    // CHECK PAST TIME
+    // ==========================================
     /* ==========================================
        FORMAT MINUTES AS TIME
     ========================================== */
 
+    function isPastTime(
+      date,
+      time
+    ) {
     function minutesToTime(minutes) {
 
         const hour = Math.floor(minutes / 60);
         const minute = minutes % 60;
 
+      if (!date || !time) {
+        return false;
+      }
         const ampm = hour >= 12 ? "PM" : "AM";
 
+      const todayString =
+        getTodayString();
         let displayHour = hour % 12;
 
         if (displayHour === 0) {
             displayHour = 12;
         }
 
+      if (date < todayString) {
+        return true;
+      }
         return (
             `${displayHour}:${String(minute).padStart(2, "0")} ${ampm}`
         );
     }
 
+      if (date > todayString) {
+        return false;
+      }
 
+      const now =
+        new Date();
     /* ==========================================
        GET TODAY'S DATE
     ========================================== */
 
+      const currentMinutes =
+        now.getHours() * 60 +
+        now.getMinutes();
     function getTodayString() {
 
+      const slotMinutes =
+        timeToMinutes(time);
         const today = new Date();
 
+      return (
+        slotMinutes <=
+        currentMinutes
+      );
         return (
             today.getFullYear() +
             "-" +
@@ -270,25 +461,53 @@ document.addEventListener("DOMContentLoaded", function () {
             "-" +
             String(today.getDate()).padStart(2, "0")
         );
-    }
+}
 
+    // ==========================================
+    // GET BOOKED APPOINTMENTS
+    // ==========================================
 
+    async function getBookedAppointments() {
     /* ==========================================
        CHECK PAST APPOINTMENT TIMES
     ========================================== */
 
+      const {
+        data,
+        error
+      } = await supabaseClient
+        .from("appointments")
+        .select("*")
+        .or(
+          "status.is.null,status.neq.past"
+        );
     function isPastTime(date, time) {
 
+      if (error) {
         if (!date || !time) return false;
 
+        console.error(
+          "Supabase read error:",
+          error
+        );
         const todayString = getTodayString();
 
+        return {};
+      }
         if (date < todayString) return true;
 
+      const bookedAppointments =
+        {};
         if (date > todayString) return false;
 
+      data.forEach(
+        function (appointment) {
         const now = new Date();
 
+          const blockedTimes =
+            appointment.blockedTimes ||
+            appointment.blocked_times ||
+            [];
         const currentMinutes =
             now.getHours() * 60 +
             now.getMinutes();
@@ -296,13 +515,28 @@ document.addEventListener("DOMContentLoaded", function () {
         return timeToMinutes(time) <= currentMinutes;
     }
 
+          if (
+            !appointment.date ||
+            !blockedTimes
+          ) {
+            return;
+          }
 
+          if (
+            !bookedAppointments[
+              appointment.date
+            ]
+          ) {
     /* ==========================================
        GET BOOKED APPOINTMENTS
     ========================================== */
 
+            bookedAppointments[
+              appointment.date
+            ] = [];
     async function getBookedAppointments() {
 
+          }
         const { data, error } = await supabaseClient
             .from("appointments")
             .select("*")
@@ -310,11 +544,20 @@ document.addEventListener("DOMContentLoaded", function () {
 
         if (error) {
 
+          blockedTimes.forEach(
+            function (time) {
             console.error("Supabase read error:", error);
 
+              bookedAppointments[
+                appointment.date
+              ].push(time);
+            }
+          );
             throw error;
-        }
+}
+      );
 
+      return bookedAppointments;
         const bookedAppointments = {};
 
         data.forEach(function (appointment) {
@@ -339,57 +582,130 @@ document.addEventListener("DOMContentLoaded", function () {
         });
 
         return bookedAppointments;
-    }
+}
 
+    // ==========================================
+    // RENDER TIME BUTTONS
+    // ==========================================
 
+    function renderTimeButtons(
+      bookedTimes
+    ) {
     /* ==========================================
        RENDER TIME BUTTONS
     ========================================== */
 
+      if (!timeSlots) return;
     function renderTimeButtons(unavailableTimes) {
 
+      timeSlots.innerHTML = "";
         if (!timeSlots) return;
 
+      allTimes.forEach(
+        function (time) {
         timeSlots.innerHTML = "";
 
+          const button =
+            document.createElement(
+              "button"
+            );
         allTimes.forEach(function (time) {
 
+          button.type =
+            "button";
             const button = document.createElement("button");
 
+          button.textContent =
+            time;
             button.type = "button";
             button.textContent = time;
             button.classList.add("time-slot");
 
+          button.classList.add(
+            "time-slot"
+          );
             const timeAlreadyPassed =
                 isPastTime(selectedDate, time);
 
+          const timeAlreadyPassed =
+            isPastTime(
+              selectedDate,
+              time
+            );
             const alreadyBooked =
                 unavailableTimes.includes(time);
 
+          const alreadyBooked =
+            bookedTimes.some(
+              function (bookedTime) {
             if (timeAlreadyPassed || alreadyBooked) {
 
+                return (
+                  bookedTime === time
+                );
+              }
+            );
                 button.classList.add("booked");
                 button.disabled = true;
 
             }
 
+          if (
+            timeAlreadyPassed ||
+            alreadyBooked
+          ) {
             button.addEventListener("click", function () {
 
+            button.classList.add(
+              "booked"
+            );
                 if (button.disabled) return;
 
+            button.disabled =
+              true;
                 document.querySelectorAll(".time-slot")
                     .forEach(function (btn) {
                         btn.classList.remove("selected");
                     });
 
+          }
                 button.classList.add("selected");
 
+          button.addEventListener(
+            "click",
+            function () {
                 selectedTime = time;
 
+              if (
+                button.disabled ||
+                button.classList.contains(
+                  "booked"
+                )
+              ) {
+                return;
+              }
+
+              document
+                .querySelectorAll(
+                  ".time-slot"
+                )
+                .forEach(
+                  function (btn) {
+
+                    btn.classList.remove(
+                      "selected"
+                    );
+                  }
+                );
             });
 
+              button.classList.add(
+                "selected"
+              );
             timeSlots.appendChild(button);
 
+              selectedTime =
+                time;
         });
 
     }
@@ -410,43 +726,108 @@ document.addEventListener("DOMContentLoaded", function () {
             if (timeSlots) {
                 timeSlots.innerHTML =
                     "<p>This date is unavailable.</p>";
-            }
+}
+          );
 
+          timeSlots.appendChild(
+            button
+          );
             return;
-        }
+}
+      );
+    }
 
+    // ==========================================
+    // LOAD AVAILABLE TIMES
+    // ==========================================
         try {
 
+    async function loadTimes(
+      date
+    ) {
             const bookedAppointments =
                 await getBookedAppointments();
 
+      selectedTime = "";
             const bookedTimes =
                 bookedAppointments[date] || [];
 
+      const bookedAppointments =
+        await getBookedAppointments();
             const manuallyBlockedTimes =
                 blockedTimesByDate[date] || [];
 
+      const bookedTimes =
+        bookedAppointments[date] ||
+        [];
             const unavailableTimes = [
                 ...bookedTimes,
                 ...manuallyBlockedTimes
             ];
 
+      renderTimeButtons(
+        bookedTimes
+      );
+    }
             renderTimeButtons(unavailableTimes);
 
+    // ==========================================
+    // DATE PICKER
+    // ==========================================
         } catch (error) {
 
+    if (
+      typeof flatpickr !==
+        "undefined" &&
+      document.getElementById(
+        "appointmentDate"
+      )
+    ) {
             console.error("Unable to load appointment times:", error);
 
+     flatpickr(
+  "#appointmentDate",
+  {
+    dateFormat: "Y-m-d",
+    minDate: "today",
+    disable: [
+  function(date) {
+    return date.getDay() === 0;
+  },
+
+  "2026-10-14",
+  "2026-10-15",
+  "2026-10-28"
+],
+
+    onChange:
+            async function (
+              selectedDates,
+              dateStr
+            ) {
+
+              selectedDate =
+                dateStr;
+
+
+              await loadTimes(
+                dateStr
+              );
             if (timeSlots) {
                 timeSlots.innerHTML =
                     "<p>Unable to load appointment times. Please try again.</p>";
-            }
+}
 
-        }
+}
+      );
 
-    }
+}
 
+// ==========================================
+// ADDITIONAL SERVICES
+// ==========================================
 
+let selectedAdditionalServices = [];
     /* ==========================================
        DATE PICKER
     ========================================== */
@@ -462,55 +843,340 @@ document.addEventListener("DOMContentLoaded", function () {
 
             minDate: "today",
 
+// ==========================================
+// OPEN ADDITIONAL SERVICE POPUP
+// ==========================================
             disable: [
 
+window.openAdditionalServicePopup = function () {
                 function (date) {
 
+  const popup = document.getElementById(
+    "additionalServicePopup"
+  );
                     const dateString =
                         date.getFullYear() + "-" +
                         String(date.getMonth() + 1).padStart(2, "0") + "-" +
                         String(date.getDate()).padStart(2, "0");
 
+  if (popup) {
+    popup.style.display = "flex";
+  }
+};
                     return isDateBlocked(dateString);
 
+// ==========================================
+// CLOSE ADDITIONAL SERVICE POPUP
+// ==========================================
                 }
 
+window.closeAdditionalServicePopup = function () {
             ],
 
+  const popup = document.getElementById(
+    "additionalServicePopup"
+  );
             onChange: async function (selectedDates, dateStr) {
 
+  if (popup) {
+    popup.style.display = "none";
+  }
+};
                 selectedDate = dateStr;
 
+// ==========================================
+// SAVE ADDITIONAL SERVICE
+// ==========================================
                 await loadTimes(dateStr);
 
+window.saveAdditionalServiceOptions = function () {
             }
 
+  const serviceElement =
+    document.getElementById("additionalServiceType");
         });
 
-    }
+  const polishElement =
+    document.getElementById("additionalPolishSelect");
+
+  const designElement =
+    document.getElementById("additionalDesignSelect");
+
+  const detailsElement =
+    document.getElementById("additionalDesignDetails");
 
 
+  if (!serviceElement) {
+    console.error(
+      "additionalServiceType element not found"
+    );
+    return;
+  }
+
+  const service =
+    serviceElement.value;
+
+  const polish =
+    polishElement ? polishElement.value : "";
+
+  const design =
+    designElement ? designElement.value : "";
+
+  const designDetails =
+    detailsElement
+      ? detailsElement.value.trim()
+      : "";
+
+  if (!service) {
+
+    alert(
+      "Please select an additional service."
+    );
+    return;
+  }
+
+  selectedAdditionalServices.push({
+
+    service: service,
+    polish: polish,
+    design: design,
+    designDetails: designDetails
+  });
+
+
+  renderAdditionalServices();
+
+  // CLEAR POPUP
+
+  serviceElement.value = "";
+
+  if (polishElement) {
+    polishElement.value = "";
+  }
+  if (designElement) {
+    designElement.value = "";
+  }
+  if (detailsElement) {
+    detailsElement.value = "";
+  }
+  window.closeAdditionalServicePopup();
+};
+
+
+// ==========================================
+// DISPLAY SELECTED SERVICES
+// ==========================================
+
+function renderAdditionalServices() {
+
+  const container =
+    document.getElementById(
+      "selectedAdditionalServices"
+    );
+  if (!container) return;
+  container.innerHTML = "";
+  selectedAdditionalServices.forEach(
+    function (item, index) {
+
+      const service =
+        document.createElement("div");
+      service.className =
+        "selected-additional-service";
+      let details = "";
+      if (item.polish) {
+        details +=
+          " • " + item.polish;
+      }
+      if (item.design) {
+        details +=
+          " • " + item.design;
+      }
+      if (item.designDetails) {
+        details +=
+          " • " + item.designDetails;
+      }
+      service.innerHTML = `
+        <div class="additional-service-info">
+          <strong>
+            ${item.service}
+          </strong>
+          <span>
+            ${details}
+          </span>
+        </div>
+        <button
+          type="button"
+          onclick="removeAdditionalService(${index})">
+          ×
+        </button>
+      `;
+      container.appendChild(service);
+}
+  );
+};
+
+// ==========================================
+// REMOVE ADDITIONAL SERVICE
+// ==========================================
+
+window.removeAdditionalService = function (index) {
+
+  selectedAdditionalServices.splice(
+    index,
+    1
+  );
+  renderAdditionalServices();
+};
+  
+    // ==========================================
+    // CLOSE BOOKING POPUP
+    // ==========================================
+
+    window.closePopup =
+      function () {
+
+        const popup =
+          document.getElementById(
+            "bookingPopup"
+          );
+
+        if (popup) {
+
+          popup.style.display =
+            "none";
+        }
+      };
+
+    // ==========================================
+    // BOOK APPOINTMENT
+    // ==========================================
+
+    window.bookAppointment =
+      async function () {
+        // --------------------------------------
+        // CHECK LOGIN
+        // --------------------------------------
+
+        const {
+          data: {
+            user
+          },
+          error: userError
+        } =
+          await supabaseClient.auth
+            .getUser();
+        if (
+          userError ||
+          !user
+        ) {
+
+          alert(
+            "Please log in or create an account before booking an appointment."
+          );
+          window.location.href =
+            "login.html";
+          return;
+        }
+        
+        // --------------------------------------
+        // GET FORM VALUES
+        // --------------------------------------
+
+        const name =
+          document
+            .getElementById(
+              "clientName"
+            )
+            .value
+            .trim();
+
+
+        const phone =
+          document
+            .getElementById(
+              "clientPhone"
+            )
+            .value
+            .trim();
+
+
+        const service =
+          document
+            .getElementById(
+              "serviceSelect"
+            )
+            .value;
+
+
+        const polish =
+          document
+            .getElementById(
+              "polishSelect"
+            )
+            .value;
+
+
+        const design =
+          document
+            .getElementById(
+              "designSelect"
+            )
+            .value;
+
+
+        // --------------------------------------
+        // VALIDATE FORM
+        // --------------------------------------
+
+        if (!name) {
+          alert(
+            "Please enter your name."
+          );
+          return;
+        }
     /* ==========================================
        ADDITIONAL SERVICES
     ========================================== */
 
     window.openAdditionalServicePopup = function () {
 
+        if (!phone) {
+          alert(
+            "Please enter your phone number."
+          );
+          return;
         const popup = document.getElementById(
             "additionalServicePopup"
         );
 
         if (popup) {
             popup.style.display = "flex";
-        }
+}
 
     };
 
+        if (
+          !selectedDate ||
+          !selectedTime
+        ) {
+          alert(
+            "Please select a date and time."
+          );
+          return;
+        }
 
     /* ==========================================
        CLOSE ADDITIONAL SERVICE POPUP
     ========================================== */
 
+        if (
+          !service ||
+          !design
+        ) {
+          alert(
+            "Please select a service and design."
+          );
+          return;
     window.closeAdditionalServicePopup = function () {
 
         const popup = document.getElementById(
@@ -519,7 +1185,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
         if (popup) {
             popup.style.display = "none";
-        }
+}
 
     };
 
@@ -546,6 +1212,20 @@ document.addEventListener("DOMContentLoaded", function () {
 
         const service = serviceElement.value;
 
+        if (
+          isPastTime(
+            selectedDate,
+            selectedTime
+          )
+        ) {
+
+          alert(
+            "That time has already passed. Please choose another time."
+          );
+          await loadTimes(
+            selectedDate
+          );
+          return;
         const polish = polishElement
             ? polishElement.value
             : "";
@@ -563,7 +1243,7 @@ document.addEventListener("DOMContentLoaded", function () {
             alert("Please select an additional service.");
 
             return;
-        }
+}
 
         selectedAdditionalServices.push({
             service: service,
@@ -572,25 +1252,57 @@ document.addEventListener("DOMContentLoaded", function () {
             designDetails: designDetails
         });
 
+// --------------------------------------
+// CALCULATE DURATION
+// --------------------------------------
         renderAdditionalServices();
 
+let duration =
+  Math.max(
+    serviceDurations[service] || 1,
+    serviceDurations[polish] || 1,
+    serviceDurations[design] || 1
+  );
         serviceElement.value = "";
 
+if (
+  selectedAdditionalServices &&
+  selectedAdditionalServices.length > 0
+) {
+  duration +=
+    selectedAdditionalServices.length * 2;
+}
         if (polishElement) polishElement.value = "";
         if (designElement) designElement.value = "";
         if (detailsElement) detailsElement.value = "";
 
+// --------------------------------------
+// ADDITIONAL SERVICES
+// --------------------------------------
         window.closeAdditionalServicePopup();
 
+if (
+  selectedAdditionalServices &&
+  selectedAdditionalServices.length > 0
+) {
+  duration +=
+    selectedAdditionalServices.length * 2;
+}
     };
 
 
+        const startIndex =
+          allTimes.indexOf(
+            selectedTime
+          );
     /* ==========================================
        DISPLAY SELECTED SERVICES
     ========================================== */
 
     function renderAdditionalServices() {
 
+        const slotsNeeded =
+          duration * 2;
         const container = document.getElementById(
             "selectedAdditionalServices"
         );
@@ -605,14 +1317,21 @@ document.addEventListener("DOMContentLoaded", function () {
 
             service.className = "selected-additional-service";
 
+       const timesToBook = [];
             const info = document.createElement("div");
             info.className = "additional-service-info";
 
+for (let i = 0; i < slotsNeeded; i++) {
+  const minutes =
+    timeToMinutes(selectedTime) + (i * 30);
             const title = document.createElement("strong");
             title.textContent = item.service;
 
+  const hour = Math.floor(minutes / 60);
+  const minute = minutes % 60;
             let details = "";
 
+  let displayHour = hour;
             if (item.polish) {
                 details += " • " + item.polish;
             }
@@ -625,6 +1344,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 details += " • " + item.designDetails;
             }
 
+  let ampm = "AM";
             const description = document.createElement("span");
             description.textContent = details;
 
@@ -647,13 +1367,25 @@ document.addEventListener("DOMContentLoaded", function () {
 
         });
 
-    }
+  if (hour >= 12) {
+    ampm = "PM";
+    if (hour > 12) {
+      displayHour = hour - 12;
+}
+  }
 
+  if (displayHour === 0) {
+    displayHour = 12;
+  }
 
+  const formattedTime =
+    `${displayHour}:${String(minute).padStart(2, "0")} ${ampm}`;
     /* ==========================================
        REMOVE ADDITIONAL SERVICE
     ========================================== */
 
+  timesToBook.push(formattedTime);
+}
     window.removeAdditionalService = function (index) {
 
         selectedAdditionalServices.splice(index, 1);
@@ -662,18 +1394,31 @@ document.addEventListener("DOMContentLoaded", function () {
 
     };
 
+        // --------------------------------------
+        // CHECK FOR CONFLICT
+        // --------------------------------------
 
+        const bookedAppointments =
+          await getBookedAppointments();
     /* ==========================================
        CLOSE BOOKING POPUP
     ========================================== */
 
     window.closePopup = function () {
 
+        if (
+          !bookedAppointments[
+            selectedDate
+          ]
+        ) {
         const popup = document.getElementById("bookingPopup");
 
+          bookedAppointments[
+            selectedDate
+          ] = [];
         if (popup) {
             popup.style.display = "none";
-        }
+}
 
     };
 
@@ -695,8 +1440,14 @@ document.addEventListener("DOMContentLoaded", function () {
                 error: userError
             } = await supabaseClient.auth.getUser();
 
+        const conflict =
+          timesToBook.some(
+            function (time) {
             if (userError || !user) {
 
+              return bookedAppointments[
+                selectedDate
+              ].includes(time);
                 alert(
                     "Please log in or create an account before booking an appointment."
                 );
@@ -704,13 +1455,23 @@ document.addEventListener("DOMContentLoaded", function () {
                 window.location.href = "login.html";
 
                 return;
-            }
+}
+          );
 
 
+        if (conflict) {
             /* ==========================================
                GET FORM VALUES
             ========================================== */
 
+          alert(
+            "One or more of those time slots are already booked. Please choose another time."
+          );
+          await loadTimes(
+            selectedDate
+          );
+          return;
+        }
             const name = document
                 .getElementById("clientName")
                 .value.trim();
@@ -719,19 +1480,62 @@ document.addEventListener("DOMContentLoaded", function () {
                 .getElementById("clientPhone")
                 .value.trim();
 
+        // --------------------------------------
+        // CREATE APPOINTMENT
+        // --------------------------------------
+
+const appointment = {
+  user_id: user.id,
+  name: name,
+  phone: phone,
+  date: selectedDate,
+  time: selectedTime,
+  duration: duration,
+  blocked_times: timesToBook,
+  service: service,
+  polish: polish,
+  design: design,
+  additional_services: selectedAdditionalServices,
+  notes: "",
+  status: "active",
+  created_at: new Date().toISOString()
+};
+
+        // --------------------------------------
+        // SAVE TO SUPABASE
+        // --------------------------------------
+
+        const {
+          error
+        } =
+          await supabaseClient
+            .from("appointments")
+            .insert([
+              appointment
+            ]);
             const service = document
                 .getElementById("serviceSelect")
                 .value;
 
+        if (error) {
             const polish = document
                 .getElementById("polishSelect")
                 .value;
 
+          console.error(
+            "Supabase insert error:",
+            error
+          );
             const design = document
                 .getElementById("designSelect")
                 .value;
 
+          alert(
+            error.message
+          );
 
+          return;
+        }
             /* ==========================================
                VALIDATE FORM
             ========================================== */
@@ -741,20 +1545,73 @@ document.addEventListener("DOMContentLoaded", function () {
                 return;
             }
 
+        // --------------------------------------
+        // SHOW SUCCESS POPUP
+        // --------------------------------------
             if (!phone) {
                 alert("Please enter your phone number.");
                 return;
             }
 
+        const popup =
+          document.getElementById(
+            "bookingPopup"
+          );
             if (!selectedDate || !selectedTime) {
                 alert("Please select a date and time.");
                 return;
             }
 
+        if (popup) {
             if (isDateBlocked(selectedDate)) {
 
+          popup.style.display =
+            "flex";
+        }
                 alert("This date is unavailable. Please choose another date.");
 
+        // --------------------------------------
+        // CLEAR FORM
+        // --------------------------------------
+
+        document
+          .getElementById(
+            "clientName"
+          )
+          .value = "";
+
+        document
+          .getElementById(
+            "clientPhone"
+          )
+          .value = "";
+
+        document
+          .getElementById(
+            "appointmentDate"
+          )
+          .value = "";
+
+        document
+          .getElementById(
+            "serviceSelect"
+          )
+          .value = "";
+
+        document
+          .getElementById(
+            "polishSelect"
+          )
+          .value = "";
+
+        document
+          .getElementById(
+            "designSelect"
+          )
+          .value = "";
+
+        selectedDate = "";
+        selectedTime = "";
                 return;
             }
 
@@ -813,6 +1670,7 @@ document.addEventListener("DOMContentLoaded", function () {
             const bookedTimes =
                 bookedAppointments[selectedDate] || [];
 
+        if (timeSlots) {
             const manuallyBlockedTimes =
                 blockedTimesByDate[selectedDate] || [];
 
@@ -960,7 +1818,12 @@ document.addEventListener("DOMContentLoaded", function () {
                 "Something went wrong while booking your appointment. Please try again."
             );
 
-        }
+          timeSlots.innerHTML =
+            "";
+}
+      };
+  }
+);
 
     };
 
