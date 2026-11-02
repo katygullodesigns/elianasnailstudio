@@ -136,7 +136,7 @@ document.addEventListener("DOMContentLoaded", function () {
     // RECURRING DAYS OFF
 
     const blockedWeekdays = [
-        0
+        0,3,5,6
     ];
 
     // ENTIRE DAYS OFF
