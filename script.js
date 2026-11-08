@@ -26,7 +26,7 @@ for (let minutes = 9 * 60; minutes <= 18 * 60; minutes += 30) {
 }
 
 // Latest permitted appointment end time.
-const CLOSING_MINUTES = timeToMinutes("6:00 PM");
+const CLOSING_MINUTES = timeToMinutes("6:30 PM");
 
 // Sundays are permanently unavailable.
 const PERMANENTLY_BLOCKED_WEEKDAYS = [0, 1, 2, 5];
@@ -35,9 +35,8 @@ const PERMANENTLY_BLOCKED_WEEKDAYS = [0, 1, 2, 5];
 // Sunday = 0, Monday = 1, Tuesday = 2, etc.
 
 const WEEKLY_BLOCKED_HOURS = {
-    2: { start: "10:00 AM", end: "7:00 PM" }, // Tuesday
+    3: { start: "10:00 AM", end: "7:00 PM" }, // Wednesday
     4: { start: "1:00 PM", end: "7:00 PM" },  // Thursday
-    5: { start: "9:00 AM", end: "5:00 PM" }   // Friday
 };
 
 // Service durations in hours.
