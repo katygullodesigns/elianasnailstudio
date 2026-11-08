@@ -1,3 +1,4 @@
+
 /* =========================================================
    ELIANA'S NAIL STUDIO
    BOOKING SYSTEM + SUPABASE AVAILABILITY
@@ -17,26 +18,24 @@ const supabaseClient = window.supabase
 
 /* 2. BUSINESS SETTINGS */
 
-// Appointment start times: 9 AM–8 PM, every 30 minutes.
+// Appointment start times: 9 AM–6 PM, every 30 minutes.
 const allTimes = [];
 
-for (let minutes = 9 * 60; minutes <= 20 * 60; minutes += 30) {
+for (let minutes = 9 * 60; minutes <= 18 * 60; minutes += 30) {
     allTimes.push(minutesToTime(minutes));
 }
 
 // Latest permitted appointment end time.
-const CLOSING_MINUTES = timeToMinutes("8:30 PM");
+const CLOSING_MINUTES = timeToMinutes("6:00 PM");
 
 // Sundays are permanently unavailable.
-const PERMANENTLY_BLOCKED_WEEKDAYS = [0];
+const PERMANENTLY_BLOCKED_WEEKDAYS = [0, 1, 3];
 
 // RECURRING WEEKLY UNAVAILABLE HOURS
 // Sunday = 0, Monday = 1, Tuesday = 2, etc.
 
 const WEEKLY_BLOCKED_HOURS = {
-    1: { start: "10:00 AM", end: "7:00 PM" }, // Monday
     2: { start: "10:00 AM", end: "7:00 PM" }, // Tuesday
-    3: { start: "1:00 PM", end: "7:00 PM" },  // Wednesday
     4: { start: "1:00 PM", end: "7:00 PM" },  // Thursday
     5: { start: "9:00 AM", end: "5:00 PM" }   // Friday
 };
@@ -74,7 +73,6 @@ function timeToMinutes(time) {
 
     const value = String(time).trim();
 
-    // Supabase TIME format: 12:00:00 or 14:30
     const sqlMatch = value.match(
         /^(\d{1,2}):(\d{2})(?::\d{2})?$/
     );
@@ -84,7 +82,6 @@ function timeToMinutes(time) {
             Number(sqlMatch[2]);
     }
 
-    // Display format: 12:00 PM
     const displayMatch = value.match(
         /^(\d{1,2}):(\d{2})\s*(AM|PM)$/i
     );
@@ -308,9 +305,9 @@ async function getBookedAppointments() {
         throw new Error("Supabase is not connected.");
     }
 
-const { data, error } = await supabaseClient
-    .from("appointments")
-    .select("*");
+    const { data, error } = await supabaseClient
+        .from("appointments")
+        .select("*");
 
     if (error) {
         console.error("Could not load appointments:", error);
@@ -657,7 +654,7 @@ window.saveAdditionalServiceOptions = function () {
 
     window.closeAdditionalServicePopup();
 
-    // Refresh times because the appointment duration changed.
+    // Refresh times because appointment duration changed.
     if (selectedDate) {
         loadTimes(selectedDate);
     }
