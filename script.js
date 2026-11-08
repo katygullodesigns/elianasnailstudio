@@ -308,9 +308,9 @@ async function getBookedAppointments() {
         throw new Error("Supabase is not connected.");
     }
 
-    const { data, error } = await supabaseClient
-        .from("appointments")
-        .select("date, time, blocked_times, status");
+const { data, error } = await supabaseClient
+    .from("appointments")
+    .select("*");
 
     if (error) {
         console.error("Could not load appointments:", error);
