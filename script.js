@@ -1,13 +1,14 @@
 /* =========================================================
    ELIANA'S NAIL STUDIO
-   Booking System + Supabase Availability
+   BOOKING SYSTEM + SUPABASE AVAILABILITY
 ========================================================= */
 
 
 /* 1. SUPABASE CONNECTION */
 
 const SUPABASE_URL = "https://kyonstvpolakjhrecqcj.supabase.co";
-const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imt5b25zdHZwb2xha2pocmVjcWNqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE2OTYxMjUsImV4cCI6MjA5NzI3MjEyNX0.oq6v7gEy8FJPh4NI3ngUYybwJcHF6rW6qkNtepCxr7Y";
+
+const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhbGciOiJIUzI1NiIsInJlZiI6Imt5b25zdHZwb2xha2pocmVjcWNqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE2OTYxMjUsImV4cCI6MjA5NzI3MjEyNX0.oq6v7gEy8FJPh4NI3ngUYybwJcHF6rW6qkNtepCxr7Y";
 
 const supabaseClient = window.supabase
     ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
@@ -16,18 +17,29 @@ const supabaseClient = window.supabase
 
 /* 2. BUSINESS SETTINGS */
 
-// Appointment times: 9 AM through 8 PM, every 30 minutes.
+// Appointment start times: 9 AM–8 PM, every 30 minutes.
 const allTimes = [];
 
 for (let minutes = 9 * 60; minutes <= 20 * 60; minutes += 30) {
     allTimes.push(minutesToTime(minutes));
 }
 
-// Closing time.
+// Latest permitted appointment end time.
 const CLOSING_MINUTES = timeToMinutes("8:30 PM");
 
 // Sundays are permanently unavailable.
 const PERMANENTLY_BLOCKED_WEEKDAYS = [0];
+
+// RECURRING WEEKLY UNAVAILABLE HOURS
+// Sunday = 0, Monday = 1, Tuesday = 2, etc.
+
+const WEEKLY_BLOCKED_HOURS = {
+    1: { start: "10:00 AM", end: "7:00 PM" }, // Monday
+    2: { start: "10:00 AM", end: "7:00 PM" }, // Tuesday
+    3: { start: "1:00 PM", end: "7:00 PM" },  // Wednesday
+    4: { start: "1:00 PM", end: "7:00 PM" },  // Thursday
+    5: { start: "9:00 AM", end: "5:00 PM" }   // Friday
+};
 
 // Service durations in hours.
 const serviceDurations = {
@@ -148,6 +160,12 @@ function isPastTime(date, time) {
 }
 
 
+// Check whether two time ranges overlap.
+function rangesOverlap(startA, endA, startB, endB) {
+    return startA < endB && endA > startB;
+}
+
+
 /* 5. LOAD AVAILABILITY FROM SUPABASE */
 
 async function loadAvailabilitySettings() {
@@ -168,20 +186,12 @@ async function loadAvailabilitySettings() {
     ]);
 
     if (blocksResult.error) {
-        console.error(
-            "availability_blocks error:",
-            blocksResult.error
-        );
-
+        console.error("availability_blocks error:", blocksResult.error);
         throw blocksResult.error;
     }
 
     if (weekdaysResult.error) {
-        console.error(
-            "blocked_weekdays error:",
-            weekdaysResult.error
-        );
-
+        console.error("blocked_weekdays error:", weekdaysResult.error);
         throw weekdaysResult.error;
     }
 
@@ -218,24 +228,46 @@ function isDateBlocked(dateString) {
 
     const date = dateStringToLocalDate(dateString);
 
-    // Check recurring days off.
     if (blockedWeekdays.includes(date.getDay())) {
         return true;
     }
 
-    // Check full-day blocks from Supabase.
     return getBlocksForDate(dateString).some(
         block => block.all_day === true
     );
 }
 
 
-// Check whether a time range overlaps a blocked period.
+// Check weekly restrictions AND date-specific Supabase blocks.
 function isTimeRangeBlocked(
     dateString,
     startMinutes,
     endMinutes
 ) {
+    if (!dateString) return false;
+
+    const date = dateStringToLocalDate(dateString);
+
+    // Check recurring weekly unavailable hours.
+    const weeklyBlock = WEEKLY_BLOCKED_HOURS[date.getDay()];
+
+    if (weeklyBlock) {
+        const weeklyStart = timeToMinutes(weeklyBlock.start);
+        const weeklyEnd = timeToMinutes(weeklyBlock.end);
+
+        if (
+            rangesOverlap(
+                startMinutes,
+                endMinutes,
+                weeklyStart,
+                weeklyEnd
+            )
+        ) {
+            return true;
+        }
+    }
+
+    // Check date-specific Supabase blocks.
     return getBlocksForDate(dateString).some(block => {
 
         if (block.all_day === true) return true;
@@ -247,15 +279,17 @@ function isTimeRangeBlocked(
         const blockStart = timeToMinutes(block.start_time);
         const blockEnd = timeToMinutes(block.end_time);
 
-        return (
-            startMinutes < blockEnd &&
-            endMinutes > blockStart
+        return rangesOverlap(
+            startMinutes,
+            endMinutes,
+            blockStart,
+            blockEnd
         );
     });
 }
 
 
-// Check an individual 30-minute slot.
+// Check one individual 30-minute slot.
 function isSlotBlocked(dateString, time) {
     const start = timeToMinutes(time);
 
@@ -279,11 +313,7 @@ async function getBookedAppointments() {
         .select("date, time, blocked_times, status");
 
     if (error) {
-        console.error(
-            "Could not load appointments:",
-            error
-        );
-
+        console.error("Could not load appointments:", error);
         throw error;
     }
 
@@ -292,6 +322,13 @@ async function getBookedAppointments() {
     (data || []).forEach(appointment => {
 
         if (!appointment.date) return;
+
+        // Ignore cancelled appointments.
+        const status = String(appointment.status || "").toLowerCase();
+
+        if (["cancelled", "canceled", "deleted"].includes(status)) {
+            return;
+        }
 
         const times = Array.isArray(appointment.blocked_times)
             ? appointment.blocked_times
@@ -310,7 +347,62 @@ async function getBookedAppointments() {
 }
 
 
-/* 7. DATE PICKER */
+/* 7. APPOINTMENT DURATION HELPERS */
+
+function calculateAppointmentDuration(
+    service,
+    polish,
+    design
+) {
+    let duration = Math.max(
+        serviceDurations[service] || 1,
+        serviceDurations[polish] || 1,
+        serviceDurations[design] || 1
+    );
+
+    // Each additional service adds two hours.
+    duration += selectedAdditionalServices.length * 2;
+
+    return duration;
+}
+
+
+// Calculate all half-hour slots occupied by an appointment.
+function getAppointmentSlots(startTime, durationHours) {
+    const slotCount = Math.ceil(durationHours * 2);
+    const startMinutes = timeToMinutes(startTime);
+
+    const slots = [];
+
+    for (let index = 0; index < slotCount; index++) {
+        slots.push(
+            minutesToTime(startMinutes + index * 30)
+        );
+    }
+
+    return slots;
+}
+
+
+// Check every half-hour interval of an appointment.
+function appointmentOverlapsBlockedTime(
+    dateString,
+    slots
+) {
+    return slots.some(time => {
+
+        const start = timeToMinutes(time);
+
+        return isTimeRangeBlocked(
+            dateString,
+            start,
+            start + 30
+        );
+    });
+}
+
+
+/* 8. DATE PICKER */
 
 function initializeDatePicker() {
     const dateInput = document.getElementById("appointmentDate");
@@ -363,7 +455,7 @@ function initializeDatePicker() {
 }
 
 
-/* 8. DISPLAY AVAILABLE APPOINTMENT TIMES */
+/* 9. DISPLAY AVAILABLE APPOINTMENT TIMES */
 
 function renderTimeButtons(bookedTimes) {
     if (!timeSlotsContainer) return;
@@ -381,22 +473,48 @@ function renderTimeButtons(bookedTimes) {
 
     const bookedSet = new Set(bookedTimes || []);
 
+    // Get the selected service duration.
+    const service = document.getElementById("serviceSelect")?.value || "";
+    const polish = document.getElementById("polishSelect")?.value || "";
+    const design = document.getElementById("designSelect")?.value || "";
+
+    const previewDuration = (service || polish || design)
+        ? calculateAppointmentDuration(service, polish, design)
+        : 0.5;
+
     allTimes.forEach(time => {
 
         const start = timeToMinutes(time);
+
+        const previewSlots = getAppointmentSlots(
+            time,
+            previewDuration
+        );
 
         const button = document.createElement("button");
 
         button.type = "button";
         button.textContent = time;
-
         button.classList.add("time-slot");
 
+        // Check the entire appointment duration.
+        const overlapsExistingBooking = previewSlots.some(slot =>
+            bookedSet.has(slot)
+        );
+
+        const overlapsBlockedHours = appointmentOverlapsBlockedTime(
+            selectedDate,
+            previewSlots
+        );
+
+        const appointmentEnd =
+            start + previewDuration * 60;
+
         const unavailable =
-            bookedSet.has(time) ||
-            isSlotBlocked(selectedDate, time) ||
+            overlapsExistingBooking ||
+            overlapsBlockedHours ||
             isPastTime(selectedDate, time) ||
-            start >= CLOSING_MINUTES;
+            appointmentEnd > CLOSING_MINUTES;
 
         if (unavailable) {
 
@@ -448,10 +566,7 @@ async function loadTimes(dateString) {
 
     } catch (error) {
 
-        console.error(
-            "Unable to load appointment times:",
-            error
-        );
+        console.error("Unable to load appointment times:", error);
 
         timeSlotsContainer.textContent =
             "Unable to load appointment times. Please refresh and try again.";
@@ -459,7 +574,7 @@ async function loadTimes(dateString) {
 }
 
 
-/* 9. ADDITIONAL SERVICES POPUP */
+/* 10. ADDITIONAL SERVICES POPUP */
 
 window.openAdditionalServicePopup = function () {
     const popup = document.getElementById(
@@ -502,10 +617,7 @@ window.saveAdditionalServiceOptions = function () {
     );
 
     if (!serviceElement) {
-        console.error(
-            "Additional service field was not found."
-        );
-
+        console.error("Additional service field was not found.");
         return;
     }
 
@@ -544,6 +656,11 @@ window.saveAdditionalServiceOptions = function () {
     if (detailsElement) detailsElement.value = "";
 
     window.closeAdditionalServicePopup();
+
+    // Refresh times because the appointment duration changed.
+    if (selectedDate) {
+        loadTimes(selectedDate);
+    }
 };
 
 
@@ -615,10 +732,14 @@ window.removeAdditionalService = function (index) {
     selectedAdditionalServices.splice(index, 1);
 
     renderAdditionalServices();
+
+    if (selectedDate) {
+        loadTimes(selectedDate);
+    }
 };
 
 
-/* 10. BOOKING CONFIRMATION POPUP */
+/* 11. BOOKING CONFIRMATION POPUP */
 
 window.closePopup = function () {
 
@@ -628,66 +749,6 @@ window.closePopup = function () {
         popup.style.display = "none";
     }
 };
-
-
-/* 11. APPOINTMENT DURATION */
-
-function calculateAppointmentDuration(
-    service,
-    polish,
-    design
-) {
-
-    let duration = Math.max(
-        serviceDurations[service] || 1,
-        serviceDurations[polish] || 1,
-        serviceDurations[design] || 1
-    );
-
-    // Add two hours for each additional service.
-    duration += selectedAdditionalServices.length * 2;
-
-    return duration;
-}
-
-
-// Convert appointment duration into half-hour slots.
-function getAppointmentSlots(startTime, durationHours) {
-
-    const slotCount = Math.ceil(durationHours * 2);
-
-    const startMinutes = timeToMinutes(startTime);
-
-    const slots = [];
-
-    for (let index = 0; index < slotCount; index++) {
-
-        slots.push(
-            minutesToTime(startMinutes + index * 30)
-        );
-    }
-
-    return slots;
-}
-
-
-// Check the entire appointment against blocked times.
-function appointmentOverlapsBlockedTime(
-    dateString,
-    slots
-) {
-
-    return slots.some(time => {
-
-        const start = timeToMinutes(time);
-
-        return isTimeRangeBlocked(
-            dateString,
-            start,
-            start + 30
-        );
-    });
-}
 
 
 /* 12. BOOK APPOINTMENT */
@@ -721,15 +782,10 @@ window.bookAppointment = async function () {
 
         // Get form fields.
         const nameElement = document.getElementById("clientName");
-
         const phoneElement = document.getElementById("clientPhone");
-
         const serviceElement = document.getElementById("serviceSelect");
-
         const polishElement = document.getElementById("polishSelect");
-
         const designElement = document.getElementById("designSelect");
-
 
         const name = nameElement
             ? nameElement.value.trim()
@@ -833,7 +889,7 @@ window.bookAppointment = async function () {
         }
 
 
-        // Check Supabase blocked time intervals.
+        // Check weekly hours and Supabase blocked time intervals.
         if (
             appointmentOverlapsBlockedTime(
                 selectedDate,
@@ -842,7 +898,7 @@ window.bookAppointment = async function () {
         ) {
 
             alert(
-                "That appointment overlaps with a blocked time. Please choose another time."
+                "That appointment overlaps with your unavailable hours. Please choose another time."
             );
 
             await loadTimes(selectedDate);
@@ -945,21 +1001,15 @@ window.bookAppointment = async function () {
 
         // Reset form.
         if (nameElement) nameElement.value = "";
-
         if (phoneElement) phoneElement.value = "";
-
         if (serviceElement) serviceElement.value = "";
-
         if (polishElement) polishElement.value = "";
-
         if (designElement) designElement.value = "";
 
 
         // Reset booking selections.
         selectedDate = "";
-
         selectedTime = "";
-
         selectedAdditionalServices = [];
 
         renderAdditionalServices();
@@ -1079,7 +1129,9 @@ async function initializeBookingSystem() {
 
     if (!supabaseClient) {
 
-        console.error("Supabase is not connected.");
+        console.error(
+            "Supabase is not connected. Make sure the Supabase JS library loads before this file."
+        );
 
         return;
     }
@@ -1090,6 +1142,22 @@ async function initializeBookingSystem() {
         await loadAvailabilitySettings();
 
         initializeDatePicker();
+
+        // Refresh displayed times when a service selection changes.
+        ["serviceSelect", "polishSelect", "designSelect"].forEach(id => {
+
+            const element = document.getElementById(id);
+
+            if (element) {
+
+                element.addEventListener("change", function () {
+
+                    if (selectedDate) {
+                        loadTimes(selectedDate);
+                    }
+                });
+            }
+        });
 
         console.log(
             "Supabase appointment availability loaded."
