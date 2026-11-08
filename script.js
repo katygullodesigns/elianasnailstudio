@@ -29,7 +29,7 @@ for (let minutes = 9 * 60; minutes <= 18 * 60; minutes += 30) {
 const CLOSING_MINUTES = timeToMinutes("6:00 PM");
 
 // Sundays are permanently unavailable.
-const PERMANENTLY_BLOCKED_WEEKDAYS = [0, 1, 3];
+const PERMANENTLY_BLOCKED_WEEKDAYS = [0, 1, 2, 5];
 
 // RECURRING WEEKLY UNAVAILABLE HOURS
 // Sunday = 0, Monday = 1, Tuesday = 2, etc.
