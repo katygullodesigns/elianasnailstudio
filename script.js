@@ -37,8 +37,10 @@ const PERMANENTLY_BLOCKED_WEEKDAYS = [0, 1, 2, 5];
 const WEEKLY_BLOCKED_HOURS = {
     3: { start: "10:00 AM", end: "7:00 PM" }, // Wednesday
     4: { start: "10:00 AM", end: "7:00 PM" },  // Thursday
-    
+    4: { start: "9:30 AM", end: "11:59 PM" } // Thursday: 9 AM only
 };
+
+
 
 // Service durations in hours.
 const serviceDurations = {
