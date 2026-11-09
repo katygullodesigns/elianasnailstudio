@@ -39,7 +39,7 @@ const CLOSING_MINUTES = timeToMinutes("8:30 PM");
 
 // New recurring weekly schedule begins November 17, 2026.
 
-const WEEKLY_BLOCKING_START_DATE = "2026-11-17";
+const WEEKLY_BLOCKING_START_DATE = "2026-11-16";
 
 // Permanently unavailable weekdays.
 // Sunday = 0, Monday = 1, Tuesday = 2, etc.
