@@ -285,33 +285,27 @@ function getBlocksForDate(dateString) {
 ========================================================= */
 
 function isDateBlocked(dateString) {
-
     if (!dateString) return false;
 
     const date = dateStringToLocalDate(dateString);
-
     const weekday = date.getDay();
 
-    // These weekdays remain unavailable under the old
-    // and new schedules.
+    // Apply the new weekly schedule beginning November 16, 2026.
+    if (dateString >= WEEKLY_BLOCKING_START_DATE) {
 
-    if (PERMANENTLY_BLOCKED_WEEKDAYS.includes(weekday)) {
-        return true;
+        // Sunday, Monday, Tuesday, and Friday are unavailable.
+        if (PERMANENTLY_BLOCKED_WEEKDAYS.includes(weekday)) {
+            return true;
+        }
+
+        // Apply weekday restrictions saved in Supabase.
+        if (databaseBlockedWeekdays.includes(weekday)) {
+            return true;
+        }
     }
 
-    // Supabase recurring weekday restrictions are part
-    // of the new schedule and begin November 17, 2026.
-
-    if (
-        dateString >= WEEKLY_BLOCKING_START_DATE &&
-        databaseBlockedWeekdays.includes(weekday)
-    ) {
-        return true;
-    }
-
-    // Individual date-specific all-day blocks remain active
-    // regardless of the schedule transition date.
-
+    // Individual date-specific blocks remain active regardless
+    // of which weekly schedule is in effect.
     return getBlocksForDate(dateString).some(
         block => block.all_day === true
     );
