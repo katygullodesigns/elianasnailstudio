@@ -37,7 +37,7 @@ for (let minutes = 9 * 60; minutes <= 18 * 60; minutes += 30) {
 
 const CLOSING_MINUTES = timeToMinutes("8:30 PM");
 
-// Recurring weekly restrictions begin November 17, 2026.
+// New recurring weekly schedule begins November 17, 2026.
 
 const WEEKLY_BLOCKING_START_DATE = "2026-11-17";
 
@@ -51,8 +51,8 @@ const PERMANENTLY_BLOCKED_WEEKDAYS = [0, 1, 2, 5];
 // Wednesday: Unavailable 10 AM–7 PM.
 // Thursday: Only one appointment start time at 9 AM.
 //
-// Thursday appointments starting at 9 AM are allowed
-// to finish their full service duration.
+// Thursday appointments starting at 9 AM may finish
+// their full service duration.
 
 const WEEKLY_BLOCKED_HOURS = {
     3: {
@@ -91,9 +91,10 @@ let selectedAdditionalServices = [];
 
 let availabilityBlocks = [];
 
-let blockedWeekdays = [
-    ...PERMANENTLY_BLOCKED_WEEKDAYS
-];
+// Weekdays stored in Supabase are part of the new schedule.
+// They only become active November 17, 2026.
+
+let databaseBlockedWeekdays = [];
 
 let datePicker = null;
 
@@ -256,20 +257,16 @@ async function loadAvailabilitySettings() {
 
     availabilityBlocks = blocksResult.data || [];
 
-    const databaseWeekdays = (weekdaysResult.data || [])
+    // Store database weekdays separately.
+    // They are not automatically applied before November 17.
+
+    databaseBlockedWeekdays = (weekdaysResult.data || [])
         .map(row => Number(row.weekday))
         .filter(day =>
             Number.isInteger(day) &&
             day >= 0 &&
             day <= 6
         );
-
-    blockedWeekdays = [
-        ...new Set([
-            ...PERMANENTLY_BLOCKED_WEEKDAYS,
-            ...databaseWeekdays
-        ])
-    ];
 }
 
 
@@ -283,7 +280,9 @@ function getBlocksForDate(dateString) {
 }
 
 
-// Check whether an entire date is unavailable.
+/* =========================================================
+   6. CHECK DATE AVAILABILITY
+========================================================= */
 
 function isDateBlocked(dateString) {
 
@@ -291,15 +290,37 @@ function isDateBlocked(dateString) {
 
     const date = dateStringToLocalDate(dateString);
 
-    if (blockedWeekdays.includes(date.getDay())) {
+    const weekday = date.getDay();
+
+    // These weekdays remain unavailable under the old
+    // and new schedules.
+
+    if (PERMANENTLY_BLOCKED_WEEKDAYS.includes(weekday)) {
         return true;
     }
+
+    // Supabase recurring weekday restrictions are part
+    // of the new schedule and begin November 17, 2026.
+
+    if (
+        dateString >= WEEKLY_BLOCKING_START_DATE &&
+        databaseBlockedWeekdays.includes(weekday)
+    ) {
+        return true;
+    }
+
+    // Individual date-specific all-day blocks remain active
+    // regardless of the schedule transition date.
 
     return getBlocksForDate(dateString).some(
         block => block.all_day === true
     );
 }
 
+
+/* =========================================================
+   7. CHECK TIME AVAILABILITY
+========================================================= */
 
 // Check recurring weekly restrictions and individual
 // Supabase blocks.
@@ -387,7 +408,7 @@ function isSlotBlocked(dateString, time) {
 
 
 /* =========================================================
-   6. LOAD EXISTING APPOINTMENTS
+   8. LOAD EXISTING APPOINTMENTS
 ========================================================= */
 
 async function getBookedAppointments() {
@@ -446,7 +467,7 @@ async function getBookedAppointments() {
 
 
 /* =========================================================
-   7. APPOINTMENT DURATION HELPERS
+   9. APPOINTMENT DURATION HELPERS
 ========================================================= */
 
 function calculateAppointmentDuration(
@@ -502,7 +523,7 @@ function appointmentOverlapsBlockedTime(
 
     // Special Thursday rule:
     // An appointment starting at 9 AM may finish
-    // its entire service duration.
+    // its full service duration.
     //
     // Other Thursday start times remain unavailable.
 
@@ -526,7 +547,7 @@ function appointmentOverlapsBlockedTime(
 
 
 /* =========================================================
-   8. DATE PICKER
+   10. DATE PICKER
 ========================================================= */
 
 function initializeDatePicker() {
@@ -589,7 +610,7 @@ function initializeDatePicker() {
 
 
 /* =========================================================
-   9. DISPLAY AVAILABLE APPOINTMENT TIMES
+   11. DISPLAY AVAILABLE APPOINTMENT TIMES
 ========================================================= */
 
 function renderTimeButtons(bookedTimes) {
@@ -730,7 +751,7 @@ async function loadTimes(dateString) {
 
 
 /* =========================================================
-   10. ADDITIONAL SERVICES POPUP
+   12. ADDITIONAL SERVICES POPUP
 ========================================================= */
 
 window.openAdditionalServicePopup = function () {
@@ -914,7 +935,7 @@ window.removeAdditionalService = function (index) {
 
 
 /* =========================================================
-   11. BOOKING CONFIRMATION POPUP
+   13. BOOKING CONFIRMATION POPUP
 ========================================================= */
 
 window.closePopup = function () {
@@ -928,7 +949,7 @@ window.closePopup = function () {
 
 
 /* =========================================================
-   12. BOOK APPOINTMENT
+   14. BOOK APPOINTMENT
 ========================================================= */
 
 window.bookAppointment = async function () {
@@ -1260,7 +1281,7 @@ window.bookAppointment = async function () {
 
 
 /* =========================================================
-   13. MOBILE NAVIGATION
+   15. MOBILE NAVIGATION
 ========================================================= */
 
 function initializeMobileNavigation() {
@@ -1341,7 +1362,7 @@ function initializeMobileNavigation() {
 
 
 /* =========================================================
-   14. INITIALIZE BOOKING SYSTEM
+   16. INITIALIZE BOOKING SYSTEM
 ========================================================= */
 
 async function initializeBookingSystem() {
@@ -1421,7 +1442,7 @@ async function initializeBookingSystem() {
 
 
 /* =========================================================
-   15. START WHEN PAGE LOADS
+   17. START WHEN PAGE LOADS
 ========================================================= */
 
 if (document.readyState === "loading") {
