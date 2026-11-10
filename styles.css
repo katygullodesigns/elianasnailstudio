@@ -1,3 +1,17 @@
+    min-height: auto;
+    padding-top: 30px;
+  }
+
+  .owner-page .booking {
+    width: 92%;
+    margin: 45px auto;
+  }
+
+  .owner-page h2 {
+    font-size: 36px;
+    text-align: center;
+  }
+
   .owner-page nav {
     position: static;
     inset: auto;
@@ -80,7 +94,7 @@
     width: 100%;
   }
 
-  .owner-availability-manager {
+ .owner-availability-manager {
     padding: 18px;
   }
 
