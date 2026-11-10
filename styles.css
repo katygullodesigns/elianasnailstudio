@@ -962,6 +962,144 @@ footer a:hover {
   border-radius: 12px;
 }
 
+/* =================================
+   OWNER AVAILABILITY MANAGER
+================================= */
+
+.owner-availability-manager {
+  margin: 25px 0;
+  padding: 20px;
+  background: rgba(255,255,255,0.8);
+  border-radius: 12px;
+}
+
+.block-availability-btn {
+  width: 100%;
+  padding: 14px;
+  background: #805c63;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 15px;
+}
+
+.owner-blocked-date {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  padding: 14px;
+  border-bottom: 1px solid #ddd;
+}
+
+.owner-blocked-date-info {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.owner-blocked-date-info span,
+.owner-blocked-date-info small {
+  color: #777;
+}
+
+.remove-availability-block {
+  background: #a34f4f;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 8px 12px;
+  cursor: pointer;
+}
+
+/* =================================
+   BLOCK MODAL
+================================= */
+
+.block-modal[hidden] {
+  display: none !important;
+}
+
+.block-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background: rgba(0,0,0,0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+}
+
+.block-modal-content {
+  background: white;
+  padding: 30px;
+  border-radius: 14px;
+  width: 100%;
+  max-width: 430px;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.block-modal-content h2 {
+  margin-top: 0;
+}
+
+.block-modal-content label {
+  display: block;
+  margin: 15px 0 7px;
+}
+
+.block-modal-content input:not([type="checkbox"]) {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  box-sizing: border-box;
+}
+
+.block-checkbox {
+  display: flex !important;
+  align-items: center;
+  gap: 10px;
+}
+
+.block-warning {
+  font-size: 12px;
+  color: #a34f4f;
+  margin: 15px 0;
+}
+
+.block-modal-content button {
+  width: 100%;
+  padding: 12px;
+  margin-top: 12px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+#saveAvailabilityBlock {
+  background: #805c63;
+  color: white;
+}
+
+#closeBlockModal {
+  background: #eee;
+  color: #333;
+}
+
+@media (max-width: 600px) {
+  .owner-blocked-date {
+    align-items: flex-start;
+  }
+
+  .block-modal-content {
+    padding: 22px;
+  }
+}
+
 .back-link {
   display: inline-block;
   margin-top: 45px;
