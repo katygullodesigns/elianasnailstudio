@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -45,7 +46,9 @@
 <body class="owner-page">
 
 
-  <!-- OWNER NAVIGATION -->
+  <!-- =====================================
+       OWNER NAVIGATION
+  ====================================== -->
 
   <header>
 
@@ -67,7 +70,9 @@
   <div class="background"></div>
 
 
-  <!-- OWNER APPOINTMENT MANAGER -->
+  <!-- =====================================
+       OWNER APPOINTMENT MANAGER
+  ====================================== -->
 
   <section class="booking">
 
@@ -84,6 +89,10 @@
       Total Appointments: 0
     </p>
 
+
+    <!-- =================================
+         CALENDAR AND APPOINTMENT LAYOUT
+    ================================== -->
 
     <div class="calendar-layout">
 
@@ -184,13 +193,60 @@
 
       </div>
 
+
+    </div>
+
+
+    <!-- =====================================
+         OWNER AVAILABILITY MANAGER
+    ====================================== -->
+
+    <div class="owner-availability-manager">
+
+
+      <h2>
+        Manage Your Availability
+      </h2>
+
+
+      <p>
+        Block off dates or specific times when
+        you are unavailable for appointments.
+      </p>
+
+
+      <button
+        id="blockAvailabilityBtn"
+        type="button"
+        class="block-availability-btn"
+      >
+        + Block Off Dates & Times
+      </button>
+
+
+      <h3>
+        Currently Blocked Availability
+      </h3>
+
+
+      <div id="ownerBlockedDatesList">
+
+        <p>
+          Loading blocked dates...
+        </p>
+
+      </div>
+
+
     </div>
 
 
     <br>
 
 
-    <!-- LOGOUT -->
+    <!-- =====================================
+         LOGOUT
+    ====================================== -->
 
     <button
       id="logoutBtn"
@@ -214,16 +270,155 @@
   </section>
 
 
-  <!-- SUPABASE -->
+  <!-- =====================================
+       BLOCK AVAILABILITY MODAL
+  ====================================== -->
+
+  <div
+    id="blockAvailabilityModal"
+    class="block-modal"
+    hidden
+    aria-hidden="true"
+  >
+
+
+    <div class="block-modal-content">
+
+
+      <h2>
+        Block Off Availability
+      </h2>
+
+
+      <p>
+        Choose when you will be unavailable.
+      </p>
+
+
+      <form id="blockAvailabilityForm">
+
+
+        <!-- DATE -->
+
+        <label for="blockDate">
+          Select Date
+        </label>
+
+
+        <input
+          type="date"
+          id="blockDate"
+          required
+        >
+
+
+        <!-- ALL DAY OPTION -->
+
+        <label class="block-checkbox">
+
+          <input
+            type="checkbox"
+            id="blockAllDay"
+          >
+
+          Block Entire Day
+
+        </label>
+
+
+        <!-- SPECIFIC TIMES -->
+
+        <div id="blockTimeFields">
+
+
+          <label for="blockStartTime">
+            Start Time
+          </label>
+
+
+          <input
+            type="time"
+            id="blockStartTime"
+          >
+
+
+          <label for="blockEndTime">
+            End Time
+          </label>
+
+
+          <input
+            type="time"
+            id="blockEndTime"
+          >
+
+
+        </div>
+
+
+        <!-- REASON -->
+
+        <label for="blockReason">
+          Reason (Optional)
+        </label>
+
+
+        <input
+          type="text"
+          id="blockReason"
+          placeholder="Personal, Vacation, Holiday..."
+        >
+
+
+        <p class="block-warning">
+          Blocking availability does not automatically
+          cancel existing appointments.
+        </p>
+
+
+        <!-- SAVE -->
+
+        <button
+          type="submit"
+          id="saveAvailabilityBlock"
+        >
+          Save Blocked Time
+        </button>
+
+
+        <!-- CANCEL -->
+
+        <button
+          type="button"
+          id="closeBlockModal"
+        >
+          Cancel
+        </button>
+
+
+      </form>
+
+
+    </div>
+
+
+  </div>
+
+
+  <!-- =====================================
+       SUPABASE CONNECTION
+  ====================================== -->
 
   <script
     src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"
   ></script>
 
 
-  <!-- OWNER APPOINTMENT JAVASCRIPT -->
+  <!-- =====================================
+       OWNER APPOINTMENT JAVASCRIPT
+  ====================================== -->
 
-  <script src="appointments.js?v=6"></script>
+  <script src="appointments.js?v=7"></script>
 
 
 </body>
