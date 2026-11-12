@@ -746,3 +746,23 @@ async function loadTimes(dateString, preserveSelection = false) {
             "Unable to load appointment times. Please refresh and try again.";
     }
 }
+
+/* =========================================================
+   START BOOKING SYSTEM
+========================================================= */
+
+document.addEventListener("DOMContentLoaded", async function () {
+
+    try {
+
+        await loadAvailabilitySettings();
+
+    } catch (error) {
+
+        console.error("Could not load availability:", error);
+
+    }
+
+    initializeDatePicker();
+
+});
