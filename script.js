@@ -91,6 +91,9 @@ let selectedAdditionalServices = [];
 
 let availabilityBlocks = [];
 
+// Weekdays stored in Supabase are part of the new schedule.
+// They only become active November 17, 2026.
+
 let databaseBlockedWeekdays = [];
 
 let datePicker = null;
@@ -202,6 +205,8 @@ function isPastTime(date, time) {
 }
 
 
+// Check whether two time ranges overlap.
+
 function rangesOverlap(startA, endA, startB, endB) {
 
     return startA < endB && endA > startB;
@@ -252,6 +257,9 @@ async function loadAvailabilitySettings() {
 
     availabilityBlocks = blocksResult.data || [];
 
+    // Store database weekdays separately.
+    // They are not automatically applied before November 17.
+
     databaseBlockedWeekdays = (weekdaysResult.data || [])
         .map(row => Number(row.weekday))
         .filter(day =>
@@ -261,6 +269,8 @@ async function loadAvailabilitySettings() {
         );
 }
 
+
+// Get all blocked entries for a specific date.
 
 function getBlocksForDate(dateString) {
 
@@ -275,23 +285,27 @@ function getBlocksForDate(dateString) {
 ========================================================= */
 
 function isDateBlocked(dateString) {
-
     if (!dateString) return false;
 
     const date = dateStringToLocalDate(dateString);
     const weekday = date.getDay();
 
+    // Apply the new weekly schedule beginning November 16, 2026.
     if (dateString >= WEEKLY_BLOCKING_START_DATE) {
 
+        // Sunday, Monday, Tuesday, and Friday are unavailable.
         if (PERMANENTLY_BLOCKED_WEEKDAYS.includes(weekday)) {
             return true;
         }
 
+        // Apply weekday restrictions saved in Supabase.
         if (databaseBlockedWeekdays.includes(weekday)) {
             return true;
         }
     }
 
+    // Individual date-specific blocks remain active regardless
+    // of which weekly schedule is in effect.
     return getBlocksForDate(dateString).some(
         block => block.all_day === true
     );
@@ -301,6 +315,12 @@ function isDateBlocked(dateString) {
 /* =========================================================
    7. CHECK TIME AVAILABILITY
 ========================================================= */
+
+// Check recurring weekly restrictions and individual
+// Supabase blocks.
+//
+// ignoreWeeklyBlock allows a Thursday 9 AM appointment
+// to finish its full service duration.
 
 function isTimeRangeBlocked(
     dateString,
@@ -312,6 +332,9 @@ function isTimeRangeBlocked(
     if (!dateString) return false;
 
     const date = dateStringToLocalDate(dateString);
+
+    // Apply recurring weekly restrictions only
+    // beginning November 17, 2026.
 
     if (
         dateString >= WEEKLY_BLOCKING_START_DATE &&
@@ -339,6 +362,9 @@ function isTimeRangeBlocked(
         }
     }
 
+    // Always check individual Supabase blocks,
+    // regardless of the date.
+
     return getBlocksForDate(dateString).some(block => {
 
         if (block.all_day === true) return true;
@@ -360,6 +386,8 @@ function isTimeRangeBlocked(
     });
 }
 
+
+// Check one individual 30-minute slot.
 
 function isSlotBlocked(dateString, time) {
 
@@ -402,6 +430,8 @@ async function getBookedAppointments() {
     (data || []).forEach(appointment => {
 
         if (!appointment.date) return;
+
+        // Ignore cancelled appointments.
 
         const status = String(
             appointment.status || ""
@@ -454,6 +484,8 @@ function calculateAppointmentDuration(
 }
 
 
+// Calculate all half-hour slots occupied by an appointment.
+
 function getAppointmentSlots(startTime, durationHours) {
 
     const slotCount = Math.ceil(durationHours * 2);
@@ -473,6 +505,8 @@ function getAppointmentSlots(startTime, durationHours) {
 }
 
 
+// Check every half-hour interval of an appointment.
+
 function appointmentOverlapsBlockedTime(
     dateString,
     slots,
@@ -480,6 +514,12 @@ function appointmentOverlapsBlockedTime(
 ) {
 
     const date = dateStringToLocalDate(dateString);
+
+    // Special Thursday rule:
+    // An appointment starting at 9 AM may finish
+    // its full service duration.
+    //
+    // Other Thursday start times remain unavailable.
 
     const allowThursdayNineAM =
         dateString >= WEEKLY_BLOCKING_START_DATE &&
@@ -539,7 +579,6 @@ function initializeDatePicker() {
 
                 selectedDate = dateString;
 
-                // Changing dates clears the previous time.
                 selectedTime = "";
 
                 await loadTimes(dateString);
@@ -547,6 +586,8 @@ function initializeDatePicker() {
         });
 
     } else {
+
+        // Fallback if Flatpickr is not installed.
 
         dateInput.min = getTodayString();
 
@@ -575,12 +616,9 @@ function renderTimeButtons(bookedTimes) {
     if (!selectedDate) return;
 
     if (isDateBlocked(selectedDate)) {
-
         selectedTime = "";
-
         timeSlotsContainer.textContent =
             "This date is unavailable. Please choose another date.";
-
         return;
     }
 
@@ -639,14 +677,14 @@ function renderTimeButtons(bookedTimes) {
             button.disabled = true;
             button.classList.add("booked");
 
-            // Clear the selection only if it is no longer available.
+            // Keep the selection only while it remains available.
             if (selectedTime === time) {
                 selectedTime = "";
             }
 
         } else {
 
-            // Restore the previously selected time.
+            // Re-highlight the selected time after refreshing the slots.
             if (selectedTime === time) {
                 button.classList.add("selected");
             }
@@ -659,7 +697,6 @@ function renderTimeButtons(bookedTimes) {
                     });
 
                 button.classList.add("selected");
-
                 selectedTime = time;
             });
         }
@@ -669,16 +706,14 @@ function renderTimeButtons(bookedTimes) {
 }
 
 
-/* =========================================================
-   LOAD TIMES WITHOUT LOSING CUSTOMER SELECTION
-========================================================= */
+// Load times for the selected date.
 
 async function loadTimes(dateString, preserveSelection = false) {
 
-    // Save the previously selected time when refreshing.
+    // Save the customer's current time only when refreshing because
+    // a service, polish, design, or additional service changed.
     const previousTime = preserveSelection ? selectedTime : "";
 
-    // Only clear the time when selecting a new date.
     if (!preserveSelection) {
         selectedTime = "";
     }
@@ -690,12 +725,9 @@ async function loadTimes(dateString, preserveSelection = false) {
     if (!dateString) return;
 
     if (isDateBlocked(dateString)) {
-
         selectedTime = "";
-
         timeSlotsContainer.textContent =
             "This date is unavailable. Please choose another date.";
-
         return;
     }
 
@@ -703,9 +735,8 @@ async function loadTimes(dateString, preserveSelection = false) {
 
         const booked = await getBookedAppointments();
 
-        // Restore the previous selection.
-        // The renderer will clear it only if it is unavailable.
-
+        // Restore the selection before rendering. The renderer will
+        // clear it only if the updated duration makes it unavailable.
         selectedTime = previousTime;
 
         renderTimeButtons(booked[dateString] || []);
@@ -721,725 +752,3 @@ async function loadTimes(dateString, preserveSelection = false) {
             "Unable to load appointment times. Please refresh and try again.";
     }
 }
-
-
-/* =========================================================
-   12. ADDITIONAL SERVICES POPUP
-========================================================= */
-
-window.openAdditionalServicePopup = function () {
-
-    const popup = document.getElementById(
-        "additionalServicePopup"
-    );
-
-    if (popup) {
-        popup.style.display = "flex";
-    }
-};
-
-
-window.closeAdditionalServicePopup = function () {
-
-    const popup = document.getElementById(
-        "additionalServicePopup"
-    );
-
-    if (popup) {
-        popup.style.display = "none";
-    }
-};
-
-
-window.saveAdditionalServiceOptions = function () {
-
-    const serviceElement = document.getElementById(
-        "additionalServiceType"
-    );
-
-    const polishElement = document.getElementById(
-        "additionalPolishSelect"
-    );
-
-    const designElement = document.getElementById(
-        "additionalDesignSelect"
-    );
-
-    const detailsElement = document.getElementById(
-        "additionalDesignDetails"
-    );
-
-    if (!serviceElement) {
-
-        console.error(
-            "Additional service field was not found."
-        );
-
-        return;
-    }
-
-    const service = serviceElement.value;
-
-    const polish = polishElement
-        ? polishElement.value
-        : "";
-
-    const design = designElement
-        ? designElement.value
-        : "";
-
-    const designDetails = detailsElement
-        ? detailsElement.value.trim()
-        : "";
-
-    if (!service) {
-
-        alert("Please select an additional service.");
-
-        return;
-    }
-
-    selectedAdditionalServices.push({
-        service,
-        polish,
-        design,
-        designDetails
-    });
-
-    renderAdditionalServices();
-
-    // Reset the additional-service popup fields.
-
-    serviceElement.value = "";
-
-    if (polishElement) polishElement.value = "";
-
-    if (designElement) designElement.value = "";
-
-    if (detailsElement) detailsElement.value = "";
-
-    window.closeAdditionalServicePopup();
-
-    // Refresh availability without clearing the selected time.
-
-    if (selectedDate) {
-        loadTimes(selectedDate, true);
-    }
-};
-
-
-/* =========================================================
-   DISPLAY SELECTED ADDITIONAL SERVICES
-========================================================= */
-
-function renderAdditionalServices() {
-
-    const container = document.getElementById(
-        "selectedAdditionalServices"
-    );
-
-    if (!container) return;
-
-    container.innerHTML = "";
-
-    selectedAdditionalServices.forEach((item, index) => {
-
-        const wrapper = document.createElement("div");
-
-        wrapper.className = "selected-additional-service";
-
-        const info = document.createElement("div");
-
-        info.className = "additional-service-info";
-
-        const title = document.createElement("strong");
-
-        title.textContent = item.service;
-
-        const details = document.createElement("span");
-
-        const detailParts = [
-            item.polish,
-            item.design,
-            item.designDetails
-        ].filter(Boolean);
-
-        details.textContent = detailParts.length
-            ? " • " + detailParts.join(" • ")
-            : "";
-
-        info.appendChild(title);
-
-        info.appendChild(details);
-
-        const removeButton = document.createElement("button");
-
-        removeButton.type = "button";
-
-        removeButton.textContent = "×";
-
-        removeButton.setAttribute(
-            "aria-label",
-            `Remove ${item.service}`
-        );
-
-        removeButton.addEventListener("click", function () {
-
-            window.removeAdditionalService(index);
-        });
-
-        wrapper.appendChild(info);
-
-        wrapper.appendChild(removeButton);
-
-        container.appendChild(wrapper);
-    });
-}
-
-
-/* =========================================================
-   REMOVE AN ADDITIONAL SERVICE
-========================================================= */
-
-window.removeAdditionalService = function (index) {
-
-    selectedAdditionalServices.splice(index, 1);
-
-    renderAdditionalServices();
-
-    // Preserve the selected time if it remains available.
-
-    if (selectedDate) {
-        loadTimes(selectedDate, true);
-    }
-};
-
-
-
-/* =========================================================
-   13. BOOKING CONFIRMATION POPUP
-========================================================= */
-
-window.closePopup = function () {
-
-    const popup = document.getElementById("bookingPopup");
-
-    if (popup) {
-        popup.style.display = "none";
-    }
-};
-
-
-/* =========================================================
-   14. BOOK APPOINTMENT
-========================================================= */
-
-window.bookAppointment = async function () {
-
-    if (!supabaseClient) {
-
-        alert("The booking system is not connected.");
-
-        return;
-    }
-
-    try {
-
-        // Verify customer login.
-
-        const {
-            data: { user },
-            error: userError
-        } = await supabaseClient.auth.getUser();
-
-        if (userError || !user) {
-
-            alert(
-                "Please log in or create an account before booking."
-            );
-
-            window.location.href = "login.html";
-
-            return;
-        }
-
-
-        // Get form fields.
-
-        const nameElement = document.getElementById("clientName");
-
-        const phoneElement = document.getElementById("clientPhone");
-
-        const serviceElement = document.getElementById("serviceSelect");
-
-        const polishElement = document.getElementById("polishSelect");
-
-        const designElement = document.getElementById("designSelect");
-
-
-        const name = nameElement
-            ? nameElement.value.trim()
-            : "";
-
-        const phone = phoneElement
-            ? phoneElement.value.trim()
-            : "";
-
-        const service = serviceElement
-            ? serviceElement.value
-            : "";
-
-        const polish = polishElement
-            ? polishElement.value
-            : "";
-
-        const design = designElement
-            ? designElement.value
-            : "";
-
-
-        // Validate required fields.
-
-        if (!name) {
-
-            alert("Please enter your name.");
-
-            return;
-        }
-
-        if (!phone) {
-
-            alert("Please enter your phone number.");
-
-            return;
-        }
-
-        if (!selectedDate || !selectedTime) {
-
-            alert("Please select an appointment date and time.");
-
-            return;
-        }
-
-        if (!service || !design) {
-
-            alert("Please select a service and design.");
-
-            return;
-        }
-
-        if (isPastTime(selectedDate, selectedTime)) {
-
-            alert(
-                "That time has already passed. Please choose another time."
-            );
-
-            await loadTimes(selectedDate);
-
-            return;
-        }
-
-
-        // Refresh availability before saving.
-
-        await loadAvailabilitySettings();
-
-
-        // Check whether the entire day is blocked.
-
-        if (isDateBlocked(selectedDate)) {
-
-            alert(
-                "This date is unavailable. Please choose another date."
-            );
-
-            await loadTimes(selectedDate);
-
-            if (datePicker) {
-                datePicker.redraw();
-            }
-
-            return;
-        }
-
-
-        // Calculate appointment duration.
-
-        const duration = calculateAppointmentDuration(
-            service,
-            polish,
-            design
-        );
-
-        const timesToBook = getAppointmentSlots(
-            selectedTime,
-            duration
-        );
-
-        const appointmentEnd =
-            timeToMinutes(selectedTime) + duration * 60;
-
-
-        // Check closing time.
-
-        if (appointmentEnd > CLOSING_MINUTES) {
-
-            alert(
-                "This appointment would extend beyond closing time. Please choose an earlier appointment."
-            );
-
-            return;
-        }
-
-
-        // Check weekly hours and Supabase blocked time intervals.
-
-        if (
-            appointmentOverlapsBlockedTime(
-                selectedDate,
-                timesToBook,
-                selectedTime
-            )
-        ) {
-
-            alert(
-                "That appointment overlaps with your unavailable hours. Please choose another time."
-            );
-
-            await loadTimes(selectedDate);
-
-            return;
-        }
-
-
-        // Check existing appointments.
-
-        const bookedAppointments = await getBookedAppointments();
-
-        const bookedTimes =
-            bookedAppointments[selectedDate] || [];
-
-        const hasBookingConflict = timesToBook.some(
-            time => bookedTimes.includes(time)
-        );
-
-        if (hasBookingConflict) {
-
-            alert(
-                "One or more of those time slots have already been booked. Please choose another time."
-            );
-
-            await loadTimes(selectedDate);
-
-            return;
-        }
-
-
-        // Prepare appointment for Supabase.
-
-        const appointment = {
-
-            user_id: user.id,
-
-            name: name,
-
-            phone: phone,
-
-            date: selectedDate,
-
-            time: selectedTime,
-
-            duration: duration,
-
-            blocked_times: timesToBook,
-
-            service: service,
-
-            polish: polish,
-
-            design: design,
-
-            additional_services: selectedAdditionalServices,
-
-            notes: "",
-
-            status: "active",
-
-            created_at: new Date().toISOString()
-        };
-
-
-        // Save appointment.
-
-        const { error: insertError } = await supabaseClient
-            .from("appointments")
-            .insert([appointment]);
-
-
-        if (insertError) {
-
-            console.error(
-                "Supabase booking error:",
-                insertError
-            );
-
-            alert(
-                insertError.message ||
-                "Your appointment could not be saved. Please try again."
-            );
-
-            return;
-        }
-
-
-        // Show confirmation.
-
-        const confirmationPopup = document.getElementById(
-            "bookingPopup"
-        );
-
-        if (confirmationPopup) {
-
-            confirmationPopup.style.display = "flex";
-
-        } else {
-
-            alert("Your appointment has been booked!");
-        }
-
-
-        // Reset form.
-
-        if (nameElement) nameElement.value = "";
-
-        if (phoneElement) phoneElement.value = "";
-
-        if (serviceElement) serviceElement.value = "";
-
-        if (polishElement) polishElement.value = "";
-
-        if (designElement) designElement.value = "";
-
-
-        // Reset booking selections.
-
-        selectedDate = "";
-
-        selectedTime = "";
-
-        selectedAdditionalServices = [];
-
-        renderAdditionalServices();
-
-
-        const dateInput = document.getElementById(
-            "appointmentDate"
-        );
-
-        if (dateInput) {
-            dateInput.value = "";
-        }
-
-        if (datePicker) {
-            datePicker.clear();
-        }
-
-        if (timeSlotsContainer) {
-            timeSlotsContainer.innerHTML = "";
-        }
-
-    } catch (error) {
-
-        console.error(
-            "Booking error:",
-            error
-        );
-
-        alert(
-            "Something went wrong while booking. Please refresh the page and try again."
-        );
-    }
-};
-
-
-/* =========================================================
-   15. MOBILE NAVIGATION
-========================================================= */
-
-function initializeMobileNavigation() {
-
-    const nav = document.querySelector("nav");
-
-    const menuButton = document.querySelector(
-        ".mobile-menu-btn"
-    );
-
-    const scrollArrow = document.getElementById(
-        "scrollArrow"
-    );
-
-
-    if (menuButton && nav) {
-
-        menuButton.addEventListener("click", function () {
-
-            const isOpen = nav.classList.toggle(
-                "mobile-open"
-            );
-
-            document.body.classList.toggle(
-                "menu-open",
-                isOpen
-            );
-
-            menuButton.innerHTML = isOpen ? "✕" : "☰";
-
-            menuButton.setAttribute(
-                "aria-expanded",
-                String(isOpen)
-            );
-        });
-    }
-
-
-    document.querySelectorAll("nav a").forEach(link => {
-
-        link.addEventListener("click", function () {
-
-            if (nav) {
-                nav.classList.remove("mobile-open");
-            }
-
-            document.body.classList.remove("menu-open");
-
-            if (menuButton) {
-
-                menuButton.innerHTML = "☰";
-
-                menuButton.setAttribute(
-                    "aria-expanded",
-                    "false"
-                );
-            }
-        });
-    });
-
-
-    if (scrollArrow) {
-
-        scrollArrow.addEventListener("click", function () {
-
-            document.body.style.overflow = "auto";
-
-            document.body.classList.remove("lock-scroll");
-        });
-    }
-
-
-    if (document.body.classList.contains("home-page")) {
-
-        document.body.style.overflow = "auto";
-    }
-}
-
-
-/* =========================================================
-   16. INITIALIZE BOOKING SYSTEM
-========================================================= */
-
-async function initializeBookingSystem() {
-
-    initializeMobileNavigation();
-
-    if (!supabaseClient) {
-
-        console.error(
-            "Supabase is not connected. Make sure the Supabase JS library loads before this file."
-        );
-
-        return;
-    }
-
-    try {
-
-        // Load availability before initializing the calendar.
-
-        await loadAvailabilitySettings();
-
-        initializeDatePicker();
-
-
-        // Refresh displayed times when service selections change.
-
-        [
-            "serviceSelect",
-            "polishSelect",
-            "designSelect"
-        ].forEach(id => {
-
-            const element = document.getElementById(id);
-
-            if (element) {
-
-                element.addEventListener("change", function () {
-
-                    if (selectedDate) {
-
-                        // Keep the selected appointment time when
-                        // service, polish, or design choices change.
-
-                        loadTimes(selectedDate, true);
-                    }
-                });
-            }
-        });
-
-
-        console.log(
-            "Supabase appointment availability loaded."
-        );
-
-    } catch (error) {
-
-        console.error(
-            "Could not initialize booking availability:",
-            error
-        );
-
-        const dateInput = document.getElementById(
-            "appointmentDate"
-        );
-
-        if (dateInput) {
-
-            dateInput.disabled = true;
-
-            dateInput.title =
-                "Availability could not be loaded. Please refresh the page.";
-        }
-
-        if (timeSlotsContainer) {
-
-            timeSlotsContainer.textContent =
-                "Appointment availability could not be loaded. Please refresh the page.";
-        }
-    }
-}
-
-
-/* =========================================================
-   17. START WHEN PAGE LOADS
-========================================================= */
-
-if (document.readyState === "loading") {
-
-    document.addEventListener(
-        "DOMContentLoaded",
-        initializeBookingSystem
-    );
-
-} else {
-
-    initializeBookingSystem();
-}
-
