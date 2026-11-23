@@ -1,6 +1,7 @@
+
 /* =========================================================
    ELIANA'S NAIL STUDIO
-   BOOKING SYSTEM + SUPABASE AVAILABILITY
+   COMPLETE BOOKING SYSTEM + SUPABASE AVAILABILITY
 ========================================================= */
 
 
@@ -14,6 +15,12 @@ const SUPABASE_URL =
 const SUPABASE_ANON_KEY =
     "sb_publishable_nsqFsxiE1238R9D4QZqiQA_bJfMioyd";
 
+if (!window.supabase) {
+    console.error(
+        "Supabase library was not found. Check your Supabase CDN script."
+    );
+}
+
 const supabaseClient = window.supabase
     ? window.supabase.createClient(
         SUPABASE_URL,
@@ -26,7 +33,7 @@ const supabaseClient = window.supabase
    2. BUSINESS SETTINGS
 ========================================================= */
 
-// Appointment start times: 9 AM–6 PM.
+// Appointment start times: 9 AM–6 PM, every 30 minutes.
 
 const allTimes = [];
 
@@ -54,22 +61,22 @@ const WEEKLY_BLOCKING_START_DATE = "2026-11-16";
 // Friday = 5
 // Saturday = 6
 
+// Sunday, Monday, Tuesday, and Friday are unavailable.
+
 const PERMANENTLY_BLOCKED_WEEKDAYS = [
     0, 1, 2, 5
 ];
 
-// Weekly unavailable hours.
+// Wednesday: only 9 AM appointment starts.
+// Thursday: only 9 AM appointment starts.
 //
-// Wednesday:
-// Unavailable starting at 10:00 AM.
-//
-// Thursday:
-// Only the 9:00 AM appointment start is permitted.
+// These restrictions apply to appointment START TIMES.
+// A 9 AM appointment can continue for its full duration.
 
 const WEEKLY_BLOCKED_HOURS = {
     3: {
         start: "10:00 AM",
-        end: "7:00 PM"
+        end: "11:59 PM"
     },
 
     4: {
@@ -86,6 +93,7 @@ const serviceDurations = {
     "Gel": 1.5,
     "Acrylic": 2.5,
     "Basic": 0.5,
+    "Basic Design": 0.5,
     "Minimal Design": 1,
     "Max Design": 2.5
 };
@@ -128,7 +136,6 @@ function timeToMinutes(time) {
     );
 
     if (sqlMatch) {
-
         return (
             Number(sqlMatch[1]) * 60 +
             Number(sqlMatch[2])
@@ -176,6 +183,21 @@ function minutesToTime(totalMinutes) {
     }
 
     return `${displayHour}:${String(minute).padStart(2, "0")} ${ampm}`;
+}
+
+
+function minutesToSQLTime(totalMinutes) {
+
+    const hour = Math.floor(totalMinutes / 60);
+
+    const minute = totalMinutes % 60;
+
+    return (
+        String(hour).padStart(2, "0") +
+        ":" +
+        String(minute).padStart(2, "0") +
+        ":00"
+    );
 }
 
 
@@ -235,7 +257,6 @@ function rangesOverlap(
     startB,
     endB
 ) {
-
     return startA < endB && endA > startB;
 }
 
@@ -264,11 +285,9 @@ async function loadAvailabilitySettings() {
         supabaseClient
             .from("blocked_weekdays")
             .select("weekday, reason")
-
     ]);
 
     if (blocksResult.error) {
-
         console.error(
             "availability_blocks error:",
             blocksResult.error
@@ -278,7 +297,6 @@ async function loadAvailabilitySettings() {
     }
 
     if (weekdaysResult.error) {
-
         console.error(
             "blocked_weekdays error:",
             weekdaysResult.error
@@ -324,15 +342,11 @@ function isDateBlocked(dateString) {
 
     if (dateString >= WEEKLY_BLOCKING_START_DATE) {
 
-        // Sunday, Monday, Tuesday, Friday.
-
         if (
             PERMANENTLY_BLOCKED_WEEKDAYS.includes(weekday)
         ) {
             return true;
         }
-
-        // Additional weekday blocks stored in Supabase.
 
         if (
             databaseBlockedWeekdays.includes(weekday)
@@ -340,8 +354,6 @@ function isDateBlocked(dateString) {
             return true;
         }
     }
-
-    // Check individual all-day blocks.
 
     return getBlocksForDate(dateString).some(
         block => block.all_day === true
@@ -353,17 +365,12 @@ function isDateBlocked(dateString) {
    7. CHECK TIME AVAILABILITY
 ========================================================= */
 
-// Checks recurring weekly restrictions and individual
-// Supabase blocks.
+// Check the starting 30-minute slot against weekly
+// restrictions and individual date-specific blocks.
 //
-// IMPORTANT:
-// The booking system checks the STARTING 30-MINUTE SLOT
-// against unavailable hours.
-//
-// It does NOT reject an appointment simply because its
-// duration extends into a later weekly unavailable period.
-//
-// Thursday 9 AM is a special permitted starting time.
+// Wednesday and Thursday only permit 9 AM starts.
+// A 9 AM appointment may continue beyond the blocked
+// starting-time window.
 
 function isTimeRangeBlocked(
     dateString,
@@ -375,8 +382,6 @@ function isTimeRangeBlocked(
     if (!dateString) return false;
 
     const date = dateStringToLocalDate(dateString);
-
-    // Check recurring weekly unavailable hours.
 
     if (
         dateString >= WEEKLY_BLOCKING_START_DATE &&
@@ -407,9 +412,7 @@ function isTimeRangeBlocked(
         }
     }
 
-    // Check individual Supabase blocks.
-    // These are still respected even when the weekly
-    // restriction is ignored for Thursday at 9 AM.
+    // Individual Supabase blocks.
 
     return getBlocksForDate(dateString).some(block => {
 
@@ -437,7 +440,7 @@ function isTimeRangeBlocked(
 }
 
 
-// Check whether a proposed appointment START TIME is available.
+// Check the proposed appointment starting time.
 
 function appointmentOverlapsBlockedTime(
     dateString,
@@ -455,9 +458,6 @@ function appointmentOverlapsBlockedTime(
         dateString >= WEEKLY_BLOCKING_START_DATE &&
         date.getDay() === 4 &&
         startMinutes === 9 * 60;
-
-    // Only check the first 30-minute starting slot.
-    // Do not check the entire service duration here.
 
     return isTimeRangeBlocked(
         dateString,
@@ -483,7 +483,6 @@ async function getBookedAppointments() {
         .select("*");
 
     if (error) {
-
         console.error(
             "Could not load appointments:",
             error
@@ -510,19 +509,37 @@ async function getBookedAppointments() {
             return;
         }
 
-        const times = Array.isArray(
-            appointment.blocked_times
-        )
-            ? appointment.blocked_times
-            : appointment.time
-                ? [appointment.time]
-                : [];
-
         if (!bookedByDate[appointment.date]) {
             bookedByDate[appointment.date] = [];
         }
 
-        bookedByDate[appointment.date].push(...times);
+        // Use saved blocked_times when available.
+
+        if (
+            Array.isArray(appointment.blocked_times) &&
+            appointment.blocked_times.length
+        ) {
+
+            bookedByDate[appointment.date].push(
+                ...appointment.blocked_times
+            );
+
+            return;
+        }
+
+        // Fallback for older appointments without blocked_times.
+        // Reconstruct their occupied slots from duration.
+
+        const duration = Number(appointment.duration) || 1;
+
+        const occupiedSlots = getAppointmentSlots(
+            appointment.time,
+            duration
+        );
+
+        bookedByDate[appointment.date].push(
+            ...occupiedSlots
+        );
     });
 
     return bookedByDate;
@@ -533,21 +550,76 @@ async function getBookedAppointments() {
    9. APPOINTMENT DURATION HELPERS
 ========================================================= */
 
+// Get the duration of one selection.
+// Unknown or empty selections add no extra time.
+
+function getSelectionDuration(value) {
+
+    if (!value) return 0;
+
+    return serviceDurations[value] || 0;
+}
+
+
+// Calculate one service's duration.
+//
+// The main service, polish, and design are treated as
+// selections within the same service. The longest one
+// determines the duration.
+
+function getSingleServiceDuration(
+    service,
+    polish,
+    design
+) {
+
+    const durations = [
+        getSelectionDuration(service),
+        getSelectionDuration(polish),
+        getSelectionDuration(design)
+    ];
+
+    const duration = Math.max(...durations);
+
+    return duration > 0 ? duration : 1;
+}
+
+
+// Calculate the duration of one additional service.
+
+function getAdditionalServiceDuration(item) {
+
+    if (!item) return 0;
+
+    return getSingleServiceDuration(
+        item.service,
+        item.polish,
+        item.design
+    );
+}
+
+
+// Calculate the entire appointment duration.
+//
+// Main service duration + each additional service duration.
+
 function calculateAppointmentDuration(
     service,
     polish,
     design
 ) {
 
-    let duration = Math.max(
-        serviceDurations[service] || 1,
-        serviceDurations[polish] || 1,
-        serviceDurations[design] || 1
+    let duration = getSingleServiceDuration(
+        service,
+        polish,
+        design
     );
 
-    // Each additional service adds two hours.
+    selectedAdditionalServices.forEach(item => {
 
-    duration += selectedAdditionalServices.length * 2;
+        duration += getAdditionalServiceDuration(item);
+
+    });
 
     return duration;
 }
@@ -585,8 +657,7 @@ function getAppointmentSlots(
 }
 
 
-// Normalize booked times so Supabase times and display
-// times can be compared reliably.
+// Normalize booked times.
 
 function getBookedTimeSet(bookedTimes) {
 
@@ -699,20 +770,22 @@ function renderTimeButtons(bookedTimes) {
     const design =
         document.getElementById("designSelect")?.value || "";
 
-    const previewDuration =
-        (service || polish || design)
-            ? calculateAppointmentDuration(
-                service,
-                polish,
-                design
-            )
-            : 0.5;
+    // Use a short preview only until a service is selected.
+
+    const hasServiceSelection =
+        Boolean(service || polish || design);
+
+    const previewDuration = hasServiceSelection
+        ? calculateAppointmentDuration(
+            service,
+            polish,
+            design
+        )
+        : 0.5;
 
     allTimes.forEach(time => {
 
         const start = timeToMinutes(time);
-
-        // These are the slots this appointment would occupy.
 
         const previewSlots = getAppointmentSlots(
             time,
@@ -725,16 +798,15 @@ function renderTimeButtons(bookedTimes) {
         button.textContent = time;
         button.classList.add("time-slot");
 
-        // Check whether this appointment overlaps an
-        // EXISTING appointment.
+        // Check conflicts across the complete duration.
 
         const overlapsExistingBooking =
             previewSlots.some(slot =>
                 bookedSet.has(timeToMinutes(slot))
             );
 
-        // Only check the starting 30-minute slot against
-        // weekly unavailable hours and individual blocks.
+        // Check weekly and date-specific restrictions
+        // for the appointment's starting slot.
 
         const overlapsBlockedHours =
             appointmentOverlapsBlockedTime(
@@ -827,8 +899,7 @@ async function loadTimes(
 
         const booked = await getBookedAppointments();
 
-        // Ignore outdated requests if another date or
-        // service selection was made while loading.
+        // Ignore outdated requests.
 
         if (
             requestNumber !== availabilityRequestNumber
@@ -956,8 +1027,8 @@ window.saveAdditionalServiceOptions = function () {
 
     window.closeAdditionalServicePopup();
 
-    // Refresh the times without clearing the selected time
-    // unless the new duration makes it conflict with a booking.
+    // Refresh times while preserving the selected start time
+    // if the new duration still fits.
 
     if (selectedDate) {
         loadTimes(selectedDate, true);
@@ -1012,14 +1083,23 @@ function renderAdditionalServices() {
                     : "";
 
             info.appendChild(title);
-
             info.appendChild(details);
+
+            const duration =
+                getAdditionalServiceDuration(item);
+
+            const durationLabel =
+                document.createElement("span");
+
+            durationLabel.textContent =
+                ` (${duration} hr)`;
+
+            info.appendChild(durationLabel);
 
             const removeButton =
                 document.createElement("button");
 
             removeButton.type = "button";
-
             removeButton.textContent = "×";
 
             removeButton.setAttribute(
@@ -1035,7 +1115,6 @@ function renderAdditionalServices() {
             );
 
             wrapper.appendChild(info);
-
             wrapper.appendChild(removeButton);
 
             container.appendChild(wrapper);
@@ -1212,13 +1291,15 @@ window.bookAppointment = async function () {
         }
 
 
-        // Calculate appointment duration.
+        // Calculate the complete appointment duration.
 
         const duration = calculateAppointmentDuration(
             service,
             polish,
             design
         );
+
+        // Calculate all occupied 30-minute slots.
 
         const timesToBook = getAppointmentSlots(
             selectedTime,
@@ -1244,9 +1325,8 @@ window.bookAppointment = async function () {
         }
 
 
-        // Check ONLY the appointment's starting slot
-        // against recurring unavailable hours and individual
-        // date-specific blocked times.
+        // Check appointment starting time against weekly
+        // restrictions and individual date-specific blocks.
 
         if (
             appointmentOverlapsBlockedTime(
@@ -1265,8 +1345,8 @@ window.bookAppointment = async function () {
         }
 
 
-        // Check existing appointments for conflicts
-        // across the FULL appointment duration.
+        // Check existing appointments across the FULL
+        // calculated appointment duration.
 
         const bookedAppointments =
             await getBookedAppointments();
@@ -1306,11 +1386,13 @@ window.bookAppointment = async function () {
 
             date: selectedDate,
 
-            time: selectedTime,
+            time: minutesToSQLTime(appointmentStart),
 
             duration: duration,
 
-            blocked_times: timesToBook,
+            blocked_times: timesToBook.map(time =>
+                minutesToSQLTime(timeToMinutes(time))
+            ),
 
             service: service,
 
@@ -1394,9 +1476,7 @@ window.bookAppointment = async function () {
         // Reset booking selections.
 
         selectedDate = "";
-
         selectedTime = "";
-
         selectedAdditionalServices = [];
 
         renderAdditionalServices();
@@ -1566,9 +1646,8 @@ async function initializeBookingSystem() {
 
                         if (selectedDate) {
 
-                            // Preserve the selected time unless
-                            // the new duration conflicts with
-                            // an existing appointment.
+                            // Keep the selected start time if it
+                            // remains available for the new duration.
 
                             loadTimes(selectedDate, true);
                         }
