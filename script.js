@@ -91,7 +91,13 @@ const serviceDurations = {
     "Manicure": 1.5,
     "Pedicure": 2.0,
     "Gel": 1.5,
-    "Acrylic": 2.5
+    "Acrylic": 2.5,
+
+    // Designs do not affect appointment duration
+    "Basic": 0,
+    "Basic Design": 0,
+    "Minimal Design": 0,
+    "Max Design": 0
 };
 
 
